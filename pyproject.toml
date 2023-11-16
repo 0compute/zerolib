@@ -1,0 +1,229 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "zerolib"
+version = "0.1.0"
+description = "..."
+dependencies = ["atools", "msgspec[msgpack]", "rustworkx[mpl]", "wrapt"]
+
+[project.optional-dependencies]
+interactive = ["pypython"]
+serialize = ["msgpack", "orjson", "pyyaml"]
+# these are widely-used PEP 517 build backends / setuptools extensions
+dev = [
+  # required by .pyproject
+  "toml",
+  # lint
+  "pre-commit",
+  "validate-pyproject",
+  "vulture",
+  "yamlfix",
+  "yamllint",
+  # format
+  "black",
+  # XXX: replaced by ruff?
+  "isort",
+  # typing
+  "mypy[dmypy]",
+  "types-aiofiles",
+  "types-PyYAML",
+  "types-setuptools",
+  "types-toml",
+  # lsp
+  # "pyls-isort",
+  # "pylsp-mypy",
+  # TimeoutError in pylsp.workspace.Workspace._progress_begin, same with "python-lsp-server[rope]"
+  # "pylsp-rope",
+  "python-lsp-black",
+  "python-lsp-server",
+  # use instead of python-lsp-ruff so python-lsp-server has less to do
+  "ruff-lsp",
+  # debug
+  "pdbpp",
+  # profile
+  "py-spy",
+  "pyinstrument",
+  "snakeviz",
+  "yappi",
+]
+test = [
+  "pytest-asyncio",
+  "pytest-cov",
+  "pytest-flakefinder",
+  "pytest-random-order",
+  "pytest-sugar",
+  "pytest-xdist[psutil,setproctitle]",
+]
+
+[tool.black]
+target-version = ["py310"]
+
+[tool.coverage.run]
+branch = true
+data_file = "tests/.coverage"
+# pytest-cov fails with pytest-xdist: https://github.com/pytest-dev/pytest-cov/issues/604
+# dynamic_context = "test_function"
+parallel = true
+source = ["."]
+omit = [".pyproject/*", "tests/sitecustomize.py", "tests/whitelist.py"]
+relative_files = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "pragma: no cover",
+  "@overload",
+  "pass",
+]
+
+[tool.coverage.html]
+directory = "tests/coverage-html"
+show_contexts = true
+
+[tool.coverage.xml]
+output = "tests/coverage.xml"
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+
+[tool.mypy]
+allow_untyped_defs = false
+cache_fine_grained = true
+check_untyped_defs = true
+# left to ruff
+disable_error_code = "name-defined,syntax"
+# speed issue
+follow_imports = "skip"
+ignore_missing_imports = true
+show_error_codes = true
+strict_optional = false
+# nice in theory, practically mypy is fukt and enabling this will lead you down
+# an endless trail of casts
+# warn_return_any = true
+warn_no_return = false
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+exclude = [
+  # single quotes is a literal string
+  '^/nix/store/.*',
+  '^.result.*',
+  '^result.*',
+]
+
+[[tool.mypy.overrides]]
+# assigning to a function
+module = "tests.conftest"
+disable_error_code = "assignment"
+
+[tool.pylsp-mypy]
+enabled = true
+dmypy = true
+dmypy_status_file = ".dmypy-pylsp.json"
+live_mode = false
+report_progress = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# do not capture logging since we log to stderr, like this so we can use a single log
+# configuration - see ./distinfo/logconfig.py and ./distinfo/logconfig.yaml
+addopts = """
+--capture sys
+--show-capture stderr
+--showlocals
+    --no-cov-on-fail
+    --tb short
+"""
+# --random-order
+# --random-order-bucket global
+cache_dir = "tests/.cache"
+junit_logging = "all"
+junit_log_passing_tests = true
+tmp_path_retention_policy = "failed"
+
+[tool.ruff]
+extend-exclude = [".result*", ".pyproject*", "result*"]
+force-exclude = true
+ignore = [
+  # mccabe
+  "C90",
+  # pydocstyle
+  "D",
+  # pylint
+  "PL",
+  # shadowing a python builtin
+  "A001",
+  # Nissing type annotation for `self` in method
+  "ANN101",
+  # Missing type annotation for `cls` in classmethod
+  "ANN102",
+  # Dynamically typed expressions (typing.Any) are disallowed
+  "ANN401",
+  # Do not catch blind exception: `Exception
+  "BLE001",
+  # unnecessary dict call
+  "C408",
+  # Trailing comma missing
+  "COM812",
+  # commented-out code - selected in pre-commit
+  "ERA001",
+  # line too long
+  "E501",
+  # Exception must not use a string literal
+  "EM101",
+  # Exception must not use an f-string literal
+  "EM102",
+  # Logging statement uses `+`
+  "G003",
+  # Logging statement uses f-string
+  "G004",
+  # `inplace=True` should be avoided - what's this?
+  "PD002",
+  # pytest.raises(...)` is too broad
+  "PT011",
+  # Missing explicit `return` at the end of function able to return non-`None` value
+  "RET503",
+  # github: Requests call without timeout
+  "S113",
+  # Private member accessed
+  "SLF001",
+  # Relative imports from parent modules are banned
+  "TID252",
+  # Create your own exception
+  "TRY002",
+  # Avoid specifying long messages outside the exception class
+  "TRY003",
+]
+ignore-init-module-imports = true
+select = ["ALL"]
+show-fixes = true
+show-source = true
+target-version = "py310"
+task-tags = ["FIXME", "HACK", "TODO", "TOGO", "XXX"]
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true
+
+[tool.ruff.isort]
+combine-as-imports = true
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.per-file-ignores]
+# use of assert
+"tests/*" = ["S101"]
+# imported but unused
+"__init__.py" = ["F401"]
+
+[tool.vulture]
+exclude = [".pyproject/", ".result*/", "result*/"]
+
+[tool.yamlfix]
+explicit_start = false
+line_length = 100
+sequence_style = "keep_style"
+section_whitelines = 1

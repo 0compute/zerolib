@@ -1,0 +1,14 @@
+*.pyc
+/*.dist-info/
+/*.egg-info/
+/*.pstat
+/.*_cache/
+/.coverage*
+/.default.nix
+/.dmypy*.json
+/.pyinstrument.html
+/.result*
+/.test-results/
+/YAKSHAVE
+/flamegraph.svg
+/result*
