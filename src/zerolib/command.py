@@ -9,17 +9,21 @@ from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, overload
 
 import anyio
-import atools
 from anyio.streams.text import TextReceiveStream
-from loguru import logger
+from loguru import logger as log
 
 from . import util
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from typing import IO, Any, Literal
+    from typing import IO, Any, Literal, TextIO
 
     from anyio.abc import ByteReceiveStream
+
+
+@overload
+async def run(command: str) -> bytes:
+    ...
 
 
 @overload
@@ -28,7 +32,12 @@ async def run(*command: Any) -> bytes:
 
 
 @overload
-async def run(*command: Any, stdin: bytes, env: Mapping[str, str]) -> bytes:
+async def run(command: str, stdin: bytes) -> bytes:
+    ...
+
+
+@overload
+async def run(command: str, stdout: TextIO, stderr: TextIO) -> bytes:
     ...
 
 
@@ -37,15 +46,7 @@ async def run(*command: Any, lines: Literal[True]) -> list[str]:
     ...
 
 
-@overload
-async def run(*command: Any, lines: Literal[True], cwd: anyio.Path) -> list[str]:
-    ...
-
-
-@util.trace(
-    desc=lambda *command, **_kwargs: subprocess.list2cmdline(command),
-    log=logger,
-)
+@util.trace(lambda *command, **_kwargs: subprocess.list2cmdline(command), log=log)
 async def run(
     *command: Any,
     stdin: bytes | None = None,
@@ -55,12 +56,12 @@ async def run(
     env: Mapping[str, str] | None = None,
     lines: bool = False,
 ) -> bytes | list[str] | None:
-    if cwd is not None:
-        logger.trace(f"cwd: {cwd}")
     async with (
         anyio.create_task_group() as tg,
         await anyio.open_process(
-            list(map(str, command)),
+            command[0]
+            if len(command) == 1 and isinstance(command[0], str)
+            else list(map(str, command)),
             stdin=subprocess.PIPE if stdin else subprocess.DEVNULL,
             stderr=stderr,
             cwd=cwd,
@@ -104,9 +105,4 @@ async def _process_stderr(stream: ByteReceiveStream, lines: list[str]) -> None:
     async for line in TextReceiveStream(stream):
         if line := line.rstrip():  # pragma: no branch
             lines.append(line)
-            logger.debug(f"err: {line}")
-
-
-@atools.memoize
-async def sha256sum(path: anyio.Path) -> str:
-    return (await run("sha256sum", path)).decode().split()[0]
+            log.debug(f"err: {line}")

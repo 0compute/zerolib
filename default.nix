@@ -209,6 +209,24 @@ in
         pythonImportsCheck = ["attr" "attrs"];
       };
 
+    beartype =
+      python.pkgs.buildPythonPackage rec
+      {
+        pname = "beartype";
+        version = "0.16.4";
+        format = "pyproject";
+        src =
+          python.pkgs.fetchPypi
+          {
+            inherit pname;
+            inherit version;
+            sha256 = "sha256-GtqJzy1usw624Vbu0utUkzV3gpN5ENdDgJGOU8Lq4L8=";
+          };
+        nativeBuildInputs = [setuptools];
+        doCheck = false;
+        pythonImportsCheck = ["beartype"];
+      };
+
     beautifulsoup4 =
       python.pkgs.buildPythonPackage rec
       {
@@ -2884,6 +2902,28 @@ in
         pythonImportsCheck = ["pytest_httpx"];
       };
 
+    pytest-random-order =
+      python.pkgs.buildPythonPackage
+      rec {
+        pname = "pytest-random-order";
+        version = "1.1.0";
+        src =
+          python.pkgs.fetchPypi
+          {
+            inherit pname;
+            inherit version;
+            sha256 = "dbe6debb9353a7af984cc9eddbeb3577dd4dbbcc1529a79e3d21f68ed9b45605";
+          };
+        propagatedBuildInputs = [pytest];
+        doCheck = false;
+        meta = {
+          description = "Randomise the order in which pytest tests are run with some control over the randomness";
+          homepage = "https://github.com/jbasko/pytest-random-order";
+          license = pkgs.lib.licenses.mit;
+        };
+        pythonImportsCheck = ["random_order"];
+      };
+
     pytest-sugar =
       python.pkgs.buildPythonPackage rec
       {
@@ -3624,14 +3664,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "typeguard";
-        version = "2.13.3";
+        version = "4.1.5";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "00edaa8da3a133674796cf5ea87d9f4b4c367d77476e185e80251cc13dfbb8c4";
+            sha256 = "sha256-6goRO7wRG8/8kHieuyFWJcljQR9wlqfpBi1ORjDBVf0=";
           };
         nativeBuildInputs = [setuptools-scm];
         doCheck = false;
@@ -3641,6 +3681,27 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["typeguard"];
+      };
+
+    types-aiofiles =
+      python.pkgs.buildPythonPackage rec
+      {
+        pname = "types-aiofiles";
+        version = "23.1.0.2";
+        src =
+          python.pkgs.fetchPypi
+          {
+            inherit pname;
+            inherit version;
+            sha256 = "ea0a659f7cdd689a65a4e56170299d5d3c848b46984789b5302567f843a51462";
+          };
+        doCheck = false;
+        meta = {
+          description = "Typing stubs for aiofiles";
+          homepage = "https://github.com/python/typeshed";
+          license = pkgs.lib.licenses.asl20;
+        };
+        pythonImportsCheck = ["aiofiles-stubs"];
       };
 
     types-appdirs =
@@ -3924,14 +3985,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "typing_extensions";
-        version = "4.5.0";
+        version = "4.8.0";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb";
+            sha256 = "sha256-345DOenLdzV1WMvbzsozwwNxTPhh0e7xXhBwBVrot+8=";
           };
         nativeBuildInputs = [flit-core];
         doCheck = false;
@@ -4193,14 +4254,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "yamlfix";
-        version = "1.9.0";
+        version = "1.15.0";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "dbf0873e1e409fa9e37e32c07ef74c1e93418392b1f952b4b5964adbe17cb402";
+            sha256 = "sha256-aqUOrDswjvjTH14NDDaqXFvUbeTY+UOubLYt9g6OfnI=";
           };
         nativeBuildInputs = [pdm-pep517];
         propagatedBuildInputs = [maison ruyaml];
@@ -4298,6 +4359,7 @@ in
           }
         );
       nativeBuildInputs = [
+        beartype
         flit-core
         manhole
         pdbpp
@@ -4306,10 +4368,11 @@ in
         pyinstrument
         pytest-asyncio
         pytest-cov
-        pytest-httpx
+        pytest-random-order
         pytest-sugar
-        pytest-xdist
         toml
+        typeguard
+        types-aiofiles
         types-appdirs
         types-attrs
         types-humanfriendly
@@ -4319,6 +4382,8 @@ in
         types-setuptools
         types-toml
         types-tqdm
+        yamlfix
+        yamllint
         yappi
       ];
       propagatedNativeBuildInputs = [
@@ -4337,6 +4402,7 @@ in
         msgpack
         msgspec
         ptpython
+        pyyaml
         rustworkx
         tqdm
         wrapt

@@ -1,6 +1,12 @@
 from __future__ import annotations
 
-from zerolib import Node
+from typing import TYPE_CHECKING
+
+import pytest
+from zerolib import Context, FrozenNode, Graph, Node
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 class Impl(Node):
@@ -11,6 +17,17 @@ class Impl(Node):
 
     def __hash__(self) -> int:
         return hash(str(self))
+
+
+class FrozenImpl(FrozenNode):  # type: ignore[misc]
+    a: str = "1"
+
+
+# give each test a clean graph
+@pytest.fixture(autouse=True)
+def _graph(ctx: Context) -> Generator[None, None, None]:
+    with ctx(graph=Graph.factory()):
+        yield
 
 
 def test_add_has_node() -> None:
@@ -60,3 +77,9 @@ def test_topo_iter() -> None:
     obj2.add_child(obj3)
     obj.add_child(obj4)
     assert list(obj.ctx.graph) == [{obj}, {obj2, obj4}, {obj3}]
+
+
+def test_frozen() -> None:
+    obj = FrozenImpl()
+    with pytest.raises(AttributeError):
+        obj.a = "2"

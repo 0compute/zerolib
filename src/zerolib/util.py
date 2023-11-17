@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import contextlib
 import functools
-import logging
 import os
 import tempfile
 import time
@@ -11,7 +10,7 @@ from typing import TYPE_CHECKING
 import aiofiles
 import anyio
 import atools
-from loguru import logger
+from loguru import logger as log
 
 from . import const
 
@@ -19,8 +18,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable
     from typing import Any
 
-
-log = logging.getLogger(__name__)
+    from loguru._logger import Logger
 
 
 def run_sync(func: Callable, *args: Any, debug: bool = False, **kwargs: Any) -> Any:
@@ -29,7 +27,9 @@ def run_sync(func: Callable, *args: Any, debug: bool = False, **kwargs: Any) -> 
     )
 
 
-def joinmap(iterable: Iterable, func: Callable = str, sep: str = ", ") -> str:
+def joinmap(
+    iterable: Iterable, func: Callable[[Any], str] = str, sep: str = ", "
+) -> str:
     return sep.join(map(func, iterable))
 
 
@@ -39,7 +39,7 @@ REPR_MAX_LENGTH = 70
 def trepr(
     obj: Any,
     *,
-    repr: Callable = repr,
+    repr: Callable[[Any], str] = repr,
     max_length: int | None = REPR_MAX_LENGTH,
 ) -> str:
     """Truncated repr"""
@@ -66,7 +66,7 @@ def trepr(
 def irepr(
     iterable: Iterable,
     sep: str = ", ",
-    repr: Callable = repr,
+    repr: Callable[[Any], str] = repr,
     max_length: int | None = REPR_MAX_LENGTH,
 ) -> str:
     """Iterable repr"""
@@ -79,28 +79,28 @@ def irepr(
 
 @contextlib.contextmanager
 def log_duration(
-    msg: str | None,
-    end_msg: Callable | str | None = None,
-    *,
-    log: Callable | type[logger] = logger,
-    level: str = "debug",
+    desc: str | Callable[[], str] | None = None,
+    end_desc: str | Callable[[], str] | None = None,
+    log: Logger = log,
+    level: str = "DEBUG",
     end_level: str | None = None,
 ) -> Generator[None, None, None]:
     start = time.monotonic()
-    if msg is not None:
-        getattr(log, level)(msg)
+    if desc is not None:
+        if callable(desc):
+            desc = desc()
+        getattr(log, level)(desc)
     yield
     getattr(log, end_level or level)(
-        f"{end_msg() if callable(end_msg) else end_msg if end_msg is not None else msg} "
+        f"{end_desc() if callable(end_desc) else end_desc if end_desc is not None else desc} "
         f"in {time.monotonic() - start:.4f}s",
     )
 
 
 def trace(
-    *,
-    desc: str | Callable | None = None,
-    end_desc: str | Callable | None = None,
-    log: Callable | type[logger] = logger,
+    desc: str | Callable[[], str] | None = None,
+    end_desc: str | Callable[[], str] | None = None,
+    log: Logger = log,
     level: str = "DEBUG",
 ) -> Callable:
     def wrapper(func: Callable) -> Callable:
@@ -146,8 +146,8 @@ def tmpdir(
     return aiofiles.tempfile.TemporaryDirectory(**kwargs)
 
 
-def is_tmpdir(path: anyio.Path) -> bool:
-    return str(path).startswith(f"{tempfile.gettempdir()}{os.sep}{TMPDIR_PREFIX}")
+def is_tmpdir(path: str) -> bool:
+    return path.startswith(f"{tempfile.gettempdir()}{os.sep}{TMPDIR_PREFIX}")
 
 
 @contextlib.contextmanager

@@ -75,6 +75,7 @@ exclude_lines = [
   "if TYPE_CHECKING:",
   "raise NotImplementedError",
   "raise RuntimeError",
+  "raise TypeError",
   "pragma: no cover",
   "@overload",
   "pass",
@@ -126,17 +127,13 @@ report_progress = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-# do not capture logging since we log to stderr, like this so we can use a single log
-# configuration - see ./distinfo/logconfig.py and ./distinfo/logconfig.yaml
 addopts = """
---capture sys
---show-capture stderr
---showlocals
-    --no-cov-on-fail
-    --tb short
+  --showlocals
+  --no-cov-on-fail
+  --tb short
+  --random-order
+  --random-order-bucket global
 """
-# --random-order
-# --random-order-bucket global
 cache_dir = "tests/.cache"
 junit_logging = "all"
 junit_log_passing_tests = true
@@ -183,6 +180,8 @@ ignore = [
   "G003",
   # Logging statement uses f-string
   "G004",
+  # implicitly concatenated strings - selected in pre-commit
+  "ISC001",
   # `inplace=True` should be avoided - what's this?
   "PD002",
   # pytest.raises(...)` is too broad
@@ -209,6 +208,10 @@ task-tags = ["FIXME", "HACK", "TODO", "TOGO", "XXX"]
 
 [tool.ruff.flake8-annotations]
 mypy-init-return = true
+
+[tool.ruff.flake8-pytest-style]
+mark-parentheses = false
+fixture-parentheses = false
 
 [tool.ruff.isort]
 combine-as-imports = true

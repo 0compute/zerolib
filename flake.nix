@@ -3,7 +3,7 @@
     nixpkgs.url = "/home/arthur/wrk/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-pre-commit = {
-      url = "/home/arthur/wrk/nix-pre-commit";
+      url = "github:kingarrrt/nix-pre-commit";
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -48,14 +48,46 @@
             }
             # py
             {
+              name = "ruff check";
               package = ruff;
-              args = ["check" "--fix"];
+              # ERA001: catch commented-out code - here because we don't want it for normal dev
+              # ISC001: check for implicitly concatenated strings - disabled for format
+              args = ["check" "--fix" "--extend-select=ERA001,ISC001" "--unfixable=ERA001"];
               types_or = ["python" "pyi"];
+            }
+            {
+              name = "ruff format";
+              package = ruff;
+              args = ["format"];
+              types_or = ["python" "pyi"];
+            }
+            {
+              entry = "dmypy";
+              args = ["run"];
+              types_or = ["python" "pyi"];
+              require_serial = true;
+            }
+            {
+              entry = "vulture";
+              args = ["."];
+              types_or = ["python" "pyi"];
+              pass_filenames = false;
             }
             # sh
             {
               package = beautysh;
               types = ["shell"];
+            }
+            # yaml
+            {
+              entry = "yamlfix";
+              args = ["--exclude=.pre-commit-config.yaml" "."];
+              types = ["yaml"];
+            }
+            {
+              entry = "yamllint";
+              args = ["."];
+              types = ["yaml"];
             }
           ];
         in

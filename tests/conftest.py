@@ -1,19 +1,35 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import os
 
+import beartype
+import beartype.claw
 import pytest
-from loguru import logger
-from zerolib import Context, Graph
+import typeguard
+from loguru import logger as log
 
-if TYPE_CHECKING:
-    from collections.abc import Generator
+# XXX: install type checkers - must be before local imports
+if "ZEROLIB_NO_TYPECHECK" not in os.environ:
+    typeguard.config.forward_ref_policy = typeguard.ForwardRefPolicy.ERROR
+    typeguard.install_import_hook("zerolib")
+    typeguard.install_import_hook("tests")
+
+    beartype.claw.beartype_packages(
+        ("zerolib", "tests"),
+        conf=beartype.BeartypeConf(
+            is_color=True,
+            is_debug=True,
+            strategy=beartype.BeartypeStrategy.On,
+        ),
+    )
+
+from zerolib import Context
 
 
 # https://loguru.readthedocs.io/en/stable/resources/migration.html#replacing-caplog-fixture-from-pytest-library
-@pytest.fixture()
+@pytest.fixture
 def caplog(caplog: pytest.LogCaptureFixture) -> pytest.LogCaptureFixture:
-    handler_id = logger.add(
+    handler_id = log.add(
         caplog.handler,
         format="{message}",
         level=0,
@@ -21,11 +37,9 @@ def caplog(caplog: pytest.LogCaptureFixture) -> pytest.LogCaptureFixture:
         enqueue=True,
     )
     yield caplog
-    logger.remove(handler_id)
+    log.remove(handler_id)
 
 
-# give each test a clean graph
-@pytest.fixture(autouse=True)
-def _graph() -> Generator[None, None, None]:
-    with Context()(graph=Graph()):
-        yield
+@pytest.fixture
+def ctx() -> Context:
+    return Context()

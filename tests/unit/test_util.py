@@ -45,4 +45,3 @@ def test_cached_property() -> None:
         del instance.aproperty
     assert instance_key not in memoized.memos
     assert len(memoized.memos) == 1
-    assert repr(instance.aproperty) == repr(1)

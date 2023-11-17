@@ -1,30 +1,36 @@
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 import rustworkx
 import wrapt
+from loguru import logger as log
 
 from .exc import CircularError
 
-log = logging.getLogger(__name__)
-
 if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Hashable
-    from typing import Any
+    from typing import Self
 
-    NodeFilterType = tuple | type | Callable | None
+    NodeFilterType = tuple[type, ...] | type | Callable[[Hashable], bool] | None
 
 
 class Graph(wrapt.ObjectProxy):
-    def __init__(self, graph: rustworkx.PyDiGraph | None = None):
+    _self_node_index_map: dict[Hashable, int]
+    _self_index_node_map: dict[int, Hashable]
+    _self_filter: NodeFilterType
+
+    # XXX: need a factory because superclass does not allow setting self members in
+    # __init__ - trying results in "ValueError: wrapper has not been initialized"
+    @classmethod
+    def factory(cls, graph: rustworkx.PyDiGraph | None = None) -> Self:
         if graph is None:
-            graph = self._digraph()
-        super().__init__(graph)
-        self._self_node_index_map: dict[Hashable, int] = {}
-        self._self_index_node_map: dict[int, Hashable] = {}
-        self._self_filter: NodeFilterType = None
+            graph = cls._digraph()
+        self = cls(graph)
+        self._self_node_index_map = {}
+        self._self_index_node_map = {}
+        self._self_filter = None
+        return self
 
     @classmethod
     def _digraph(cls) -> rustworkx.PyDiGraph:
@@ -48,19 +54,19 @@ class Graph(wrapt.ObjectProxy):
         self._self_filter = value
 
     def __iter__(self) -> Generator[set[Hashable], None, None]:
-        sorter = rustworkx.TopologicalSorter(
+        sorter = rustworkx.TopologicalSorter(  # type: ignore[attr-defined]
             self.__wrapped__,
             # we don't need to check cycle - it's been done already
             check_cycle=False,
         )
-        ready: set | None = None
+        ready: list | None = None
         while True:
             if not sorter.is_active():
                 break
             if ready is not None:
                 sorter.done(ready)
             ready = sorter.get_ready()
-            nodes = {self._self_index_node_map[index] for index in ready}
+            nodes: set[Hashable] = {self._self_index_node_map[index] for index in ready}
             if self.filter is not None:
                 nodes = set(self._filter_nodes(nodes, self.filter))
             if nodes:
@@ -124,7 +130,7 @@ class Graph(wrapt.ObjectProxy):
                 self._self_index_node_map[edge[1]],
                 self.__wrapped__.get_edge_data(*edge),
             )
-            for edge in rustworkx.digraph_find_cycle(self.__wrapped__, child_index)
+            for edge in rustworkx.digraph_find_cycle(self.__wrapped__, child_index)  # type: ignore[attr-defined]
         ]
         if cycle:
             raise CircularError(cycle)
@@ -137,7 +143,7 @@ class Graph(wrapt.ObjectProxy):
                 self._self_node_index_map[parent], self._self_node_index_map[child]
             )
 
-    def children(self, node: Hashable) -> list[tuple[Hashable, dict]]:
+    def children(self, node: Hashable) -> list[tuple[Hashable, dict | None]]:
         try:
             index = self._self_node_index_map[node]
         except KeyError:
@@ -147,7 +153,7 @@ class Graph(wrapt.ObjectProxy):
             for e in self.__wrapped__.out_edges(index)
         ]
 
-    def parents(self, node: Hashable) -> list[tuple[Hashable, dict]]:
+    def parents(self, node: Hashable) -> list[tuple[Hashable, dict | None]]:
         try:
             index = self._self_node_index_map[node]
         except KeyError:
@@ -167,7 +173,7 @@ class Graph(wrapt.ObjectProxy):
     ) -> list[Hashable]:
         descendants = [
             self._self_index_node_map[n]
-            for n in rustworkx.descendants(
+            for n in rustworkx.descendants(  # type: ignore[attr-defined]
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
@@ -180,7 +186,7 @@ class Graph(wrapt.ObjectProxy):
     ) -> list[Hashable]:
         ancestors = [
             self._self_index_node_map[n]
-            for n in rustworkx.ancestors(
+            for n in rustworkx.ancestors(  # type: ignore[attr-defined]
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
@@ -200,14 +206,14 @@ class Graph(wrapt.ObjectProxy):
             )
         ]
 
-    def get_edge_data(self, parent: Hashable, child: Hashable) -> Any:
+    def get_edge_data(self, parent: Hashable, child: Hashable) -> dict | None:
         return self.__wrapped__.get_edge_data(
             self._self_node_index_map[parent], self._self_node_index_map[child]
         )
 
-    def subgraph(self, node: Hashable, filter: NodeFilterType = None) -> Graph:
+    def subgraph(self, node: Hashable, filter: NodeFilterType = None) -> Self:
         descendants = self._descendants(node, filter)
-        graph = Graph(
+        graph = Graph.factory(
             graph=self.__wrapped__.subgraph(
                 [self._self_node_index_map[node] for node in descendants],
                 preserve_attrs=True,

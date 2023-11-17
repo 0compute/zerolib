@@ -1,9 +1,12 @@
 logger:
   handlers:
     # first handler is stderr
-    - format: <yellow>{elapsed.seconds}.{elapsed.microseconds}</yellow> | <level>{message}</level> | <magenta>{extra!r}</magenta>
-        | <blue>{name}:{line}</blue>
-      level: DEBUG
+    - format:
+        # format is joined with " "
+        - <white><bold>{elapsed.seconds}.{elapsed.microseconds}</bold></white>
+        - <level>{message}</level>
+        - <magenta>{extra!r}</magenta>
+        - <blue>{name}:{line}</blue>
       backtrace: false
   levels:
     - name: INFO

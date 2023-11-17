@@ -4,8 +4,7 @@ import datetime
 import io
 
 import pytest
-from zerolib import serialize
-from zerolib.dic import Dic
+from zerolib import Dic, serialize
 
 ODICT = Dic(
     one=list(),
@@ -19,9 +18,7 @@ ODICT = Dic(
     nine={Dic(a=1)},
 )
 
-ODICT_CLEAN = ODICT.clean()
-
-ODICT_DUMP_CLEAN = ODICT.export()
+ODICT_EXPORT = ODICT.export(stringify=True)
 
 
 def _assert_clean(odict: dict) -> None:
@@ -33,26 +30,25 @@ def _assert_clean(odict: dict) -> None:
     assert "six" in odict
     assert "seven" in odict
     assert "eight" not in odict
-    assert odict["nine"] == {Dic(a=1)}
+    assert odict["nine"] == [Dic(a=1)]
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize("fmt", serialize.SERIALIZE)
 def test_dump_load(fmt: str) -> None:
-    check = ODICT_DUMP_CLEAN
     # dump/load
     stream_cls = io.BytesIO if fmt == "msgpack" else io.StringIO
     stream = stream_cls()
     serialize.dump(ODICT, file=stream, fmt=fmt)
     stream.seek(0)
     dumped = serialize.load(file=stream, fmt=fmt)
-    assert dumped == check
+    _assert_clean(dumped)
+    assert dumped == ODICT_EXPORT
     # dumps/loads
     # FIXME: I've spent enough time fucking with mypy - the overload for dumps needs
     # fixing
-    dump = serialize.dumps(ODICT, fmt=fmt)
+    dump = serialize.dumps(ODICT, fmt=fmt)  # type: ignore[call-overload]
     dumped = serialize.loads(dump, fmt=fmt)
-    assert dumped == check
+    assert dumped == ODICT_EXPORT
     # box dumps/loads
     check = Dic(a=1)
     dump = serialize.dumps(check, fmt=fmt)  # type: ignore[call-overload]

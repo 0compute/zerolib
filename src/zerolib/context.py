@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import anyio
 import appdirs
 from contextvars_extras import ContextVarsRegistry
 
-from . import const, util
+from . import const
 from .graph import Graph
-from .serialize import MsgSpecSerde
-
-if TYPE_CHECKING:
-    from .dic import Dic
 
 
 class Context(ContextVarsRegistry):
@@ -21,28 +15,14 @@ class Context(ContextVarsRegistry):
     Context-local state for config and services
     """
 
-    graph = Graph()
+    graph = Graph.factory()
     """DAG for Node type"""
 
-    serde: MsgSpecSerde = MsgSpecSerde()
-    """Msgspec serde wrapper"""
+    cache = True
+    """Whether to cache"""
 
-    @util.cached_property
-    async def cachedir(self) -> anyio.Path:
-        """Application cache directoy in XDG_CACHE_HOME"""
-        return anyio.Path(
-            await anyio.to_thread.run_sync(appdirs.user_cache_dir, const.NAME)
-        )
-
-    # def __hash__(self) -> int:
-    #     return hash(self.cfg)
+    cachedir = anyio.Path(appdirs.user_cache_dir(const.NAME))
+    """User cache dir"""
 
     def __repr__(self) -> str:
         return f"<Context {self.graph}>"
-
-    @classmethod
-    async def factory(cls, options: Dic | None = None) -> Context:
-        self = cls()
-        if options:
-            self.options = options.copy()
-        return self

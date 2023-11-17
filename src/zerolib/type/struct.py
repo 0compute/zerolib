@@ -1,22 +1,134 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+import functools
+from typing import TYPE_CHECKING, Any, ClassVar, Self, Union, cast
 
+import anyio
+
+try:
+    import msgpack
+except ImportError:
+    msgpack = None
 import msgspec
-from loguru import logger
 
-from .. import util
+try:
+    import yaml
+except ImportError:
+    yaml = None
+from loguru import logger as log
+
+# export msgspec field for import convenience
+from msgspec import field  # noqa: F401
+
+from .. import serialize, util
 from ..context import Context
 from ..dic import Dic
 
 if TYPE_CHECKING:
-    from typing import Any, Self
+    from collections.abc import Callable
+    from typing import Literal
 
-    import anyio
-    from loguru import Logger
+    from loguru._logger import Logger
 
-# export msgspec field for import convenience
-field = msgspec.field
+    EncoderType = Callable[["Struct"], bytes]
+
+    DecoderType = Callable[[bytes], "Struct"]
+
+    CodeType = Literal[*serialize.SERIALIZE]  # type: ignore[valid-type]
+
+# https://jcristharif.com/msgspec/extending.html#defining-a-custom-extension-messagepack-only
+EXT_CODES = {
+    anyio.Path: 1,
+}
+
+EXT_CODES_TYPE = {v: k for k, v in EXT_CODES.items()}
+
+ENCODERS: dict[type, EncoderType] = {}
+
+DECODERS: dict[type, DecoderType] = {}
+
+
+class Encoder:
+    @util.cached_property
+    def json(self) -> EncoderType:
+        return msgspec.json.Encoder(enc_hook=str).encode
+
+    if msgpack is not None:
+
+        @util.cached_property
+        def msgpack(self) -> EncoderType:
+            return msgspec.msgpack.Encoder(enc_hook=self._msgpack_encode).encode
+
+        # fallback for unsupported on msgpack encode
+        @staticmethod
+        def _msgpack_encode(obj: Any) -> Any:
+            cls = type(obj)
+            ext_code = EXT_CODES.get(cls)
+            if ext_code is None:
+                raise NotImplementedError(f"enc_hook: EXT code undefined for {cls!r}")
+            encoder = ENCODERS.get(cls, lambda obj: str(obj).encode())
+            return msgspec.msgpack.Ext(ext_code, encoder(obj))
+
+    if yaml is not None:
+
+        @util.cached_property
+        def yaml(self) -> EncoderType:
+            return functools.partial(msgspec.yaml.encode, enc_hook=str)  # type: ignore[attr-defined]
+
+
+class Decoder:
+    @util.cached_property
+    def json(self) -> DecoderType:
+        return msgspec.json.Decoder(
+            type=self._typed_union,
+            dec_hook=self._decode,
+        ).decode
+
+    if msgpack is not None:
+
+        @util.cached_property
+        def msgpack(self) -> DecoderType:
+            return msgspec.msgpack.Decoder(
+                type=self._typed_union,
+                dec_hook=self._decode,
+                ext_hook=self._ext,
+            ).decode
+
+        # extension decode hook
+        @staticmethod
+        def _ext(code: int, data: memoryview) -> Any:
+            cls = EXT_CODES_TYPE.get(code)
+            if cls is None:
+                raise NotImplementedError(
+                    f"ext_hook: type undefined for EXT code {code}"
+                )
+            return DECODERS.get(cls, lambda data: cls(data.decode()))(data.tobytes())
+
+    if yaml is not None:
+
+        @util.cached_property
+        def yaml(self) -> DecoderType:
+            return functools.partial(
+                msgspec.yaml.decode,  # type: ignore[attr-defined]
+                type=self._typed_union,
+                dec_hook=self._decode,
+            )
+
+    @util.cached_property
+    def _typed_union(self) -> Union | Any:
+        return Union[*UNION_TYPES] if UNION_TYPES else Any
+
+    # decode callback
+    @staticmethod
+    def _decode(cls: type, obj: Any) -> Any:
+        cls = getattr(cls, "__origin__", cls)
+        if cls in EXT_CODES:
+            return obj
+        if cls is set:
+            return set(*obj)
+        if issubclass(cls, dict):
+            return Dic(obj) if issubclass(cls, Dic) else cls(obj)
+        raise NotImplementedError(f"dec_hook: {cls!r}")
 
 
 class Struct(
@@ -25,15 +137,17 @@ class Struct(
     omit_defaults=True,
     forbid_unknown_fields=True,
     tag=True,
-    # TOGO: once this is all stable - makes debugging harder
-    # array_like=True,
+    array_like=True,
     dict=True,
 ):
     ctx: ClassVar[Context] = Context()
 
+    _encoder: ClassVar[Encoder] = Encoder()
+    _decoder: ClassVar[Decoder] = Decoder()
+
     @util.cached_property
     def log(self) -> Logger:
-        return logger.bind(self=self)
+        return log.bind(self=self)
 
     # FIXME: not the right way to hash
     def __hash__(self) -> int:
@@ -68,10 +182,6 @@ class Struct(
         return self
 
     @classmethod
-    def frommsgpack(cls, encoded: bytes) -> Self:
-        return cls.ctx.serde.decode(encoded)
-
-    @classmethod
     async def get(
         cls,
         key: str | None = None,
@@ -79,18 +189,18 @@ class Struct(
         *,
         path: anyio.Path | None = None,
     ) -> Self | None:
-        if cls.ctx.cfg.cache:
+        if cls.ctx.cache:
             if path is None:
                 if key is None:
                     raise TypeError("either key or path must be provided")
-                path = await cls._key_path(key)
+                path = cls._key_path(key)
             try:
                 encoded = await path.read_bytes()
             except FileNotFoundError:
                 ...
             else:
                 try:
-                    self = cls.frommsgpack(encoded)
+                    self = cls.decode(encoded)
                 except (
                     msgspec.DecodeError,
                     msgspec.ValidationError,
@@ -98,7 +208,7 @@ class Struct(
                     TypeError,
                 ):
                     await path.unlink()
-                    logger.exception(f"get: decode fail - unlinked {path}")
+                    log.exception(f"get: decode fail - unlinked {path}")
                 else:
                     self.log.debug(f"cache hit: {path}")
                     await self.__setstate__()
@@ -106,16 +216,16 @@ class Struct(
         return default
 
     async def put(self, path: anyio.Path | None = None) -> None:
-        if self.ctx.cfg.cache:
+        if self.ctx.cache:
             if path is None:
-                path = await self._key_path(self)
+                path = self._key_path(self)
             # TODO: lock
             await path.parent.mkdir(parents=True, exist_ok=True)
-            await path.write_bytes(self.asmsgpack())
+            await path.write_bytes(self.encode())
             self.log.debug(f"wrote to {path}")
 
     async def delete(self) -> None:
-        path = await self._key_path(self)
+        path = self._key_path(self)
         try:
             await path.unlink()
         except FileNotFoundError:
@@ -124,8 +234,15 @@ class Struct(
             self.log.debug(f"deleted {path}")
 
     @classmethod
-    async def _key_path(cls, key: str | Self) -> anyio.Path:
-        return (await cls.ctx.cachedir) / "db" / cls.__name__.lower() / f"{key}.msgpack"
+    def _key_path(cls, key: str | Self) -> anyio.Path:
+        return cls.ctx.cachedir / "db" / cls.__name__.lower() / f"{key}.msgpack"
+
+    @classmethod
+    def decode(cls, encoded: bytes, type: CodeType = serialize.FAST_SERIALIZER) -> Self:
+        return cast(Self, getattr(cls._decoder, type)(encoded))
+
+    def encode(self, type: CodeType = serialize.FAST_SERIALIZER) -> bytes:
+        return getattr(self._encoder, type)(self)
 
     def replace(self, **changes: Any) -> Self:
         return msgspec.structs.replace(self, **changes)
@@ -133,15 +250,15 @@ class Struct(
     def asdict(self) -> Dic:
         return Dic(msgspec.structs.asdict(self))
 
-    def asmsgpack(self) -> str:
-        return self.ctx.serde.encode(self)
 
-    def asjson(self) -> str:
-        return self.ctx.serde.encode(self, "json")
-
-    def asyaml(self) -> str:
-        return self.ctx.serde.encode(self, "yaml")
-
-
-class FrozenStruct(Struct, frozen=True):
+class FrozenStruct(Struct, frozen=True):  # type: ignore[misc]
     ...
+
+
+UNION_TYPES: set[type[Struct]] = set()
+
+
+def union(cls: type[Struct]) -> type[Struct]:
+    """Join class to the tagged union used by msgspec decoder"""
+    UNION_TYPES.add(cls)
+    return cls

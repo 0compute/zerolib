@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 
 import pytest
-from zerolib.dic import Dic
+from zerolib import Dic
 
 
 def test_setattr() -> None:
@@ -44,6 +44,14 @@ def test_hash() -> None:
     assert isinstance(hash(d), int)
 
 
+def test_sha256_hex() -> None:
+    d = Dic()
+    assert (
+        d.sha256_hex()
+        == "2e38e77b22c314a449e91fafed92a43826ac6aa403ae6a8acb6cf58239fbaf5d"
+    )
+
+
 def test_order() -> None:
     d = Dic(a=1)
     d2 = Dic(a=2)
@@ -80,6 +88,12 @@ def test_merge() -> None:
     assert d.b.c == 2
 
 
+def test_sorted() -> None:
+    d = Dic(b=1, a=2)
+    assert list(d) == ["b", "a"]
+    assert list(d.sorted()) == ["a", "b"]
+
+
 def test_clean() -> None:
     d = Dic(
         a=1,
@@ -95,11 +109,10 @@ def test_clean() -> None:
     assert d.clean() == Dic(a=1, b=dict(c=1), c=False, d=0, i=[dict(a=1)], j={1})
 
 
-@pytest.mark.skip()
 def test_export() -> None:
     d = Dic(a=None)
     assert not d.export()
     now = datetime.datetime.now(datetime.timezone.utc)
-    d = Dic(a=Dic(b=now), c={1, Dic(d=2)})
-    assert d.export() == Dic(a=Dic(b=now), c=[1, dict(d=2)])
+    d = Dic(a=Dic(b=now), c={Dic(d=2), 1, (1,)}, e=["a", 1])
+    assert d.export() == Dic(a=Dic(b=now), c=[dict(d=2), (1,), 1], e=["a", 1])
     assert d.export(stringify=True).a == Dic(b=str(now))

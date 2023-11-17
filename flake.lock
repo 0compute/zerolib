@@ -28,17 +28,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1700211684,
-        "narHash": "sha256-HSpAzLDd5Z3aPeripNg+x0YkrjaKWkCTJqw4ZTF0A2I=",
-        "ref": "refs/heads/master",
-        "rev": "d41d2aa576f44182867ea06aed738cdf0a828a83",
-        "revCount": 10,
-        "type": "git",
-        "url": "file:///home/arthur/wrk/nix-pre-commit"
+        "lastModified": 1700227600,
+        "narHash": "sha256-BsncPxiDXAAzaKLKYofxmyJsu+PvXZPolKwUgzdaNkA=",
+        "owner": "kingarrrt",
+        "repo": "nix-pre-commit",
+        "rev": "e9436459deb8d99ce2919bc9b0fac9f7d3f3f5ed",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/arthur/wrk/nix-pre-commit"
+        "owner": "kingarrrt",
+        "repo": "nix-pre-commit",
+        "type": "github"
       }
     },
     "nixpkgs": {

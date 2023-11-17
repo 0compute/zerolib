@@ -1,0 +1,21 @@
+# whitelist for vulture
+# ruff: noqa
+# type: ignore
+VERSION  # unused variable (src/zerolib/const.py:7)
+COLOR_CHOICES  # unused variable (src/zerolib/logging.py:21)
+_.start_time  # unused attribute (src/zerolib/logging.py:61)
+_.showwarning  # unused attribute (src/zerolib/logging.py:69)
+filename  # unused variable (src/zerolib/logging.py:78)
+lineno  # unused variable (src/zerolib/logging.py:79)
+_._cached_child_edge_properties  # unused method (src/zerolib/type/node.py:46)
+_._cached_parent_edge_properties  # unused method (src/zerolib/type/node.py:55)
+_._json_decoder  # unused method (src/zerolib/type/struct.py:64)
+_._msgpack_decoder  # unused method (src/zerolib/type/struct.py:71)
+_._yaml_decoder  # unused method (src/zerolib/type/struct.py:79)
+run_sync  # unused function (src/zerolib/util.py:24)
+log_duration  # unused function (src/zerolib/util.py:78)
+_.forward_ref_policy  # unused attribute (tests/conftest.py:10)
+_graph  # unused function (tests/unit/type/test_node.py:27)
+mdic  # unused variable (tests/unit/type/test_struct.py:17)
+mset  # unused variable (tests/unit/type/test_struct.py:18)
+mint  # unused variable (tests/unit/type/test_struct.py:19)

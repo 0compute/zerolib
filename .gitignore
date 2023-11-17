@@ -9,6 +9,7 @@
 /.pre-commit-config.yaml
 /.pyinstrument.html
 /.result*
+/.site/
 /.test-results/
 /YAKSHAVE
 /flamegraph.svg
