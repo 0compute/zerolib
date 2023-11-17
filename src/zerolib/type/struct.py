@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, ClassVar
 import msgspec
 from loguru import logger
 
-from . import util
-from .context import Context
-from .dic import Dic
+from .. import util
+from ..context import Context
+from ..dic import Dic
 
 if TYPE_CHECKING:
     from typing import Any, Self
@@ -18,16 +18,8 @@ if TYPE_CHECKING:
 # export msgspec field for import convenience
 field = msgspec.field
 
-UNION_TYPES: set[type[Struct]] = set()
 
-
-def union(cls: type[Struct]) -> type[Struct]:
-    """Join class to the tagged union used by msgspec decoder"""
-    UNION_TYPES.add(cls)
-    return cls
-
-
-class Struct(  # type: ignore[call-arg]
+class Struct(
     msgspec.Struct,
     order=True,
     omit_defaults=True,
@@ -43,13 +35,9 @@ class Struct(  # type: ignore[call-arg]
     def log(self) -> Logger:
         return logger.bind(self=self)
 
+    # FIXME: not the right way to hash
     def __hash__(self) -> int:
         return hash(self.__class__.__name__ + str(self))
-
-    # def __eq__(self, other: object) -> bool:
-    #     if not isinstance(other, str):
-    #         other = str(other)
-    #     return str(self) == other
 
     def __repr__(self) -> str:
         name = type(self).__name__
@@ -102,7 +90,7 @@ class Struct(  # type: ignore[call-arg]
                 ...
             else:
                 try:
-                    instance = cls.frommsgpack(encoded)
+                    self = cls.frommsgpack(encoded)
                 except (
                     msgspec.DecodeError,
                     msgspec.ValidationError,
@@ -112,9 +100,9 @@ class Struct(  # type: ignore[call-arg]
                     await path.unlink()
                     logger.exception(f"get: decode fail - unlinked {path}")
                 else:
-                    instance.log.debug(f"cached: {path}")
-                    await instance.__setstate__()
-                    return instance
+                    self.log.debug(f"cache hit: {path}")
+                    await self.__setstate__()
+                    return self
         return default
 
     async def put(self, path: anyio.Path | None = None) -> None:
@@ -131,18 +119,13 @@ class Struct(  # type: ignore[call-arg]
         try:
             await path.unlink()
         except FileNotFoundError:
-            self.warning(f"not found on delete: {path}")
+            self.log.warning(f"not found on delete: {path}")
         else:
             self.log.debug(f"deleted {path}")
 
     @classmethod
     async def _key_path(cls, key: str | Self) -> anyio.Path:
-        # key with ctx hash so configs are isolated
-        key = f"{key}-{cls.ctx.cfg.sha256_hex()}"
         return (await cls.ctx.cachedir) / "db" / cls.__name__.lower() / f"{key}.msgpack"
-
-    def _key(self) -> str:
-        return str(self)
 
     def replace(self, **changes: Any) -> Self:
         return msgspec.structs.replace(self, **changes)

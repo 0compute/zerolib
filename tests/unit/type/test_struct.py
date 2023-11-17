@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from zerolib.base import Struct
+from zerolib.type import Struct
 
 
 class Impl(Struct):
@@ -17,27 +17,27 @@ class FailImpl(Struct):
 
 
 def test_hash() -> None:
-    obj = Impl("xxx")
+    obj = Impl.factory("xxx")
     assert hash(obj) == hash("Implxxx")
 
 
 def test_eq() -> None:
-    obj = Impl("xxx")
-    assert obj == Impl("xxx")
-    assert obj != Impl("yyy")
+    obj = Impl.factory("xxx")
+    assert obj == Impl.factory("xxx")
+    assert obj != Impl.factory("yyy")
 
 
 def test_repr() -> None:
-    obj = Impl("xxx")
+    obj = Impl.factory("xxx")
     assert repr(obj) == "<Impl xxx>"
-    obj = FailImpl()
+    obj = FailImpl.factory()
     assert repr(obj) == "<unprintable FailImpl>"
 
 
 def test_asdict() -> None:
-    obj = Impl("xxx")
+    obj = Impl.factory("xxx")
     assert obj.asdict() == dict(name="xxx", two=None)
 
 
 def test_replace() -> None:
-    assert Impl("xxx").replace(name="yyy") == Impl("yyy")
+    assert Impl.factory("xxx").replace(name="yyy") == Impl("yyy")

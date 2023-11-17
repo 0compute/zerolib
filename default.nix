@@ -596,8 +596,8 @@ in
         nativeBuildInputs = [
           pkgs.pkg-config
           pkgs.rustPlatform.cargoSetupHook
-          pkgs.rustPlatform.rust.cargo
-          pkgs.rustPlatform.rust.rustc
+          pkgs.cargo
+          pkgs.rustc
           setuptools-rust
         ];
         buildInputs = [pkgs.openssl];
@@ -1494,25 +1494,23 @@ in
         pythonImportsCheck = ["kiwisolver"];
       };
 
-    loguru = (
+    loguru =
       python.pkgs.buildPythonPackage rec
       {
         pname = "loguru";
         version = "0.7.2";
         format = "pyproject";
-        src = (
+        src =
           python.pkgs.fetchPypi
           {
-            pname = pname;
-            version = version;
+            inherit pname;
+            inherit version;
             sha256 = "sha256-5nGlNSJRXzT9QGNA7paMueyvvEs2xnnaA8GP2NC9Uaw";
-          }
-        );
+          };
         nativeBuildInputs = [setuptools];
         doCheck = false;
         pythonImportsCheck = ["loguru"];
-      }
-    );
+      };
 
     lsprotocol =
       python.pkgs.buildPythonPackage rec
@@ -1657,8 +1655,8 @@ in
           };
         nativeBuildInputs = [
           pkgs.rustPlatform.cargoSetupHook
-          pkgs.rustPlatform.rust.cargo
-          pkgs.rustPlatform.rust.rustc
+          pkgs.cargo
+          pkgs.rustc
           setuptools-rust
         ];
         cargoDeps =
@@ -2009,8 +2007,8 @@ in
         nativeBuildInputs = [
           maturin
           pkgs.rustPlatform.cargoSetupHook
-          pkgs.rustPlatform.rust.cargo
-          pkgs.rustPlatform.rust.rustc
+          pkgs.cargo
+          pkgs.rustc
         ];
         cargoDeps =
           pkgs.rustPlatform.importCargoLock
@@ -3122,78 +3120,26 @@ in
         pythonImportsCheck = ["redis"];
       };
 
-    ruff =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "ruff";
-        version = "0.0.267";
-        format = "wheel";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            inherit format;
-            sha256 = "20c594eb56c19063ef5a57f89340e64c6550e169d6a29408a45130a8c3068adc";
-            dist = "py3";
-            platform = "manylinux_2_17_x86_64.manylinux2014_x86_64";
-            python = "py3";
-          };
-        nativeBuildInputs = [pkgs.autoPatchelfHook];
-        doCheck = false;
-        meta = {
-          description = "An extremely fast Python linter, written in Rust.";
-          homepage = "https://github.com/charliermarsh/ruff";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["ruff"];
-      };
-
-    ruff-lsp =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "ruff_lsp";
-        version = "0.0.27";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "329e4f5fced415400397f20dc59a6d4ec1d407136969246a76c3e044d9cb09a4";
-          };
-        nativeBuildInputs = [hatchling];
-        propagatedBuildInputs = [pygls ruff typing-extensions];
-        doCheck = false;
-        meta = {
-          description = "A Language Server Protocol implementation for Ruff.";
-          homepage = "https://github.com/charliermarsh/ruff-lsp";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["ruff_lsp"];
-      };
-
     rustworkx =
       python.pkgs.buildPythonPackage rec
       {
         pname = "rustworkx";
-        version = "0.12.1";
+        version = "0.13.2";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "13a19a2f64dff086b3bffffb294c4630100ecbc13634b4995d9d36a481ae130e";
+            sha256 = "sha256-AnbPC5iSEYWeh5e2fUwW7WrJ6zLttn4KR+cNfXHoBXQ=";
           };
         nativeBuildInputs = [
           pkgs.rustPlatform.cargoSetupHook
-          pkgs.rustPlatform.rust.cargo
-          pkgs.rustPlatform.rust.rustc
+          pkgs.cargo
+          pkgs.rustc
           setuptools-rust
         ];
-        # propagatedBuildInputs = [matplotlib];
-        propagatedBuildInputs = [numpy];
+        propagatedBuildInputs = [matplotlib];
         cargoDeps =
           pkgs.rustPlatform.importCargoLock
           {
@@ -4338,7 +4284,7 @@ in
   }; (
     python.pkgs.buildPythonPackage rec
     {
-      pname = "rustworkx-lib";
+      pname = "zerolib";
       version = "0.1.0.dev0";
       format = "pyproject";
       src =
@@ -4353,26 +4299,16 @@ in
         );
       nativeBuildInputs = [
         flit-core
-        black
-        isort
         manhole
-        mypy
         pdbpp
-        pre-commit
+        pip
         py-spy
         pyinstrument
-        pyls-isort
-        pyls-memestra
-        pylsp-mypy
         pytest-asyncio
         pytest-cov
         pytest-httpx
         pytest-sugar
         pytest-xdist
-        python-lsp-black
-        python-lsp-server
-        ruff-lsp
-        snakeviz
         toml
         types-appdirs
         types-attrs
@@ -4383,10 +4319,6 @@ in
         types-setuptools
         types-toml
         types-tqdm
-        vulture
-        xmllayout
-        yamlfix
-        yamllint
         yappi
       ];
       propagatedNativeBuildInputs = [
@@ -4448,5 +4380,3 @@ in
       pythonImportsCheck = ["nixipy"];
     }
   )
-# cmd: nixipy --print-expr --out-link=.result '[dev]'
-# nixipy 0.1.0.dev0 on python 3.11.0

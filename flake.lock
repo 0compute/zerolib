@@ -18,23 +18,48 @@
         "type": "github"
       }
     },
-    "nixpkgs": {
+    "nix-pre-commit": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "dirtyRev": "e0e09de8d2489d33d06acfc981b18149e567d241-dirty",
-        "dirtyShortRev": "e0e09de8d248-dirty",
-        "lastModified": 1699495644,
-        "narHash": "sha256-oKEPqnmWqukO7W8p16VyOe0MgCgii74Ry+F2jMldPdQ=",
+        "lastModified": 1700211684,
+        "narHash": "sha256-HSpAzLDd5Z3aPeripNg+x0YkrjaKWkCTJqw4ZTF0A2I=",
+        "ref": "refs/heads/master",
+        "rev": "d41d2aa576f44182867ea06aed738cdf0a828a83",
+        "revCount": 10,
         "type": "git",
-        "url": "file:///home/arthur/wrk/nixpkgs"
+        "url": "file:///home/arthur/wrk/nix-pre-commit"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/arthur/wrk/nixpkgs"
+        "url": "file:///home/arthur/wrk/nix-pre-commit"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1698974928,
+        "narHash": "sha256-qiRbMCqO+PBdqPO1ykAdN1vS6VQba3Tb4Ec0bh+sI3s=",
+        "ref": "refs/heads/nixpkgs-unstable",
+        "rev": "7ae23b8a5ac2b47822fd65ea12e5cd62cc7f6f5f",
+        "revCount": 543326,
+        "type": "git",
+        "url": "file:///home/arthur/wrk/nixpkgs-unstable"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/arthur/wrk/nixpkgs-unstable"
       }
     },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "nix-pre-commit": "nix-pre-commit",
         "nixpkgs": "nixpkgs"
       }
     },

@@ -6,9 +6,11 @@
 /.coverage*
 /.default.nix
 /.dmypy*.json
+/.pre-commit-config.yaml
 /.pyinstrument.html
 /.result*
 /.test-results/
 /YAKSHAVE
 /flamegraph.svg
 /result*
+__pycache__/

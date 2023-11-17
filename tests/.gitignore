@@ -1,0 +1,5 @@
+/.covcfg-*.toml
+/.coverage*
+/coverage*.xml
+/coverage-html*/
+/sitecustomize.py

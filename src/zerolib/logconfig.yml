@@ -1,0 +1,22 @@
+logger:
+  handlers:
+    # first handler is stderr
+    - format: <yellow>{elapsed.seconds}.{elapsed.microseconds}</yellow> | <level>{message}</level> | <magenta>{extra!r}</magenta>
+        | <blue>{name}:{line}</blue>
+      level: DEBUG
+      backtrace: false
+  levels:
+    - name: INFO
+      color: <blue><bold>
+    - name: DEBUG
+      color: <cyan>
+    - name: TRACE
+      color: <white>
+
+levels:
+  asyncio: info
+  setuptools: info
+  httpcore: info
+  httpx: info
+  jedi: info
+  parso: info

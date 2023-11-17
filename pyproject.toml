@@ -74,6 +74,7 @@ relative_files = true
 exclude_lines = [
   "if TYPE_CHECKING:",
   "raise NotImplementedError",
+  "raise RuntimeError",
   "pragma: no cover",
   "@overload",
   "pass",
@@ -116,11 +117,6 @@ exclude = [
   '^result.*',
 ]
 
-[[tool.mypy.overrides]]
-# assigning to a function
-module = "tests.conftest"
-disable_error_code = "assignment"
-
 [tool.pylsp-mypy]
 enabled = true
 dmypy = true
@@ -156,8 +152,13 @@ ignore = [
   "D",
   # pylint
   "PL",
+  # todo
+  "FIX",
+  "TD",
   # shadowing a python builtin
   "A001",
+  "A002",
+  "A003",
   # Nissing type annotation for `self` in method
   "ANN101",
   # Missing type annotation for `cls` in classmethod

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import IO, Any
 
-    from .base import Struct
+    from .type import Struct
 
 # https://jcristharif.com/msgspec/extending.html#defining-a-custom-extension-messagepack-only
 EXT_CODES = {
@@ -62,7 +62,7 @@ class MsgSpecSerde(Dic):
     @util.cached_property
     def _decoder(self) -> msgspec.msgpack.Decoder:
         # UNION_TYPES is not complete (also circular) at import time hence this lazy load
-        from .base import UNION_TYPES
+        from .type import UNION_TYPES
 
         return msgspec.msgpack.Decoder(
             Union[*UNION_TYPES],
@@ -174,7 +174,7 @@ def dumps(obj: Any) -> str:
 
 
 @overload
-def dumps(obj: Any, fmt: Literal["json"] | Literal["yaml"]) -> str:
+def dumps(obj: Any, fmt: Literal["json", "yaml"]) -> str:
     ...
 
 

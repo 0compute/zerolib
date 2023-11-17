@@ -4,7 +4,6 @@ import datetime
 import io
 
 import pytest
-
 from zerolib import serialize
 from zerolib.dic import Dic
 
