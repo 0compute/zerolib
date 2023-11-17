@@ -62,9 +62,10 @@
               types_or = ["python" "pyi"];
             }
             {
-              entry = "dmypy";
+              name = "mypy";
+              package = gnumake;
               types_or = ["python" "pyi"];
-              args = ["run" "."];
+              args = ["mypy"];
               pass_filenames = false;
             }
             {
