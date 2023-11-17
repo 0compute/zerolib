@@ -63,9 +63,9 @@
             }
             {
               entry = "dmypy";
-              args = ["run"];
               types_or = ["python" "pyi"];
-              require_serial = true;
+              args = ["run" "."];
+              pass_filenames = false;
             }
             {
               entry = "vulture";

@@ -90,7 +90,7 @@ def dump(
 ) -> None:
     if fmt == "msgpack" and hasattr(file, "buffer"):
         # msgpack writes bytes so needs a buffer
-        file = file.buffer  # type: ignore[attr-defined]
+        file = file.buffer
     _dump(obj, SERIALIZE[fmt].dump.file, file, **kwargs)
 
 

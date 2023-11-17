@@ -41,8 +41,7 @@ class FrozenImpl(FrozenStruct):  # type: ignore[misc]
 def test_log(caplog: pytest.LogCaptureFixture) -> None:
     obj = Impl.factory()
     obj.log.info("test")
-    pytest.skip("todo")
-    assert "test" in caplog.textlog.text
+    assert "test" in caplog.text
 
 
 def test_hash() -> None:

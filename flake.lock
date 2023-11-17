@@ -28,11 +28,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1700227600,
-        "narHash": "sha256-BsncPxiDXAAzaKLKYofxmyJsu+PvXZPolKwUgzdaNkA=",
+        "lastModified": 1700261451,
+        "narHash": "sha256-mhcQ4JisoPsMt5RwxnE5ans5VohypiDj2+HQ/c7wNts=",
         "owner": "kingarrrt",
         "repo": "nix-pre-commit",
-        "rev": "e9436459deb8d99ce2919bc9b0fac9f7d3f3f5ed",
+        "rev": "af170bc38c2c55f4b676e5c38d36e8c72fd263e5",
         "type": "github"
       },
       "original": {

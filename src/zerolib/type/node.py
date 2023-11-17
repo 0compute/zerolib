@@ -115,5 +115,5 @@ class Node(Struct):
         return self.ctx.graph.subgraph(self, filter)
 
 
-class FrozenNode(Node, frozen=True):  # type: ignore[call-arg,misc]
+class FrozenNode(Node, frozen=True):  # type: ignore[misc]
     ...

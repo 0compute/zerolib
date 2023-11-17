@@ -20,14 +20,19 @@ COLOR_DEFAULT = "auto"
 
 COLOR_CHOICES = (COLOR_DEFAULT, "always", "never")
 
+HERE = anyio.Path(__file__).parent
+
 
 async def configure(
-    *, debug: bool = False, verbose: int = 0, color: str = COLOR_DEFAULT
+    *,
+    debug: bool = False,
+    verbose: int = 0,
+    color: str = COLOR_DEFAULT,
+    path: anyio.Path = HERE / "logging.yml",
 ) -> _logger.Logger:
     # read config
-    cfg = Dic(
-        serialize.loads(await (anyio.Path(__file__).parent / "logging.yml").read_text())
-    )
+    cfg = Dic(serialize.loads(await path.read_text()))
+    # format is specified as a list for ease of yaml formatting
     cfg.logger.handlers[0].format = " ".join(cfg.logger.handlers[0].format)
 
     default = cfg.logger.handlers[0]
@@ -86,11 +91,7 @@ def _showwarning(
 # https://loguru.readthedocs.io/en/stable/overview.html#entirely-compatible-with-standard-logging
 class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
-        level: str | int
-        try:
-            level = log.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
+        level = log.level(record.levelname).name
         frame, depth = inspect.currentframe(), 0
         while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
             frame = frame.f_back
