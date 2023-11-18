@@ -36,15 +36,25 @@ if TYPE_CHECKING:
 
     CodeType = Literal[*serialize.SERIALIZE]  # type: ignore[valid-type]
 
+
+# msgpack ext types
 # https://jcristharif.com/msgspec/extending.html#defining-a-custom-extension-messagepack-only
-EXT_CODES = {
-    anyio.Path: 1,
-}
+EXT_TYPES: dict[type, int] = {}
 
-EXT_CODES_TYPE = {v: k for k, v in EXT_CODES.items()}
 
+def register_ext_type(cls: type) -> int:
+    index = len(EXT_TYPES) + 1
+    EXT_TYPES[cls] = index
+    return index
+
+
+# only anyio.Path here - consumers add more as required
+register_ext_type(anyio.Path)
+
+
+# TOGO: maybe, leaving for a while in case not
+# hooks for custom encoders and decoders
 ENCODERS: dict[type, EncoderType] = {}
-
 DECODERS: dict[type, DecoderType] = {}
 
 
@@ -63,7 +73,7 @@ class Encoder:
         @staticmethod
         def _msgpack_encode(obj: Any) -> Any:
             cls = type(obj)
-            ext_code = EXT_CODES.get(cls)
+            ext_code = EXT_TYPES.get(cls)
             if ext_code is None:
                 raise NotImplementedError(f"enc_hook: EXT code undefined for {cls!r}")
             encoder = ENCODERS.get(cls, lambda obj: str(obj).encode())
@@ -94,15 +104,18 @@ class Decoder:
                 ext_hook=self._ext,
             ).decode
 
-        # extension decode hook
-        @staticmethod
-        def _ext(code: int, data: memoryview) -> Any:
-            cls = EXT_CODES_TYPE.get(code)
+        def _ext(self, code: int, data: memoryview) -> Any:
+            """Extension decode hook"""
+            cls = self._ext_types.get(code)
             if cls is None:
                 raise NotImplementedError(
                     f"ext_hook: type undefined for EXT code {code}"
                 )
             return DECODERS.get(cls, lambda data: cls(data.decode()))(data.tobytes())
+
+        @util.cached_property
+        def _ext_types(self) -> dict:
+            return {v: k for k, v in EXT_TYPES.items()}
 
     if yaml is not None:  # pragma: no branch
 
@@ -122,7 +135,7 @@ class Decoder:
     @staticmethod
     def _decode(cls: type, obj: Any) -> Any:
         cls = getattr(cls, "__origin__", cls)
-        if cls in EXT_CODES:
+        if cls in EXT_TYPES:
             return obj
         if cls is set:
             return set(*obj)
