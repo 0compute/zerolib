@@ -67,11 +67,12 @@ data_file = "tests/.coverage"
 # dynamic_context = "test_function"
 parallel = true
 source = ["."]
-omit = [".pyproject/*", "tests/sitecustomize.py", "tests/whitelist.py"]
+omit = [".pyproject/*", ".site/sitecustomize.py", "tests/whitelist.py"]
 relative_files = true
 
 [tool.coverage.report]
 exclude_lines = [
+  "except ImportError:",
   "if TYPE_CHECKING:",
   "raise NotImplementedError",
   "raise RuntimeError",
@@ -80,6 +81,7 @@ exclude_lines = [
   "@overload",
   "pass",
 ]
+skip_covered = true
 
 [tool.coverage.html]
 directory = "tests/coverage-html"
@@ -130,9 +132,9 @@ asyncio_mode = "auto"
 addopts = """
   --showlocals
   --no-cov-on-fail
-  --tb short
+  --tb=short
   --random-order
-  --random-order-bucket global
+  --random-order-bucket=global
 """
 cache_dir = "tests/.cache"
 junit_logging = "all"

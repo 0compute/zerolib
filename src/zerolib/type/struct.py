@@ -53,7 +53,7 @@ class Encoder:
     def json(self) -> EncoderType:
         return msgspec.json.Encoder(enc_hook=str).encode
 
-    if msgpack is not None:
+    if msgpack is not None:  # pragma: no branch
 
         @util.cached_property
         def msgpack(self) -> EncoderType:
@@ -69,7 +69,7 @@ class Encoder:
             encoder = ENCODERS.get(cls, lambda obj: str(obj).encode())
             return msgspec.msgpack.Ext(ext_code, encoder(obj))
 
-    if yaml is not None:
+    if yaml is not None:  # pragma: no branch
 
         @util.cached_property
         def yaml(self) -> EncoderType:
@@ -84,7 +84,7 @@ class Decoder:
             dec_hook=self._decode,
         ).decode
 
-    if msgpack is not None:
+    if msgpack is not None:  # pragma: no branch
 
         @util.cached_property
         def msgpack(self) -> DecoderType:
@@ -104,7 +104,7 @@ class Decoder:
                 )
             return DECODERS.get(cls, lambda data: cls(data.decode()))(data.tobytes())
 
-    if yaml is not None:
+    if yaml is not None:  # pragma: no branch
 
         @util.cached_property
         def yaml(self) -> DecoderType:
@@ -224,14 +224,11 @@ class Struct(
             await path.write_bytes(self.encode())
             self.log.debug(f"wrote to {path}")
 
-    async def delete(self) -> None:
-        path = self._key_path(self)
-        try:
-            await path.unlink()
-        except FileNotFoundError:
-            self.log.warning(f"not found on delete: {path}")
-        else:
-            self.log.debug(f"deleted {path}")
+    async def delete(self, path: anyio.Path | None = None) -> None:
+        if path is None:
+            path = self._key_path(self)
+        await path.unlink()
+        self.log.debug(f"deleted {path}")
 
     @classmethod
     def _key_path(cls, key: str | Self) -> anyio.Path:

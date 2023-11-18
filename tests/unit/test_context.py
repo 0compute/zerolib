@@ -7,5 +7,5 @@ def test_repr() -> None:
     assert repr(Context()) == "<Context nodes=0 edges=0>"
 
 
-async def test_cachedir() -> None:
+def test_cachedir() -> None:
     assert str(Context().cachedir).endswith(f"/.cache/{const.NAME}")

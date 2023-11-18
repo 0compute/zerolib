@@ -114,5 +114,5 @@ def test_export() -> None:
     assert not d.export()
     now = datetime.datetime.now(datetime.timezone.utc)
     d = Dic(a=Dic(b=now), c={Dic(d=2), 1, (1,)}, e=["a", 1])
-    assert d.export() == Dic(a=Dic(b=now), c=[dict(d=2), (1,), 1], e=["a", 1])
-    assert d.export(stringify=True).a == Dic(b=str(now))
+    assert d.export() == dict(a=dict(b=now), c=[dict(d=2), (1,), 1], e=["a", 1])
+    assert d.export(stringify=True)["a"] == dict(b=str(now))

@@ -44,9 +44,10 @@ def trepr(
 ) -> str:
     """Truncated repr"""
     repr_str = repr(obj)
+    # XXX: verified that both branches are hit - coverage is wrong
     if max_length is not None and len(repr_str) - 2 > max_length:
-        if "\n" in repr_str:
-            repr_str = repr_str.split("\n", maxsplit=1)[0]
+        if "\\n" in repr_str:
+            repr_str = repr_str.split("\\n", maxsplit=1)[0]
         end = ""
         match repr_str[0]:
             case "[":
@@ -74,26 +75,6 @@ def irepr(
         sorted(iterable) if isinstance(iterable, set) else iterable,
         functools.partial(trepr, repr=repr, max_length=max_length),
         sep,
-    )
-
-
-@contextlib.contextmanager
-def log_duration(
-    desc: str | Callable[[], str] | None = None,
-    end_desc: str | Callable[[], str] | None = None,
-    log: Logger = log,
-    level: str = "DEBUG",
-    end_level: str | None = None,
-) -> Generator[None, None, None]:
-    start = time.monotonic()
-    if desc is not None:
-        if callable(desc):
-            desc = desc()
-        getattr(log, level)(desc)
-    yield
-    getattr(log, end_level or level)(
-        f"{end_desc() if callable(end_desc) else end_desc if end_desc is not None else desc} "
-        f"in {time.monotonic() - start:.4f}s",
     )
 
 

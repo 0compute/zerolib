@@ -34,22 +34,36 @@ with contextlib.suppress(ImportError):
 
 
 try:
-    import orjson as json
+    import orjson
 except ImportError:
     import json
 
-_JSON_DEFAULTS = dict(default=str, indent=2)
+    _JSON_DEFAULTS = dict(default=str, indent=2)
 
-SERIALIZE.json = Dic(
-    dump=dict(
-        file=functools.partial(json.dump, **_JSON_DEFAULTS),
-        str=functools.partial(json.dumps, **_JSON_DEFAULTS),
-    ),
-    load=dict(
-        file=json.load,
-        str=json.loads,
-    ),
-)
+    SERIALIZE.json = Dic(
+        dump=dict(
+            file=functools.partial(json.dump, **_JSON_DEFAULTS),
+            str=functools.partial(json.dumps, **_JSON_DEFAULTS),
+        ),
+        load=dict(
+            file=json.load,
+            str=json.loads,
+        ),
+    )
+else:  # pragma: no cover
+    # WIP: orjson impl
+    SERIALIZE.json = Dic(
+        dump=dict(
+            file=lambda obj, file, *args, **kwargs: file.write(
+                orjson.dumps(obj, *args, **kwargs).decode()
+            ),
+            str=orjson.dumps,
+        ),
+        load=dict(
+            file=lambda file, *args, **kwargs: json.loads(file.read(), *args, **kwargs),
+            str=orjson.loads,
+        ),
+    )
 
 
 with contextlib.suppress(ImportError):

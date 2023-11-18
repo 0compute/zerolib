@@ -6,6 +6,8 @@ import io
 import pytest
 from zerolib import Dic, serialize
 
+from .type.test_struct import Impl
+
 ODICT = Dic(
     one=list(),
     two=2,
@@ -54,3 +56,9 @@ def test_dump_load(fmt: str) -> None:
     dump = serialize.dumps(check, fmt=fmt)  # type: ignore[call-overload]
     dumped = serialize.loads(dump, fmt=fmt)
     assert dumped == check
+
+
+def test_dump_struct() -> None:
+    obj = Impl()
+    dump = serialize.dumps(obj)
+    assert dump == "mstr: a\nmint: 0\n_mbool: false"

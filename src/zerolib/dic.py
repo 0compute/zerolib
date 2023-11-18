@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import atools
 import deepmerge
+from loguru import logger as log
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping
@@ -118,8 +119,10 @@ class Dic(dict):
             {key: self[key] for key in sorted(self.keys(), key=key, reverse=reverse)}
         )
 
-    def clean(self) -> Self:
-        clean = type(self)()
+    def clean(self, cls: type[dict] | None = None) -> Self | dict:
+        if cls is None:
+            cls = type(self)
+        clean = cls()
         for key, value in self.items():
             match value:
                 case Dic():
@@ -142,8 +145,11 @@ class Dic(dict):
     def _has_value(value: Any) -> bool:
         return bool(value) or isinstance(value, int | float)
 
-    def export(self, *, stringify: bool = False) -> Self:
-        clean = self.clean()
+    def export(self, *, stringify: bool = False) -> dict:
+        clean = self.clean(dict)
+        if not clean:
+            log.warning("empty export")
+            return clean
         for key, value in clean.items():
             match value:
                 case dict():
