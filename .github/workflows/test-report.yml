@@ -1,0 +1,24 @@
+name: Test Report
+
+on:
+  workflow_run:
+    workflows:
+      - Check
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/test-reporter@v1.7.0
+        with:
+          artifact: test-result
+          name: Test Report
+          path: pytest-*.xml
+          reporter: java-junit
