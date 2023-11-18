@@ -9,7 +9,7 @@ import pytest
 import typeguard
 from loguru import logger as log
 
-# XXX: install type checkers - must be before local imports
+# install type checkers - must be before local imports
 if "ZEROLIB_NO_TYPECHECK" not in os.environ:  # pragma: no branch
     typeguard.config.forward_ref_policy = typeguard.ForwardRefPolicy.ERROR
     typeguard.install_import_hook("zerolib")

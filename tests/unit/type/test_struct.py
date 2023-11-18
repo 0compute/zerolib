@@ -101,9 +101,10 @@ async def test_store_key(ctx: Context) -> None:  # noqa: ARG001
 
 
 async def test_store_key_nocache(ctx: Context) -> None:
+    obj = Impl.factory()
+    await obj.put()
+    assert await Impl.get(str(obj)) == obj
     with ctx(cache=False):
-        obj = Impl.factory()
-        await obj.put()
         assert await Impl.get(str(obj)) is None
 
 

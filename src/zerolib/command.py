@@ -91,8 +91,10 @@ async def run(
             out,
             "\n".join(stderr_lines) if stderr is subprocess.PIPE else None,
         )
-    if out is not None and lines:
-        return out.decode().strip().splitlines()
+    # XXX: branch coverage broken: lines=False in
+    # ../../tests/functional/test_command.py::test_basic
+    if lines:  # pragma: no branch
+        return [] if out is None else out.decode().strip().splitlines()
     return out
 
 

@@ -63,11 +63,14 @@ class Graph(wrapt.ObjectProxy):
         while True:
             if not sorter.is_active():
                 break
-            if ready is not None:
+            # XXX: coverage branch broken: ready is None on first loop
+            if ready is not None:  # pragma: no branch
                 sorter.done(ready)
             ready = sorter.get_ready()
             nodes: set[Hashable] = {self._self_index_node_map[index] for index in ready}
-            if self.filter is not None:
+            # XXX: coverage branch broken: self.filter is None in
+            # ../../tests/unit/test_graph.py::test_topo_iter
+            if self.filter is not None:  # pragma: no branch
                 nodes = set(self._filter_nodes(nodes, self.filter))
             if nodes:
                 yield nodes
@@ -77,7 +80,9 @@ class Graph(wrapt.ObjectProxy):
 
     def add_node(self, node: Hashable) -> int:
         index = self._self_node_index_map.get(node)
-        if index is None:
+        # XXX: coverage branch broken: index is not None in
+        # ../../tests/unit/test_graph.py::test_add_node "show idempotent"
+        if index is None:  # pragma: no branch
             index = self.__wrapped__.add_node(node)
             self._self_node_index_map[node] = index
             self._self_index_node_map[index] = node
@@ -177,7 +182,7 @@ class Graph(wrapt.ObjectProxy):
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
-        if filter is not None:
+        if filter is not None:  # pragma: no branch - XXX: coverage branch broken
             descendants = self._filter_nodes(descendants, filter)
         return descendants
 
@@ -190,7 +195,7 @@ class Graph(wrapt.ObjectProxy):
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
-        if filter is not None:
+        if filter is not None:  # pragma: no branch - XXX: coverage branch broken
             ancestors = self._filter_nodes(ancestors, filter)
         return ancestors
 

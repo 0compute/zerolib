@@ -28,6 +28,8 @@ def test_factory() -> None:
 def test_add_node(graph: Graph) -> None:
     graph.add_node(1)
     assert 1 in graph._self_node_index_map
+    # show idempotent
+    graph.add_node(1)
 
 
 def test_has_node(graph: Graph) -> None:

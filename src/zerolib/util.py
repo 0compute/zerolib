@@ -44,8 +44,9 @@ def trepr(
 ) -> str:
     """Truncated repr"""
     repr_str = repr(obj)
-    # XXX: verified that both branches are hit - coverage is wrong
-    if max_length is not None and len(repr_str) - 2 > max_length:
+    # XXX: coverage branch broken: below is False in
+    # ../../tests/unit/test_util.py::test_trepr_default
+    if max_length is not None and len(repr_str) - 2 > max_length:  # pragma: no branch
         if "\\n" in repr_str:
             repr_str = repr_str.split("\\n", maxsplit=1)[0]
         end = ""

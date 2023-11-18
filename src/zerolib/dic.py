@@ -150,7 +150,8 @@ class Dic(dict):
         if not clean:
             log.warning("empty export")
             return clean
-        for key, value in clean.items():
+        # XXX: coverage branch broken
+        for key, value in clean.items():  # pragma: no branch
             match value:
                 case dict():
                     if not isinstance(value, Dic):

@@ -136,7 +136,7 @@ def _dump(
 ) -> bytes | str | None:
     if (asdict := getattr(obj, "asdict", None)) is not None:
         obj = asdict()
-    if isinstance(obj, Dic):  # pragma: no branch
+    if isinstance(obj, Dic):
         obj = obj.export(stringify=stringify)
     return dumper(obj, *args, **kwargs)
 

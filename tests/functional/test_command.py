@@ -1,23 +1,18 @@
 from __future__ import annotations
 
-import pathlib
 import subprocess
 import sys
 
 import pytest
 from zerolib import command
 
-PATH = pathlib.Path(__file__)
-
 
 async def test_basic() -> None:
-    out = await command.run("ls", PATH)
-    assert out == f"{PATH}\n".encode()
+    assert await command.run("ls", __file__) == f"{__file__}\n".encode()
 
 
 async def test_basic_lines() -> None:
-    out = await command.run("ls", PATH, lines=True)
-    assert out == [str(PATH)]
+    assert await command.run("ls", __file__, lines=True) == [str(__file__)]
 
 
 async def test_error() -> None:
@@ -27,8 +22,7 @@ async def test_error() -> None:
 
 
 async def test_stdin() -> None:
-    out = await command.run("cat", stdin=b"a")
-    assert out == b"a"
+    assert await command.run("cat", stdin=b"a") == b"a"
 
 
 async def test_buffers(capfd: pytest.CaptureFixture) -> None:

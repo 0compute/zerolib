@@ -170,7 +170,7 @@ class Struct(
         name = type(self).__name__
         try:
             return f"<{name} {self}>"
-        except Exception:  # pragma] no ftest ptest cover
+        except Exception:
             return f"<unprintable {name}>"
 
     async def __setstate__(self) -> None:
@@ -190,7 +190,8 @@ class Struct(
                 attrs[key] = value
         self = cls(*args, **attrs)
         # set runtime members
-        for key, value in kwargs.items():
+        # XXX: coverage branch broken
+        for key, value in kwargs.items():  # pragma: no branch
             setattr(self, f"_{key}", value)
         return self
 
@@ -202,7 +203,9 @@ class Struct(
         *,
         path: anyio.Path | None = None,
     ) -> Self | None:
-        if cls.ctx.cache:
+        # XXX: coverage branch broken: cls.ctx.cache is False in
+        # ../../tests/unit/type/test_struct.py::test_store_path_nocache
+        if cls.ctx.cache:  # pragma: no branch
             if path is None:
                 if key is None:
                     raise TypeError("either key or path must be provided")
@@ -230,7 +233,9 @@ class Struct(
 
     async def put(self, path: anyio.Path | None = None) -> None:
         if self.ctx.cache:
-            if path is None:
+            # XXX: coverage branch broken: path is not None in
+            # ../../tests/unit/type/test_struct.py::test_store_path
+            if path is None:  # pragma: no branch
                 path = self._key_path(self)
             # TODO: lock
             await path.parent.mkdir(parents=True, exist_ok=True)
@@ -238,7 +243,9 @@ class Struct(
             self.log.debug(f"wrote to {path}")
 
     async def delete(self, path: anyio.Path | None = None) -> None:
-        if path is None:
+        # XXX: coverage branch broken: path is not None in
+        # ../../tests/unit/type/test_struct.py::test_store_path
+        if path is None:  # pragma: no branch
             path = self._key_path(self)
         await path.unlink()
         self.log.debug(f"deleted {path}")
