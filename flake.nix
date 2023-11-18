@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "/home/arthur/wrk/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-pre-commit = {
       url = "github:kingarrrt/nix-pre-commit";
