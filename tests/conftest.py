@@ -24,10 +24,12 @@ if "ZEROLIB_NO_TYPECHECK" not in os.environ:  # pragma: no branch
         ),
     )
 
-from zerolib import Context, logging, util
+from zerolib import Struct, logging, util
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+
+    from zerolib import Context
 
 
 # https://loguru.readthedocs.io/en/stable/resources/migration.html#replacing-caplog-fixture-from-pytest-library
@@ -48,4 +50,4 @@ def caplog(
 
 @pytest.fixture
 def ctx() -> Context:
-    return Context()
+    return Struct.ctx
