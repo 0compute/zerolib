@@ -22,11 +22,6 @@
           '';
           doCheck = true;
         });
-        # devShells.default = pkgs.mkShell {
-        #   name = "dev";
-        #   buildInputs = with pkgs; [cachix gitMinimal];
-        #   inputsFrom = builtins.attrValues self.packages.${system};
-        # };
         devShells.default = with pkgs; let
           pre-commit = inputs.nix-pre-commit.lib.${system}.mkLocalConfig [
             # nix
