@@ -46,7 +46,12 @@ async def run(*command: Any, lines: Literal[True]) -> list[str]:
     ...
 
 
-@util.trace(lambda *command, **_kwargs: subprocess.list2cmdline(command), log=log)
+@util.trace(
+    lambda *command, **_kwargs: command[0]
+    if len(command) == 1 and isinstance(command[0], str)
+    else subprocess.list2cmdline(command),
+    log=log,
+)
 async def run(
     *command: Any,
     stdin: bytes | None = None,
