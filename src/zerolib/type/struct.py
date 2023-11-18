@@ -150,7 +150,7 @@ class Struct(
     omit_defaults=True,
     forbid_unknown_fields=True,
     tag=True,
-    array_like=True,
+    # faster, but less debugability: array_like=True,
     dict=True,
 ):
     ctx: ClassVar[Context] = Context()
