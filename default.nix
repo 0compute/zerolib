@@ -25,77 +25,6 @@ in
         pythonImportsCheck = ["aiofiles"];
       };
 
-    aiohttp =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "aiohttp";
-        version = "3.8.4";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "bf2e1a9162c1e441bf805a1fd166e249d574ca04e03b34f97e2928769e91ab5c";
-          };
-        nativeBuildInputs = [setuptools];
-        propagatedBuildInputs = [aiosignal async-timeout attrs charset-normalizer yarl];
-        patchPhase = "rm tests/test_proxy_functional.py";
-        doCheck = false;
-        meta = {
-          description = "Async http client/server framework (asyncio)";
-          homepage = "https://github.com/aio-libs/aiohttp";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["aiohttp"];
-      };
-
-    aiohttp-cors =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "aiohttp-cors";
-        version = "0.7.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "4d39c6d7100fd9764ed1caf8cebf0eb01bf5e3f24e2e073fda6234bc48b19f5d";
-          };
-        propagatedBuildInputs = [aiohttp];
-        doCheck = false;
-        meta = {
-          description = "CORS support for aiohttp";
-          homepage = "https://github.com/aio-libs/aiohttp-cors";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["aiohttp_cors"];
-      };
-
-    aiosignal =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "aiosignal";
-        version = "1.3.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc";
-          };
-        nativeBuildInputs = [setuptools];
-        propagatedBuildInputs = [frozenlist];
-        doCheck = false;
-        meta = {
-          description = "aiosignal: a list of registered asynchronous callbacks";
-          homepage = "https://github.com/aio-libs/aiosignal";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["aiosignal"];
-      };
-
     anyio =
       python.pkgs.buildPythonPackage rec
       {
@@ -139,29 +68,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["appdirs"];
-      };
-
-    async-timeout =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "async-timeout";
-        version = "4.0.2";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Timeout context manager for asyncio programs";
-          homepage = "https://github.com/aio-libs/async-timeout";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["async_timeout"];
       };
 
     atools =
@@ -225,105 +131,6 @@ in
         nativeBuildInputs = [setuptools];
         doCheck = false;
         pythonImportsCheck = ["beartype"];
-      };
-
-    beautifulsoup4 =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "beautifulsoup4";
-        version = "4.12.2";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "492bbc69dca35d12daac71c4db1bfff0c876c00ef4a2ffacce226d4638eb72da";
-          };
-        nativeBuildInputs = [hatchling];
-        propagatedBuildInputs = [soupsieve];
-        doCheck = false;
-        meta = {
-          description = "Screen-scraping library";
-          homepage = "https://www.crummy.com/software/beautifulsoup/bs4/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["bs4"];
-      };
-
-    beniget =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "beniget";
-        version = "0.4.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "75554b3b8ad0553ce2f607627dad3d95c60c441189875b98e097528f8e23ac0c";
-          };
-        propagatedBuildInputs = [gast];
-        doCheck = false;
-        meta = {
-          description = "Extract semantic information about static Python code";
-          homepage = "https://github.com/serge-sans-paille/beniget/";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["beniget"];
-      };
-
-    black =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "black";
-        version = "23.3.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "1c7b8d606e728a41ea1ccbd7264677e494e87cf630e399262ced92d4a8dac940";
-          };
-        nativeBuildInputs = [hatch-fancy-pypi-readme hatch-vcs];
-        propagatedBuildInputs = [
-          aiohttp-cors
-          click
-          mypy-extensions
-          packaging
-          pathspec
-          platformdirs
-        ];
-        doCheck = false;
-        meta = {
-          description = "The uncompromising code formatter.";
-          homepage = "https://github.com/psf/black";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["black" "blackd" "blib2to3"];
-      };
-
-    bleach =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "bleach";
-        version = "6.0.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "1a1a85c1595e07d8db14c5f09f09e6433502c51c595970edc090551f0db99414";
-          };
-        propagatedBuildInputs = [six webencodings];
-        doCheck = false;
-        meta = {
-          description = "An easy safelist-based HTML-sanitizing tool.";
-          homepage = "https://github.com/mozilla/bleach";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["bleach"];
       };
 
     calver =
@@ -482,29 +289,6 @@ in
         pythonImportsCheck = ["click"];
       };
 
-    coloredlogs =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "coloredlogs";
-        version = "15.0.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "7c991aa71a4577af2f82600d8f8f3a89f936baeaf9b50a9c197da014e5bf16b0";
-          };
-        propagatedNativeBuildInputs = [pkgs.utillinux];
-        propagatedBuildInputs = [humanfriendly];
-        doCheck = false;
-        meta = {
-          description = "Colored terminal output for Python's logging module";
-          homepage = "https://coloredlogs.readthedocs.io";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["coloredlogs"];
-      };
-
     contextvars-extras =
       python.pkgs.buildPythonPackage rec
       {
@@ -557,14 +341,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "coverage";
-        version = "7.2.5";
+        version = "7.3.2";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "f99ef080288f09ffc687423b8d60978cf3a465d3f404a18d1a05474bd8575a47";
+            sha256 = "sha256-vjKtKTQbAXDnlcpZDhwH6B/AYctbEMdM5yA0kUhEBO8=";
           };
         nativeBuildInputs = [setuptools];
         doCheck = false;
@@ -660,17 +444,39 @@ in
         pythonImportsCheck = ["cycler"];
       };
 
-    cython =
+    cython2 =
       python.pkgs.buildPythonPackage rec
       {
         pname = "Cython";
-        version = "0.29.34";
+        version = "0.29.36";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "1909688f5d7b521a60c396d20bba9e47a1b2d2784bfb085401e1e1e7d29a29a8";
+            sha256 = "sha256-QcDP0tdU44PJ7rle/8mqSrhH0Ml0cHfd18Dctow7wB8=";
+          };
+        buildInputs = [pgen];
+        doCheck = false;
+        meta = {
+          description = "The Cython compiler for writing C extensions for the Python language.";
+          homepage = "http://cython.org/";
+          license = pkgs.lib.licenses.asl20;
+        };
+        pythonImportsCheck = ["cython" "Cython" "pyximport"];
+      };
+
+    cython =
+      python.pkgs.buildPythonPackage rec
+      {
+        pname = "Cython";
+        version = "3.0.5";
+        src =
+          python.pkgs.fetchPypi
+          {
+            inherit pname;
+            inherit version;
+            sha256 = "sha256-OTGDSNtIii8k58hOCL3ILyYkhTwP6otHXqC3CycXZJI=";
           };
         buildInputs = [pgen];
         doCheck = false;
@@ -705,72 +511,6 @@ in
         pythonImportsCheck = ["deepmerge"];
       };
 
-    defusedxml =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "defusedxml";
-        version = "0.7.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69";
-          };
-        doCheck = false;
-        meta = {
-          description = "XML bomb protection for Python stdlib modules";
-          homepage = "https://github.com/tiran/defusedxml";
-          license = pkgs.lib.licenses.psfl;
-        };
-        pythonImportsCheck = ["defusedxml"];
-      };
-
-    deprecated =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "Deprecated";
-        version = "1.2.13";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d";
-          };
-        propagatedBuildInputs = [wrapt];
-        doCheck = false;
-        meta = {
-          description = "Python @deprecated decorator to deprecate old python classes, functions or methods.";
-          homepage = "https://github.com/tantale/deprecated";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["deprecated"];
-      };
-
-    distlib =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "distlib";
-        version = "0.3.6";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Distribution utilities";
-          homepage = "https://github.com/pypa/distlib";
-          license = pkgs.lib.licenses.psfl;
-        };
-        pythonImportsCheck = ["distlib"];
-      };
-
     distro =
       python.pkgs.buildPythonPackage rec
       {
@@ -792,26 +532,6 @@ in
           license = pkgs.lib.licenses.asl20;
         };
         pythonImportsCheck = ["distro"];
-      };
-
-    docstring-to-markdown =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "docstring-to-markdown";
-        version = "0.12";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "40004224b412bd6f64c0f3b85bb357a41341afd66c4b4896709efa56827fb2bb";
-          };
-        doCheck = false;
-        meta = {
-          description = "On the fly conversion of Python docstrings to markdown";
-          homepage = "https://github.com/python-lsp/docstring-to-markdown";
-          license = pkgs.lib.licenses.lgpl21Plus;
-        };
       };
 
     editables =
@@ -837,28 +557,6 @@ in
         pythonImportsCheck = ["editables"];
       };
 
-    execnet =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "execnet";
-        version = "1.9.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5";
-          };
-        nativeBuildInputs = [setuptools-scm];
-        doCheck = false;
-        meta = {
-          description = "execnet: rapid multi-Python deployment";
-          homepage = "https://execnet.readthedocs.io/en/latest/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["execnet"];
-      };
-
     fancycompleter =
       python.pkgs.buildPythonPackage rec
       {
@@ -880,27 +578,6 @@ in
           license = pkgs.lib.licenses.bsdOriginal;
         };
         pythonImportsCheck = ["fancycompleter"];
-      };
-
-    fastjsonschema =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "fastjsonschema";
-        version = "2.16.3";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "4a30d6315a68c253cfa8f963b9697246315aa3db89f98b97235e345dedfb0b8e";
-          };
-        doCheck = false;
-        meta = {
-          description = "Fastest Python implementation of JSON schema";
-          homepage = "https://github.com/horejsek/python-fastjsonschema";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["fastjsonschema"];
       };
 
     filelock =
@@ -970,27 +647,6 @@ in
         pythonImportsCheck = ["fontTools"];
       };
 
-    frilouz =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "frilouz";
-        version = "0.0.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "ba7922f36500f6ea4a68e87f9cd24fe4a011a98673cb7ab4c7c3efcd33647a59";
-          };
-        doCheck = false;
-        meta = {
-          description = "Python AST parser adapter with partial error recovery";
-          homepage = "https://github.com/serge-sans-paille/frilouz/";
-          license = pkgs.lib.licenses.bsd3;
-        };
-        pythonImportsCheck = ["frilouz"];
-      };
-
     frozendict =
       python.pkgs.buildPythonPackage rec
       {
@@ -1010,50 +666,6 @@ in
           license = pkgs.lib.licenses.lgpl3Only;
         };
         pythonImportsCheck = ["frozendict"];
-      };
-
-    frozenlist =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "frozenlist";
-        version = "1.3.3";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "58bcc55721e8a90b88332d6cd441261ebb22342e238296bb330968952fbb3a6a";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "A list-like structure which implements collections.abc.MutableSequence";
-          homepage = "https://github.com/aio-libs/frozenlist";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["frozenlist"];
-      };
-
-    gast =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "gast";
-        version = "0.5.4";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "9c270fe5f4b130969b54174de7db4e764b09b4f7f67ccfc32480e29f78348d97";
-          };
-        doCheck = false;
-        meta = {
-          description = "Python AST that abstracts the underlying Python version";
-          homepage = "https://github.com/serge-sans-paille/gast/";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["gast"];
       };
 
     h11 =
@@ -1238,48 +850,6 @@ in
         pythonImportsCheck = ["httpx"];
       };
 
-    humanfriendly =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "humanfriendly";
-        version = "10.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc";
-          };
-        doCheck = false;
-        meta = {
-          description = "Human friendly output for text interfaces using Python";
-          homepage = "https://humanfriendly.readthedocs.io";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["humanfriendly"];
-      };
-
-    identify =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "identify";
-        version = "2.5.24";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0aac67d5b4812498056d28a9a512a483f5085cc28640b02b258a59dac34301d4";
-          };
-        doCheck = false;
-        meta = {
-          description = "File identification library for Python";
-          homepage = "https://github.com/pre-commit/identify";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["identify"];
-      };
-
     idna =
       python.pkgs.buildPythonPackage rec
       {
@@ -1326,29 +896,6 @@ in
         pythonImportsCheck = ["iniconfig"];
       };
 
-    isort =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "isort";
-        version = "5.12.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "8bef7dde241278824a6d83f44a544709b065191b95b6e50894bdc722fcba0504";
-          };
-        nativeBuildInputs = [poetry-core];
-        doCheck = false;
-        meta = {
-          description = "A Python utility / library to sort Python imports.";
-          homepage = "https://pycqa.github.io/isort/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["isort"];
-      };
-
     jedi =
       python.pkgs.buildPythonPackage rec
       {
@@ -1370,123 +917,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["jedi"];
-      };
-
-    jinja2 =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "Jinja2";
-        version = "3.1.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852";
-          };
-        propagatedBuildInputs = [markupsafe];
-        doCheck = false;
-        meta = {
-          description = "A very fast and expressive template engine.";
-          homepage = "https://palletsprojects.com/p/jinja/";
-          license = pkgs.lib.licenses.bsd3;
-        };
-        pythonImportsCheck = ["jinja2"];
-      };
-
-    jsonschema =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "jsonschema";
-        version = "4.17.3";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0f864437ab8b6076ba6707453ef8f98a6a0d512a80e93f8abdb676f737ecb60d";
-          };
-        nativeBuildInputs = [hatch-fancy-pypi-readme hatch-vcs];
-        propagatedBuildInputs = [attrs pyrsistent];
-        doCheck = false;
-        meta = {
-          description = "An implementation of JSON Schema validation for Python";
-          homepage = "https://github.com/python-jsonschema/jsonschema";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["jsonschema"];
-      };
-
-    jupyter-client =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "jupyter_client";
-        version = "8.2.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "9fe233834edd0e6c0aa5f05ca2ab4bdea1842bfd2d8a932878212fc5301ddaf0";
-          };
-        nativeBuildInputs = [hatchling];
-        propagatedBuildInputs = [jupyter-core python-dateutil pyzmq tornado];
-        doCheck = false;
-        meta = {
-          description = "Jupyter protocol implementation and client libraries";
-          homepage = "https://jupyter.org";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["jupyter_client"];
-      };
-
-    jupyter-core =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "jupyter_core";
-        version = "5.3.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6db75be0c83edbf1b7c9f91ec266a9a24ef945da630f3120e1a0046dc13713fc";
-          };
-        nativeBuildInputs = [hatchling];
-        propagatedBuildInputs = [platformdirs traitlets];
-        doCheck = false;
-        meta = {
-          description = "Jupyter core package. A base package on which Jupyter projects rely.";
-          homepage = "https://jupyter.org";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["jupyter_core"];
-      };
-
-    jupyterlab-pygments =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "jupyterlab_pygments";
-        version = "0.2.2";
-        format = "wheel";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            inherit format;
-            sha256 = "2405800db07c9f770863bcf8049a529c3dd4d3e28536638bd7c1c01d2748309f";
-          };
-        doCheck = false;
-        dontUsePythonImportsCheck = true;
-        meta = {
-          description = "Pygments theme using JupyterLab CSS variables";
-          homepage = "https://github.com/jupyterlab/jupyterlab_pygments";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
       };
 
     kiwisolver =
@@ -1578,48 +1008,6 @@ in
         pythonImportsCheck = ["maison"];
       };
 
-    manhole =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "manhole";
-        version = "1.8.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "bada20a25b547b395d472e2e08928f0437df26bbdbda4797c55863198e29a21f";
-          };
-        doCheck = false;
-        meta = {
-          description = "Manhole is in-process service that will accept unix domain socket connections and present the";
-          homepage = "https://github.com/ionelmc/python-manhole";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["manhole"];
-      };
-
-    markupsafe =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "MarkupSafe";
-        version = "2.1.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "abcabc8c2b26036d62d4c746381a6f7cf60aafcc653198ad678306986b09450d";
-          };
-        doCheck = false;
-        meta = {
-          description = "Safely add untrusted strings to HTML/XML markup.";
-          homepage = "https://palletsprojects.com/p/markupsafe/";
-          license = pkgs.lib.licenses.bsd3;
-        };
-        pythonImportsCheck = ["markupsafe"];
-      };
-
     matplotlib =
       python.pkgs.buildPythonPackage rec
       {
@@ -1695,63 +1083,18 @@ in
         pythonImportsCheck = ["maturin"];
       };
 
-    memestra =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "memestra";
-        version = "0.2.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "eac8707fd0680df64ccb48ad3fc7ac34fe28bfa7f0e8b2693b763965a8700d9c";
-          };
-        propagatedBuildInputs = [beniget frilouz nbconvert pyyaml];
-        doCheck = false;
-        meta = {
-          description = "Memestra checks code for places where deprecated functions are called";
-          homepage = "https://github.com/QuantStack/memestra";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["memestra"];
-      };
-
-    mistune =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "mistune";
-        version = "2.0.5";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0246113cb2492db875c6be56974a7c893333bf26cd92891c85f63151cee09d34";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "A sane Markdown parser with useful plugins and renderers";
-          homepage = "https://github.com/lepture/mistune";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["mistune"];
-      };
-
     msgpack =
       python.pkgs.buildPythonPackage rec
       {
         pname = "msgpack";
-        version = "1.0.5";
+        version = "1.0.7";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "c075544284eadc5cddc70f4757331d99dcbc16b2bbd4849d15f8aae4cf36d31c";
+            sha256 = "sha256-Vy78k9t6TSfkBFAZdcptLZd1cFwtkiOQ2Hj892jZLIc=";
           };
         nativeBuildInputs = [cython setuptools];
         patchPhase = "sed -i 's/~=/>=/' pyproject.toml";
@@ -1768,13 +1111,13 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "msgspec";
-        version = "0.15.0";
+        version = "0.18.4";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "d760ff747165d84965791bfcd14588f61f111708036d80f1980387e3760035e7";
+            sha256 = "sha256-y2IDC9axoAsBovywlzUBYBFpYwTmsdMyHlgCJUgmjT4=";
           };
         doCheck = false;
         meta = {
@@ -1783,178 +1126,6 @@ in
           license = pkgs.lib.licenses.bsdOriginal;
         };
         pythonImportsCheck = ["msgspec"];
-      };
-
-    multidict =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "multidict";
-        version = "6.0.4";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "3666906492efb76453c0e7b97f2cf459b0682e7402c0489a95484965dbc1da49";
-          };
-        doCheck = false;
-        meta = {
-          description = "multidict implementation";
-          homepage = "https://github.com/aio-libs/multidict";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["multidict"];
-      };
-
-    mypy =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "mypy";
-        version = "1.3.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "e1f4d16e296f5135624b34e8fb741eb0eadedca90862405b1f1fde2040b9bd11";
-          };
-        nativeBuildInputs = [setuptools types-psutil types-setuptools types-typed-ast];
-        propagatedBuildInputs = [mypy-extensions psutil typing-extensions];
-        doCheck = false;
-        meta = {
-          description = "Optional static typing for Python";
-          homepage = "https://www.mypy-lang.org/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["mypy" "mypyc"];
-      };
-
-    mypy-extensions =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "mypy_extensions";
-        version = "1.0.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782";
-          };
-        doCheck = false;
-        meta = {
-          description = "Type system extensions for programs checked with the mypy type checker.";
-          homepage = "https://github.com/python/mypy_extensions";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["mypy_extensions"];
-      };
-
-    nbclient =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "nbclient";
-        version = "0.7.4";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "d447f0e5a4cfe79d462459aec1b3dc5c2e9152597262be8ee27f7d4c02566a0d";
-          };
-        nativeBuildInputs = [hatchling];
-        propagatedBuildInputs = [jupyter-client nbformat];
-        doCheck = false;
-        meta = {
-          description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor.";
-          homepage = "https://jupyter.org";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["nbclient"];
-      };
-
-    nbconvert =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "nbconvert";
-        version = "7.4.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "51b6c77b507b177b73f6729dba15676e42c4e92bcb00edc8cc982ee72e7d89d7";
-          };
-        nativeBuildInputs = [hatchling];
-        propagatedBuildInputs = [
-          beautifulsoup4
-          bleach
-          defusedxml
-          jinja2
-          jupyterlab-pygments
-          mistune
-          nbclient
-          packaging
-          pandocfilters
-          pygments
-          tinycss2
-        ];
-        doCheck = false;
-        meta = {
-          description = "Converting Jupyter Notebooks";
-          homepage = "https://jupyter.org";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["nbconvert"];
-      };
-
-    nbformat =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "nbformat";
-        version = "5.8.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "46dac64c781f1c34dfd8acba16547024110348f9fc7eab0f31981c2a3dc48d1f";
-          };
-        nativeBuildInputs = [hatch-nodejs-version];
-        propagatedBuildInputs = [fastjsonschema jsonschema jupyter-core];
-        doCheck = false;
-        meta = {
-          description = "The Jupyter Notebook format";
-          homepage = "https://jupyter.org";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["nbformat"];
-      };
-
-    nodeenv =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "nodeenv";
-        version = "1.8.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "d51e0c37e64fbf47d017feac3145cdbb58836d7eee8c6f6d3b6880c5456227d2";
-          };
-        propagatedBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Node.js virtual environment builder";
-          homepage = "https://github.com/ekalinin/nodeenv";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["nodeenv"];
       };
 
     numpy =
@@ -1969,7 +1140,7 @@ in
             inherit version;
             sha256 = "b78d00e48261fbbd04aa0d7427cf78d18401ee0abd89c7559bbf422e5b1c7d01";
           };
-        nativeBuildInputs = [cython pkgs.gfortran];
+        nativeBuildInputs = [cython2 pkgs.gfortran];
         buildInputs = [pkgs.blas pkgs.lapack pkgs.zlib];
         patchPhase = ''
           sed -Ei -e 's/setuptools==/setuptools>=/' -e 's/wheel==/wheel>=/' pyproject.toml
@@ -2068,27 +1239,6 @@ in
         pythonImportsCheck = ["packaging"];
       };
 
-    pandocfilters =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pandocfilters";
-        version = "1.5.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0b679503337d233b4339a817bfc8c50064e2eff681314376a47cb582305a7a38";
-          };
-        doCheck = false;
-        meta = {
-          description = "Utilities for writing pandoc filters in python";
-          homepage = "http://github.com/jgm/pandocfilters";
-          license = pkgs.lib.licenses.bsd3;
-        };
-        pythonImportsCheck = ["pandocfilters"];
-      };
-
     parso =
       python.pkgs.buildPythonPackage rec
       {
@@ -2132,50 +1282,6 @@ in
           license = pkgs.lib.licenses.mpl20;
         };
         pythonImportsCheck = ["pathspec"];
-      };
-
-    patiencediff =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "patiencediff";
-        version = "0.2.14";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "a604d5727f996f0fd9de4534b143d3e803ec4f1b18e40cd78e91ab48a289a95f";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Python implementation of the patiencediff algorithm";
-          homepage = "https://www.breezy-vcs.org/";
-          license = pkgs.lib.licenses.gpl2Plus;
-        };
-        pythonImportsCheck = ["patiencediff"];
-      };
-
-    pbr =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pbr";
-        version = "5.11.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "aefc51675b0b533d56bb5fd1c8c6c0522fe31896679882e1c4c63d5e4a0fccb3";
-          };
-        doCheck = false;
-        meta = {
-          description = "Python Build Reasonableness";
-          homepage = "https://docs.openstack.org/pbr/latest/";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["pbr"];
       };
 
     pdbpp =
@@ -2305,29 +1411,6 @@ in
         pythonImportsCheck = ["pip"];
       };
 
-    platformdirs =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "platformdirs";
-        version = "3.5.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "412dae91f52a6f84830f39a8078cecd0e866cb72294a5c66808e74d5e88d251f";
-          };
-        nativeBuildInputs = [hatch-vcs];
-        doCheck = false;
-        meta = {
-          description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\".";
-          homepage = "https://github.com/platformdirs/platformdirs";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["platformdirs"];
-      };
-
     pluggy =
       python.pkgs.buildPythonPackage rec
       {
@@ -2371,28 +1454,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["poetry.core"];
-      };
-
-    pre-commit =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pre_commit";
-        version = "3.3.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "733f78c9a056cdd169baa6cd4272d51ecfda95346ef8a89bf93712706021b907";
-          };
-        propagatedBuildInputs = [cfgv identify nodeenv pyyaml virtualenv];
-        doCheck = false;
-        meta = {
-          description = "A framework for managing and maintaining multi-language pre-commit hooks.";
-          homepage = "https://github.com/pre-commit/pre-commit";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pre_commit"];
       };
 
     prompt-toolkit =
@@ -2462,30 +1523,6 @@ in
         pythonImportsCheck = ["ptpython"];
       };
 
-    py-spy =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "py_spy";
-        version = "0.3.14";
-        format = "wheel";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            inherit format;
-            sha256 = "f59b0b52e56ba9566305236375e6fc68888261d0d36b5addbe3cf85affbefc0e";
-            platform = "manylinux_2_5_x86_64.manylinux1_x86_64";
-          };
-        nativeBuildInputs = [pkgs.autoPatchelfHook];
-        doCheck = false;
-        meta = {
-          description = "Sampling profiler for Python programs";
-          homepage = "https://github.com/benfred/py-spy";
-          license = pkgs.lib.licenses.mit;
-        };
-      };
-
     pybind11 =
       python.pkgs.buildPythonPackage rec
       {
@@ -2552,30 +1589,6 @@ in
         pythonImportsCheck = ["pydantic"];
       };
 
-    pygls =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pygls";
-        version = "1.0.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "f3ee98ddbb4690eb5c755bc32ba7e129607f14cbd313575f33d0cea443b78cb2";
-          };
-        nativeBuildInputs = [setuptools-scm toml];
-        propagatedBuildInputs = [lsprotocol typeguard];
-        doCheck = false;
-        meta = {
-          description = "a pythonic generic language server (pronounced like \"pie glass\").";
-          homepage = "https://github.com/openlawlibrary/pygls/tree/master/";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["pygls"];
-      };
-
     pygments =
       python.pkgs.buildPythonPackage rec
       {
@@ -2599,115 +1612,6 @@ in
         pythonImportsCheck = ["pygments"];
       };
 
-    pygments-solarized =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pygments-solarized";
-        version = "0.0.3";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6b5cf1c6db86fe3cc57ebb4a8e35c05fc928d36441959d0bffa44c4f65081816";
-          };
-        propagatedBuildInputs = [pygments];
-        doCheck = false;
-        meta = {
-          description = "Pygments version of the solarized theme based on john2x/solarized-pygment.";
-          homepage = "https://github.com/meganlkm/pygments-solarized";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["pygments_solarized"];
-      };
-
-    pyinstrument =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pyinstrument";
-        version = "4.4.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "be34a2e8118c14a616a64538e02430d9099d5d67d8a370f2888e4ac71e52bbb7";
-          };
-        doCheck = false;
-        meta = {
-          description = "Call stack profiler for Python. Shows you why your code is slow!";
-          homepage = "https://github.com/joerick/pyinstrument";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["pyinstrument"];
-      };
-
-    pyls-isort =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pyls-isort";
-        version = "0.2.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "2192bd2203db00459f85eb329521feba58af63075d2dd10a051a4eccd000bba0";
-          };
-        propagatedBuildInputs = [isort python-lsp-server];
-        doCheck = false;
-        meta = {
-          description = "Isort plugin for python-lsp-server";
-          homepage = "https://github.com/paradoxxxzero/pyls-isort";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pyls_isort"];
-      };
-
-    pyls-memestra =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pyls-memestra";
-        version = "0.0.16";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "ccc543776b81e339f0dfccf7c9bd0db7ba901f97461d36d004864efeaa35fedf";
-          };
-        propagatedBuildInputs = [deprecated memestra python-lsp-server];
-        doCheck = false;
-        meta = {
-          description = "Memestra plugin for the Python Language Server";
-          homepage = "https://github.com/QuantStack/pyls-memestra";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["pyls_memestra"];
-      };
-
-    pylsp-mypy =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pylsp-mypy";
-        version = "0.6.6";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "aa5d547b25ca431b5b17689c495c55aa374b19b35c59746987e417044fb722ce";
-          };
-        propagatedBuildInputs = [mypy python-lsp-server];
-        doCheck = false;
-        meta = {
-          description = "Mypy linter for the Python LSP Server";
-          homepage = "https://github.com/python-lsp/pylsp-mypy";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pylsp_mypy"];
-      };
-
     pyparsing =
       python.pkgs.buildPythonPackage rec
       {
@@ -2729,39 +1633,6 @@ in
           license = pkgs.lib.licenses.gpl1Only;
         };
         pythonImportsCheck = ["pyparsing"];
-      };
-
-    pyproject-metadata =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pyproject-metadata";
-        version = "0.7.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0a94f18b108b9b21f3a26a3d541f056c34edcb17dc872a144a15618fed7aef67";
-          };
-        nativeBuildInputs = [setuptools];
-        propagatedBuildInputs = [packaging];
-        doCheck = false;
-        meta = {
-          description = "PEP 621 metadata parsing";
-          homepage = "https://github.com/ffy00/python-pyproject-metadata";
-          license = pkgs.lib.licenses.mit;
-        };
-        patches = [
-          (
-            pkgs.fetchpatch
-            {
-              sha256 = "138afwasnxy4xhsiknh2f73j4cdqf6cw4qz3a87yvwb2yx6pqhgj";
-              url = "https://github.com/kingarrrt/python-pyproject-metadata/commit/a4f4ae769d64ee4c41de4afdfaf9c060c6728c17.patch";
-            }
-          )
-        ];
-        pythonImportsCheck = ["pyproject_metadata"];
       };
 
     pyrepl =
@@ -2813,14 +1684,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest";
-        version = "7.3.1";
+        version = "7.4.3";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3";
+            sha256 = "sha256-2YnRNpgt5OOynavMg4rVgcZOjtUsEfvobd69naCBjNU=";
           };
         nativeBuildInputs = [setuptools-scm];
         propagatedBuildInputs = [iniconfig packaging pluggy];
@@ -2837,14 +1708,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest-asyncio";
-        version = "0.21.0";
+        version = "0.21.1";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "2b38a496aef56f56b0e87557ec313e11e1ab9276fc3863f6a7be0f1d0e415e1b";
+            sha256 = "sha256-QKfq5t3tIse2BJhoVepIQAqxWwaa44EW6MASOOnutk0=";
           };
         nativeBuildInputs = [setuptools-scm];
         propagatedBuildInputs = [pytest];
@@ -2862,13 +1733,13 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest-cov";
-        version = "4.0.0";
+        version = "4.1.0";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470";
+            sha256 = "sha256-OQSxPfv+xH8AO453/VtYnNEZBKId3xqzimTyBNahDvY=";
           };
         propagatedBuildInputs = [coverage pytest];
         doCheck = false;
@@ -2878,28 +1749,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["pytest_cov"];
-      };
-
-    pytest-httpx =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pytest_httpx";
-        version = "0.22.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "3a82797f3a9a14d51e8c6b7fa97524b68b847ee801109c062e696b4744f4431c";
-          };
-        propagatedBuildInputs = [httpx pytest];
-        doCheck = false;
-        meta = {
-          description = "Send responses to httpx.";
-          homepage = "https://colin-b.github.io/pytest_httpx/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pytest_httpx"];
       };
 
     pytest-random-order =
@@ -2946,52 +1795,6 @@ in
         pythonImportsCheck = ["pytest_sugar"];
       };
 
-    pytest-xdist =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pytest-xdist";
-        version = "3.3.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "d42c9efb388da35480878ef4b2993704c6cea800c8bafbe85a8cdc461baf0748";
-          };
-        nativeBuildInputs = [setuptools-scm];
-        propagatedBuildInputs = [execnet pytest];
-        doCheck = false;
-        meta = {
-          description = "pytest xdist plugin for distributed testing, most importantly across multiple CPUs";
-          homepage = "https://github.com/pytest-dev/pytest-xdist";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["xdist"];
-      };
-
-    python-box =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "python-box";
-        version = "7.0.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "dc6724f88255ccbc07092abd506281439cc2b75c6569c754ffc2b22580e7ae06";
-          };
-        buildInputs = [cython];
-        doCheck = false;
-        meta = {
-          description = "Advanced Python dictionaries with dot notation access";
-          homepage = "https://github.com/cdgriffith/Box";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["box"];
-      };
-
     python-dateutil =
       python.pkgs.buildPythonPackage rec
       {
@@ -3016,28 +1819,6 @@ in
         pythonImportsCheck = ["dateutil"];
       };
 
-    python-lsp-black =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "python-lsp-black";
-        version = "1.2.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "d7eaeab2a377e96a82cc26afe2f8f2e1cf7c6eaefdcdeab026343e2e559dcce9";
-          };
-        propagatedBuildInputs = [black python-lsp-server toml];
-        doCheck = false;
-        meta = {
-          description = "Black plugin for the Python LSP Server";
-          homepage = "https://github.com/python-lsp/python-lsp-black";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pylsp_black"];
-      };
-
     python-lsp-jsonrpc =
       python.pkgs.buildPythonPackage rec
       {
@@ -3060,50 +1841,20 @@ in
         pythonImportsCheck = ["pylsp_jsonrpc"];
       };
 
-    python-lsp-server =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "python-lsp-server";
-        version = "1.7.3";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "a31b0525be6ec831c7d2b476b744e5aa5074633e1d1b77ee97f332cde15983ea";
-          };
-        nativeBuildInputs = [setuptools-scm];
-        propagatedBuildInputs = [
-          docstring-to-markdown
-          jedi
-          pluggy
-          python-lsp-jsonrpc
-          setuptools
-        ];
-        doCheck = false;
-        meta = {
-          description = "Python Language Server for the Language Server Protocol";
-          homepage = "https://github.com/python-lsp/python-lsp-server";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pylsp"];
-      };
-
     pyyaml =
       python.pkgs.buildPythonPackage rec
       {
         pname = "PyYAML";
-        version = "6.0";
+        version = "6.0.1";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2";
+            sha256 = "sha256-v99GCxc2x3Xyup9qkryjC8IJUGe4qdd4dtH61sw7SkM=";
           };
-        nativeBuildInputs = [cython setuptools];
+        nativeBuildInputs = [cython2 setuptools];
         buildInputs = [pgen pkgs.libyaml];
         doCheck = false;
         meta = {
@@ -3136,28 +1887,6 @@ in
           license = pkgs.lib.licenses.bsdOriginal;
         };
         pythonImportsCheck = ["zmq"];
-      };
-
-    redis =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "redis";
-        version = "4.5.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "1eec3741cda408d3a5f84b78d089c8b8d895f21b3b050988351e925faf202864";
-          };
-        propagatedBuildInputs = [async-timeout];
-        doCheck = false;
-        meta = {
-          description = "Python client for Redis database and key-value store";
-          homepage = "https://github.com/redis/redis-py";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["redis"];
       };
 
     rustworkx =
@@ -3315,16 +2044,16 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "setuptools-rust";
-        version = "1.6.0";
+        version = "1.8.1";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "c86e734deac330597998bfbc08da45187e6b27837e23bd91eadb320732392262";
+            sha256 = "sha256-lLHdXVMIsxONW5M8OitV5taSfRoiYy5Qn86p3dD35IY=";
           };
-        propagatedBuildInputs = [semantic-version setuptools typing-extensions];
+        propagatedBuildInputs = [semantic-version setuptools setuptools-scm typing-extensions];
         doCheck = false;
         meta = {
           description = "Setuptools Rust extension plugin";
@@ -3402,30 +2131,6 @@ in
         pythonImportsCheck = ["six"];
       };
 
-    snakeviz =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "snakeviz";
-        version = "2.2.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "7bfd00be7ae147eb4a170a471578e1cd3f41f803238958b6b8efcf2c698a6aa9";
-          };
-        nativeBuildInputs = [setuptools];
-        propagatedBuildInputs = [tornado];
-        doCheck = false;
-        meta = {
-          description = "A web-based viewer for Python profiler output";
-          homepage = "https://jiffyclub.github.io/snakeviz/";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["snakeviz"];
-      };
-
     sniffio =
       python.pkgs.buildPythonPackage rec
       {
@@ -3445,29 +2150,6 @@ in
           license = pkgs.lib.licenses.asl20;
         };
         pythonImportsCheck = ["sniffio"];
-      };
-
-    soupsieve =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "soupsieve";
-        version = "2.4.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea";
-          };
-        nativeBuildInputs = [hatchling];
-        doCheck = false;
-        dontUsePythonImportsCheck = true;
-        meta = {
-          description = "A modern CSS selector implementation for Beautiful Soup.";
-          homepage = "https://github.com/facelessuser/soupsieve";
-          license = pkgs.lib.licenses.mit;
-        };
       };
 
     termcolor =
@@ -3493,30 +2175,6 @@ in
         pythonImportsCheck = ["termcolor"];
       };
 
-    tinycss2 =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "tinycss2";
-        version = "1.2.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "8cff3a8f066c2ec677c06dbc7b45619804a6938478d9d73c284b29d14ecb0627";
-          };
-        nativeBuildInputs = [flit-core];
-        propagatedBuildInputs = [webencodings];
-        doCheck = false;
-        meta = {
-          description = "A tiny CSS parser";
-          homepage = "https://www.courtbouillon.org/tinycss2";
-          license = pkgs.lib.licenses.gpl1Only;
-        };
-        pythonImportsCheck = ["tinycss2"];
-      };
-
     toml =
       python.pkgs.buildPythonPackage rec
       {
@@ -3536,29 +2194,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["toml"];
-      };
-
-    tornado =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "tornado";
-        version = "6.3.2";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "4b927c4f19b71e627b13f3db2324e4ae660527143f9e1f2e2fb404f3a187e2ba";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed.";
-          homepage = "http://www.tornadoweb.org/";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["tornado"];
       };
 
     tqdm =
@@ -3591,50 +2226,6 @@ in
           )
         ];
         pythonImportsCheck = ["tqdm"];
-      };
-
-    traceback-with-variables =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "traceback-with-variables";
-        version = "2.0.4";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "a30c79b7c206fb255967f3f5d125ce114b3dae4fd92d268f901dd35ee23f9cc0";
-          };
-        doCheck = false;
-        meta = {
-          description = "Adds variables to python traceback. Simple, lightweight, controllable. Debug reasons of exceptions by logging or pretty printing colorful variable contexts for each frame in a stacktrace, showing every value. Dump locals environments after errors to console, files, and loggers. Works with Jupiter and IPython.";
-          homepage = "https://github.com/andy-landy/traceback_with_variables";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["traceback_with_variables"];
-      };
-
-    traitlets =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "traitlets";
-        version = "5.9.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "f6cde21a9c68cf756af02035f72d5a723bf607e862e7be33ece505abf4a3bad9";
-          };
-        nativeBuildInputs = [hatchling];
-        doCheck = false;
-        meta = {
-          description = "Traitlets Python configuration system";
-          homepage = "https://github.com/ipython/traitlets";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["traitlets"];
       };
 
     trove-classifiers =
@@ -3725,70 +2316,6 @@ in
         pythonImportsCheck = ["appdirs-stubs"];
       };
 
-    types-attrs =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types_attrs";
-        version = "19.1.0";
-        format = "wheel";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            inherit format;
-            sha256 = "d11acf7a2531a7c52a740c30fa3eb8d01d3066c10d34c01ff5e59502caac5352";
-          };
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for attrs";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["attr-stubs"];
-      };
-
-    types-docutils =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-docutils";
-        version = "0.20.0.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "f682b5459a1e6e28208742adb0be8573d1ecbddd442f00d202b0278c1c4418a2";
-          };
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for docutils";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-      };
-
-    types-humanfriendly =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-humanfriendly";
-        version = "10.0.1.9";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "3ab4334c40542efc06225f70eeb061f2f7e9cc14fe043c1ee04a94025162e341";
-          };
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for humanfriendly";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["humanfriendly-stubs"];
-      };
-
     types-psutil =
       python.pkgs.buildPythonPackage rec
       {
@@ -3810,50 +2337,6 @@ in
         pythonImportsCheck = ["psutil-stubs"];
       };
 
-    types-pygments =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-Pygments";
-        version = "2.15.0.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "4fef924a4be98e4b0a3701f2822c33186cacd7dc317267853eaf451c3f361a97";
-          };
-        propagatedBuildInputs = [types-docutils types-setuptools];
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for Pygments";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["pygments-stubs"];
-      };
-
-    types-pyopenssl =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-pyOpenSSL";
-        version = "23.1.0.3";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "e7211088eff3e20d359888dedecb0994f7181d5cce0f26354dd47ca0484dc8a6";
-          };
-        propagatedBuildInputs = [cryptography];
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for pyOpenSSL";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["OpenSSL-stubs"];
-      };
-
     types-pyyaml =
       python.pkgs.buildPythonPackage rec
       {
@@ -3873,28 +2356,6 @@ in
           license = pkgs.lib.licenses.asl20;
         };
         pythonImportsCheck = ["yaml-stubs"];
-      };
-
-    types-redis =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-redis";
-        version = "4.5.5.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "2fe82f374d9dddf007deaf23d81fddcfd9523d9522bf11523c5c43bc5b27099e";
-          };
-        propagatedBuildInputs = [types-pyopenssl];
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for redis";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["redis-stubs"];
       };
 
     types-setuptools =
@@ -4047,51 +2508,6 @@ in
         pythonImportsCheck = ["uvloop"];
       };
 
-    verboselogs =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "verboselogs";
-        version = "1.7";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "e33ddedcdfdafcb3a174701150430b11b46ceb64c2a9a26198c76a156568e427";
-          };
-        doCheck = false;
-        meta = {
-          description = "Verbose logging level for Python's logging module";
-          homepage = "https://verboselogs.readthedocs.io";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["verboselogs"];
-      };
-
-    virtualenv =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "virtualenv";
-        version = "20.23.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "a85caa554ced0c0afbd0d638e7e2d7b5f92d23478d05d17a76daeac8f279f924";
-          };
-        nativeBuildInputs = [hatch-vcs];
-        propagatedBuildInputs = [distlib filelock platformdirs];
-        doCheck = false;
-        meta = {
-          description = "Virtual Python Environment builder";
-          homepage = "https://github.com/pypa/virtualenv";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["virtualenv"];
-      };
-
     vulture =
       python.pkgs.buildPythonPackage rec
       {
@@ -4133,27 +2549,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["wcwidth"];
-      };
-
-    webencodings =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "webencodings";
-        version = "0.5.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923";
-          };
-        doCheck = false;
-        meta = {
-          description = "Character encoding aliases for legacy web content";
-          homepage = "https://github.com/SimonSapin/python-webencodings";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["webencodings"];
       };
 
     wheel =
@@ -4223,33 +2618,6 @@ in
         pythonImportsCheck = ["wrapt"];
       };
 
-    xmllayout =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "XMLLayout";
-        version = "1.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "d5c0bb325f3030b67ec894fb83361da42cb87be544155917a9769d0e80d4e333";
-          };
-        patchPhase = ''
-          sed -i "s/extra\['use_2to3'\] = True/pass/" setup.py
-          2to3 --write --nobackups --no-diffs .
-          sed -i 's/send(msg)/send(msg.encode("utf-8"))/' xmllayout/handlers.py
-          sed -i -e 's/cgi/html/g' -e 's/LOG4J_LEVEL_MAP =.*/LOG4J_LEVEL_MAP = dict(CRITICAL="FATAL", WARNING="WARN", NOTICE="INFO", SPAM="TRACE")/' xmllayout/formatters.py
-        '';
-        doCheck = false;
-        meta = {
-          description = "Formats Python log messages as log4j XMLLayout XML";
-          homepage = "http://pypi.python.org/pypi/XMLLayout";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["xmllayout"];
-      };
-
     yamlfix =
       python.pkgs.buildPythonPackage rec
       {
@@ -4297,51 +2665,6 @@ in
         };
         pythonImportsCheck = ["yamllint"];
       };
-
-    yappi =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "yappi";
-        version = "1.4.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "504b5d8fc7433736cb5e257991d2e7f2946019174f1faec7b2fe947881a17fc0";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Yet Another Python Profiler";
-          homepage = "https://github.com/sumerc/yappi";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["yappi"];
-      };
-
-    yarl =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "yarl";
-        version = "1.9.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "04ab9d4b9f587c06d801c2abfe9317b77cdf996c65a90d5e84ecc45010823571";
-          };
-        propagatedBuildInputs = [idna multidict];
-        doCheck = false;
-        meta = {
-          description = "Yet another URL library";
-          homepage = "https://github.com/aio-libs/yarl/";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["yarl"];
-      };
   }; (
     python.pkgs.buildPythonPackage rec
     {
@@ -4361,11 +2684,8 @@ in
       nativeBuildInputs = [
         beartype
         flit-core
-        manhole
         pdbpp
         pip
-        py-spy
-        pyinstrument
         pytest-asyncio
         pytest-cov
         pytest-random-order
@@ -4374,17 +2694,11 @@ in
         typeguard
         types-aiofiles
         types-appdirs
-        types-attrs
-        types-humanfriendly
-        types-pygments
         types-pyyaml
-        types-redis
-        types-setuptools
         types-toml
         types-tqdm
         yamlfix
         yamllint
-        yappi
       ];
       propagatedNativeBuildInputs = [
         pkgs.gitMinimal
@@ -4401,6 +2715,7 @@ in
         loguru
         msgpack
         msgspec
+        # orjson
         ptpython
         pyyaml
         rustworkx
@@ -4409,11 +2724,6 @@ in
       ];
       catchConflicts = false;
       doCheck = false;
-      meta = {
-        description = "Build Nix derivations for Python packages";
-        homepage = "https://github.com/0compute/nixipy";
-        license = pkgs.lib.licenses.gpl3Plus;
-      };
       preShellHook = "rm -rf *.dist-info *.egg-info";
 
       # Install editable with install cache in XDG_CACHE_HOME.
@@ -4443,6 +2753,6 @@ in
         runHook postShellHook
       '';
 
-      pythonImportsCheck = ["nixipy"];
+      pythonImportsCheck = ["zerolib"];
     }
   )
