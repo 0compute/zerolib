@@ -39,6 +39,17 @@ def test_trepr_trunc_dict() -> None:
     assert util.trepr(dict(a=2, b=3, c=3), max_length=4) == "{'a'…}"
 
 
+async def test_trace(caplog: pytest.LogCaptureFixture) -> None:
+    @util.trace()
+    async def func() -> None:
+        ...
+
+    await func()
+    record = caplog.records[0]
+    assert "function test_trace.<locals>.func" in record.message
+    assert record.levelname == "DEBUG"
+
+
 async def test_tmpdir() -> None:
     async with util.tmpdir() as tmpdir:
         assert util.is_tmpdir(tmpdir)

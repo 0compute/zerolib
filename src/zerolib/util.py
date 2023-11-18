@@ -81,32 +81,30 @@ def irepr(
 def trace(
     desc: str | Callable[[], str] | None = None,
     end_desc: str | Callable[[], str] | None = None,
+    *,
     log: Logger = log,
     level: str = "DEBUG",
 ) -> Callable:
     def wrapper(func: Callable) -> Callable:
         @functools.wraps(func)
         async def wrapped(*args: Any, **kwargs: Any) -> Any:
-            log_ = log(*args, **kwargs) if callable(log) else log
             start = time.monotonic()
-            log_ = log_.opt(depth=1)
-            msg = (
-                f"{func.__name__} (args={args}, kwargs={kwargs})"
-                if desc is None
-                else desc(*args, **kwargs)
-                if callable(desc)
-                else desc
-            )
-            log_.log(level, msg)
+            _log = log(*args, **kwargs) if callable(log) else log
+            _log = _log.opt(depth=1).log
+            msg = desc(*args, **kwargs) if callable(desc) else desc
+            if msg is not None:
+                _log(level, msg)
             result = await func(*args, **kwargs)
             msg = (
-                msg
+                f"{func}: {irepr(args)} {irepr(kwargs)}"
+                if msg is None
+                else msg
                 if end_desc is None
                 else end_desc(*args, **kwargs)
                 if callable(end_desc)
                 else end_desc
             )
-            log_.log(
+            _log(
                 level,
                 f"{msg} in {time.monotonic() - start:.4f}s",
             )
