@@ -14,7 +14,8 @@ from . import serialize
 from .dic import Dic
 
 if TYPE_CHECKING:
-    from typing import TextIO
+    import datetime
+    from typing import IO, TextIO
 
 COLOR_DEFAULT = "auto"
 
@@ -28,16 +29,20 @@ async def configure(
     debug: bool = False,
     verbose: int = 0,
     color: str = COLOR_DEFAULT,
-    path: anyio.Path = HERE / "logging.yml",
+    config: anyio.Path = HERE / "logging.yml",
+    sink: IO | None = None,
+    enable_for: tuple[str, ...] = (__package__,),
 ) -> _logger.Logger:
     # read config
-    cfg = Dic(serialize.loads(await path.read_text()))
-    # format is specified as a list for ease of yaml formatting
-    cfg.logger.handlers[0].format = " ".join(cfg.logger.handlers[0].format)
+    cfg = Dic(serialize.loads(await config.read_text()))
 
     default = cfg.logger.handlers[0]
     default.update(
-        sink=sys.stderr,
+        # sink defaults to stderr, not as default argument since sys.stderr may be a
+        # wrapper under test
+        sink=sink or sys.stderr,
+        # format is specified as a list for ease of yaml formatting
+        format=" ".join(default.format),
         # colorize=None is auto based on sys.stderr.isatty
         # NO_COLOR: see https://no-color.org/
         colorize=(
@@ -63,18 +68,26 @@ async def configure(
     for name, level in cfg.levels.items():
         logging.getLogger(name).setLevel(getattr(logging, level.upper()))
     # reset start time (don't count import time)
-    _logger.start_time = _logger.aware_now()
+    set_start_time()
 
     # configure logger
     log.remove()
     log.configure(**cfg.logger)
-    log.enable(__package__)
+    for package in enable_for:
+        log.enable(package)
 
     # intercept warnings + stdlib logging
     warnings.showwarning = _showwarning
-    logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
+    logging.basicConfig(handlers=[_InterceptHandler()], level=0, force=True)
 
     return log
+
+
+start_time = _logger.start_time
+
+
+def set_start_time(time: datetime.datetime | None = None) -> None:
+    _logger.start_time = time or _logger.aware_now()
 
 
 def _showwarning(
@@ -89,7 +102,7 @@ def _showwarning(
 
 
 # https://loguru.readthedocs.io/en/stable/overview.html#entirely-compatible-with-standard-logging
-class InterceptHandler(logging.Handler):
+class _InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         level = log.level(record.levelname).name
         frame, depth = inspect.currentframe(), 0
