@@ -1,28 +1,50 @@
 from __future__ import annotations
 
+import contextlib
+import functools
+from typing import TYPE_CHECKING
+
 import anyio
 import appdirs
-from contextvars_extras import ContextVarsRegistry
+from contextvars_extras import ContextVarDescriptor
 
 from . import const
 from .graph import Graph
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from typing import Any, Self
 
-class Context(ContextVarsRegistry):
+
+class Context:
     """
     Application Context
 
     Context-local state for config and services
     """
 
-    graph = Graph.factory()
+    graph = ContextVarDescriptor(default=Graph.factory())
     """DAG for Node type"""
 
-    cache = True
+    cache = ContextVarDescriptor(default=True)
     """Whether to cache"""
 
-    cachedir = anyio.Path(appdirs.user_cache_dir(const.NAME))
-    """User cache dir"""
+    cachedir = ContextVarDescriptor(
+        default=anyio.Path(appdirs.user_cache_dir(const.NAME))
+    )
+    """Cache directory"""
 
     def __repr__(self) -> str:
-        return f"<Context {self.graph}>"
+        return f"<{type(self).__name__} {self.graph}>"
+
+    @contextlib.contextmanager
+    def __call__(self, **kwargs: Any) -> Generator[Self, None, None]:
+        reset = []
+        for key, value in kwargs.items():
+            descriptor = getattr(self.__class__, key)
+            reset.append(functools.partial(descriptor.reset, descriptor.set(value)))
+        try:
+            yield self
+        finally:
+            for func in reset:
+                func()
