@@ -4,6 +4,7 @@ import logging
 import warnings
 from typing import TYPE_CHECKING
 
+import zerolib
 from loguru import logger as log
 
 if TYPE_CHECKING:
@@ -15,6 +16,14 @@ def test_basic(caplog: pytest.LogCaptureFixture) -> None:
     record = caplog.records[0]
     assert record.message == "x"
     assert record.levelname == "DEBUG"
+
+
+async def test_debug() -> None:
+    log = await zerolib.logging.configure(debug=True)
+    assert logging.getLogger("asyncio").level == logging.NOTSET
+    assert log._core.min_level == 5
+    log = await zerolib.logging.configure(verbose=1)
+    assert log._core.min_level == 10
 
 
 def test_intercept(caplog: pytest.LogCaptureFixture) -> None:

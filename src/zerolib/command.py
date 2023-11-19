@@ -89,7 +89,7 @@ async def run(
                 proc.kill()
             raise
     out = stdout_buffer.getvalue() if stdout is subprocess.PIPE else None
-    if returncode != 0:  # pragma: no cover - error path
+    if returncode != 0:
         raise CalledProcessError(
             returncode,
             command,
@@ -110,6 +110,6 @@ async def _process_stdout(stream: ByteReceiveStream, buffer: io.BytesIO) -> None
 
 async def _process_stderr(stream: ByteReceiveStream, lines: list[str]) -> None:
     async for line in TextReceiveStream(stream):
-        if line := line.rstrip():  # pragma: no branch
+        if line := line.rstrip():
             lines.append(line)
             log.debug(f"err: {line}")

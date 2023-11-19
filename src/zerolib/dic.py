@@ -46,8 +46,11 @@ class Dic(dict):
                 ...
             case dict():
                 obj = type(self)(obj)
-            # TODO: typevar
-            case list() | set() | tuple():  # pragma: no branch
+            case (  # pragma: no branch - there is no default case
+                list()
+                | set()
+                | tuple()
+            ):
                 obj = type(obj)(map(self._convert, obj))
         return obj
 

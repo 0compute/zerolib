@@ -21,6 +21,12 @@ async def test_error() -> None:
     assert exc.value.stderr == "x"
 
 
+async def test_error_stderr_empty() -> None:
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        await command.run("echo ' ' >&2 && false")
+    assert exc.value.stderr == ""
+
+
 async def test_stdin() -> None:
     assert await command.run("cat", stdin=b"a") == b"a"
 

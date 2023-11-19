@@ -51,12 +51,12 @@ async def configure(
     )
 
     # debug mode
-    if debug:  # pragma: no cover
-        cfg.loggers["asyncio"] = "notset"
+    if debug:
+        cfg.levels["asyncio"] = "notset"
         verbose = 2
 
     # set level from verbose
-    match verbose:  # pragma: no cover
+    match verbose:
         case 0:
             default.level = "INFO"
         case 1:

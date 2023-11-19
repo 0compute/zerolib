@@ -14,7 +14,7 @@ logger:
     - name: DEBUG
       color: <cyan>
     - name: TRACE
-      color: <white>
+      color: <white><dim>
 
 levels:
   asyncio: info
