@@ -1,8 +1,8 @@
-*.pyc
 /*.dist-info/
 /*.egg-info/
 /*.pstat
 /.*_cache/
+/.__pycache__/
 /.coverage*
 /.default.nix
 /.dmypy*.json
@@ -14,4 +14,3 @@
 /YAKSHAVE
 /flamegraph.svg
 /result*
-__pycache__/
