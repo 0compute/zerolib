@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class Impl(Struct):
     mstr: str = "a"
     mdic: Dic = Dic()
-    mset: set = set()  # noqa: RUF012 - not mutable, msgspec magic
+    mset: set = set()
     mint: int = 0
     _mbool: bool = False
 
@@ -82,7 +82,9 @@ def test_replace() -> None:
 def test_serde(fmt: str) -> None:
     # use Impl2 with anyio.Path field for msgpack to exercise EXT types
     cls: type[Impl] = Impl2 if fmt == "msgpack" else Impl
-    obj = cls.factory(path=anyio.Path("."))
+    obj = cls.factory(
+        mdict=Dic(a=1), mset={1}, mint=1, mbool=True, path=anyio.Path(".")
+    )
     assert cls.decode(obj.encode(fmt), fmt) == obj
 
 

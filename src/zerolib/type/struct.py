@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Any, ClassVar, Self, Union, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Self, Union, cast, get_origin
 
 import anyio
 
@@ -91,7 +91,7 @@ class Decoder:
     def json(self) -> DecoderType:
         return msgspec.json.Decoder(
             type=self._typed_union,
-            dec_hook=self._decode,
+            dec_hook=self._dec_hook,
         ).decode
 
     if msgpack is not None:  # pragma: no branch
@@ -100,12 +100,11 @@ class Decoder:
         def msgpack(self) -> DecoderType:
             return msgspec.msgpack.Decoder(
                 type=self._typed_union,
-                dec_hook=self._decode,
-                ext_hook=self._ext,
+                dec_hook=self._dec_hook,
+                ext_hook=self._ext_hook,
             ).decode
 
-        def _ext(self, code: int, data: memoryview) -> Any:
-            """Extension decode hook"""
+        def _ext_hook(self, code: int, data: memoryview) -> Any:
             cls = self._ext_types.get(code)
             if cls is None:
                 raise NotImplementedError(
@@ -124,23 +123,18 @@ class Decoder:
             return functools.partial(
                 msgspec.yaml.decode,  # type: ignore[attr-defined]
                 type=self._typed_union,
-                dec_hook=self._decode,
+                dec_hook=self._dec_hook,
             )
 
     @util.cached_property
     def _typed_union(self) -> Union | Any:
         return Union[*UNION_TYPES] if UNION_TYPES else Any
 
-    # decode callback
     @staticmethod
-    def _decode(cls: type, obj: Any) -> Any:
-        cls = getattr(cls, "__origin__", cls)
+    def _dec_hook(cls: type, obj: Any) -> Any:
+        cls = get_origin(cls) or cls
         if cls in EXT_TYPES:
             return obj
-        if cls is set:
-            return set(*obj)
-        if issubclass(cls, dict):
-            return Dic(obj) if issubclass(cls, Dic) else cls(obj)
         raise NotImplementedError(f"dec_hook: {cls!r}")
 
 

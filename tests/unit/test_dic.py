@@ -113,6 +113,8 @@ def test_export() -> None:
     d = Dic(a=None)
     assert not d.export()
     now = datetime.datetime.now(datetime.timezone.utc)
-    d = Dic(a=Dic(b=now), c={Dic(d=2), 1, (1,)}, e=["a", 1])
-    assert d.export() == dict(a=dict(b=now), c=[dict(d=2), (1,), 1], e=["a", 1])
-    assert d.export(stringify=True)["a"] == dict(b=str(now))
+    d = Dic(a=dict(a=now), b={Dic(a=1, b={1}, c=[1]), 1, (1,)}, c=["a", 1])
+    assert d.export() == dict(
+        a=dict(a=now), b=[dict(a=1, b=[1], c=[1]), (1,), 1], c=["a", 1]
+    )
+    assert d.export(stringify=True)["a"] == dict(a=str(now))

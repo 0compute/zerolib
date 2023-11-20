@@ -46,11 +46,7 @@ class Dic(dict):
                 ...
             case dict():
                 obj = type(self)(obj)
-            case (  # pragma: no branch - there is no default case
-                list()
-                | set()
-                | tuple()
-            ):
+            case list() | set() | tuple():  # pragma: no branch - no default case
                 obj = type(obj)(map(self._convert, obj))
         return obj
 
@@ -93,15 +89,16 @@ class Dic(dict):
         if obj is None:
             obj = self
         match obj:
-            case dict():
+            case dict():  # pragma: no branch - branch coverage broken
                 return tuple(
                     (key, self._to_tuple(value)) for key, value in sorted(obj.items())
                 )
             case list() | set() | tuple():
-                if isinstance(obj, set):
+                if isinstance(obj, set):  # pragma: no branch - branch coverage broken
                     obj = sorted(obj)
                 return tuple(self._to_tuple(value) for value in obj)
-        return (obj,)
+            case _:  # case statement for coverage - otherwise could return this outside
+                return (obj,)
 
     def _to_tuple_str(self, obj: Self | SeqType | None = None) -> str:
         return str(self._to_tuple(obj))
@@ -163,15 +160,16 @@ class Dic(dict):
                 case list() | set() | tuple():
                     if isinstance(value, set):
                         value = sorted(value, key=self._to_tuple_str)
-                    if stringify:
-                        value = [
-                            v.export(stringify=stringify)
-                            if isinstance(v, Dic)
-                            else v
-                            if isinstance(v, PrimativeType)  # type: ignore[arg-type,misc]
-                            else str(v)
-                            for v in value
-                        ]
+                    value = [
+                        v.export(stringify=stringify)
+                        if isinstance(v, Dic)
+                        else sorted(value, key=self._to_tuple_str)
+                        if isinstance(v, set)
+                        else v
+                        if isinstance(v, PrimativeType) or not stringify  # type: ignore[arg-type,misc]
+                        else str(v)
+                        for v in value
+                    ]
                 case _:
                     if stringify and not isinstance(value, PrimativeType):  # type: ignore[arg-type,misc]
                         value = str(value)

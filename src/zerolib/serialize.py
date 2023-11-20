@@ -136,7 +136,8 @@ def _dump(
 ) -> bytes | str | None:
     if (asdict := getattr(obj, "asdict", None)) is not None:
         obj = asdict()
-    if isinstance(obj, Dic):
+    #  XXX: coverage broken - not Dic in ../../tests/unit/test_serialize.py::test_dump_load
+    if isinstance(obj, Dic):  # pragma: no branch
         obj = obj.export(stringify=stringify)
     return dumper(obj, *args, **kwargs)
 
@@ -145,7 +146,7 @@ def load(file: IOType = sys.stdin, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any)
     return _load(SERIALIZE[fmt].load.file(file, **kwargs))
 
 
-def loads(value: bytes | str, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any) -> dict:
+def loads(value: bytes | str, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any) -> Any:
     return _load(SERIALIZE[fmt].load.str(value, **kwargs))
 
 

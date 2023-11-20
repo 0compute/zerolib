@@ -2,6 +2,8 @@
   python = pkgs.python311;
 in
   with rec {
+    inherit (python.pkgs) setuptools;
+
     aiofiles =
       python.pkgs.buildPythonPackage rec
       {
@@ -984,30 +986,6 @@ in
         pythonImportsCheck = ["lsprotocol"];
       };
 
-    maison =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "maison";
-        version = "1.4.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "9843758d7772e0fc3ca93cf3abfdd39656f41bc75f026fd8bfb5a0ac17f27a7e";
-          };
-        nativeBuildInputs = [poetry-core];
-        propagatedBuildInputs = [click pydantic toml];
-        doCheck = false;
-        meta = {
-          description = "Maison";
-          homepage = "https://github.com/dbatten5/maison";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["maison"];
-      };
-
     matplotlib =
       python.pkgs.buildPythonPackage rec
       {
@@ -1567,28 +1545,6 @@ in
         pythonImportsCheck = ["pycparser"];
       };
 
-    pydantic =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pydantic";
-        version = "1.10.7";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "cfc83c0678b6ba51b0532bea66860617c4cd4251ecf76e9846fa5a9f3454e97e";
-          };
-        propagatedBuildInputs = [typing-extensions];
-        doCheck = false;
-        meta = {
-          description = "Data validation and settings management using python type hints";
-          homepage = "https://github.com/pydantic/pydantic";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pydantic"];
-      };
-
     pygments =
       python.pkgs.buildPythonPackage rec
       {
@@ -1819,28 +1775,6 @@ in
         pythonImportsCheck = ["dateutil"];
       };
 
-    python-lsp-jsonrpc =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "python-lsp-jsonrpc";
-        version = "1.0.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "7bec170733db628d3506ea3a5288ff76aa33c70215ed223abdb0d95e957660bd";
-          };
-        propagatedBuildInputs = [ujson];
-        doCheck = false;
-        meta = {
-          description = "JSON RPC 2.0 server library";
-          homepage = "https://github.com/python-lsp/python-lsp-jsonrpc";
-          license = "The MIT License (MIT)";
-        };
-        pythonImportsCheck = ["pylsp_jsonrpc"];
-      };
-
     pyyaml =
       python.pkgs.buildPythonPackage rec
       {
@@ -2015,29 +1949,6 @@ in
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["setupmeta"];
-      };
-
-    setuptools =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "setuptools";
-        version = "67.7.2";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "f104fa03692a2602fa0fec6c6a9e63b6c8a968de13e17c026957dd1f53d80990";
-          };
-        doCheck = false;
-        meta = {
-          description = "Easily download, build, install, upgrade, and uninstall Python packages";
-          homepage = "https://github.com/pypa/setuptools";
-          license = pkgs.lib.licenses.mit;
-        };
-        pipInstallFlags = ["--ignore-installed"];
-        pythonImportsCheck = ["pkg_resources" "setuptools"];
       };
 
     setuptools-rust =
@@ -2265,6 +2176,7 @@ in
             sha256 = "sha256-6goRO7wRG8/8kHieuyFWJcljQR9wlqfpBi1ORjDBVf0=";
           };
         nativeBuildInputs = [setuptools-scm];
+        propagatedBuildInputs = [typing-extensions];
         doCheck = false;
         meta = {
           description = "Run-time type checker for Python";
@@ -2617,54 +2529,6 @@ in
         };
         pythonImportsCheck = ["wrapt"];
       };
-
-    yamlfix =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "yamlfix";
-        version = "1.15.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "sha256-aqUOrDswjvjTH14NDDaqXFvUbeTY+UOubLYt9g6OfnI=";
-          };
-        nativeBuildInputs = [pdm-pep517];
-        propagatedBuildInputs = [maison ruyaml];
-        doCheck = false;
-        meta = {
-          description = "A simple opionated yaml formatter that keeps your comments!";
-          homepage = "https://github.com/lyz-code/yamlfix";
-          license = pkgs.lib.licenses.gpl3Only;
-        };
-        pythonImportsCheck = ["yamlfix"];
-      };
-
-    yamllint =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "yamllint";
-        version = "1.31.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "2d83f1d12f733e162a87e06b176149d7bb9c5bae4a9e5fce1c771d7f703f7a65";
-          };
-        nativeBuildInputs = [setuptools];
-        propagatedBuildInputs = [pathspec pyyaml];
-        doCheck = false;
-        meta = {
-          description = "A linter for YAML files.";
-          homepage = "https://github.com/adrienverge/yamllint";
-          license = pkgs.lib.licenses.gpl1Only;
-        };
-        pythonImportsCheck = ["yamllint"];
-      };
   }; (
     python.pkgs.buildPythonPackage rec
     {
@@ -2685,7 +2549,8 @@ in
         beartype
         flit-core
         pdbpp
-        pip
+        pip # because we're using a custom shellHook
+        ptpython
         pytest-asyncio
         pytest-cov
         pytest-random-order
@@ -2697,13 +2562,9 @@ in
         types-pyyaml
         types-toml
         types-tqdm
-        yamlfix
-        yamllint
       ];
       propagatedNativeBuildInputs = [
-        pkgs.gitMinimal
         pkgs.graphviz
-        pkgs.rsync
         pkgs.xdg-utils
       ];
       propagatedBuildInputs = [
@@ -2716,7 +2577,6 @@ in
         msgpack
         msgspec
         # orjson
-        ptpython
         pyyaml
         rustworkx
         tqdm

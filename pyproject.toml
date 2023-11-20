@@ -6,59 +6,44 @@ build-backend = "flit_core.buildapi"
 name = "zerolib"
 version = "0.1.0"
 description = "..."
-dependencies = ["atools", "msgspec[msgpack]", "rustworkx[mpl]", "wrapt"]
+dependencies = [
+  "aiofiles",
+  "anyio",
+  "atools",
+  "contextvars-extras",
+  "deepmerge",
+  "loguru",
+  "msgspec",
+  "pyyaml",
+  "rustworkx[mpl]",
+  "tqdm",
+  "wrapt",
+]
 
 [project.optional-dependencies]
-interactive = ["pypython"]
-serialize = ["msgpack", "orjson", "pyyaml"]
-# these are widely-used PEP 517 build backends / setuptools extensions
+serde = ["msgpack", "orjson", "pyyaml"]
 dev = [
   # required by .pyproject
   "toml",
-  # lint
-  "pre-commit",
-  "validate-pyproject",
-  "vulture",
-  "yamlfix",
-  "yamllint",
-  # format
-  "black",
-  # XXX: replaced by ruff?
-  "isort",
   # typing
-  "mypy[dmypy]",
+  "beartype",
+  "typeguard",
   "types-aiofiles",
-  "types-PyYAML",
-  "types-setuptools",
+  "types-appdirs",
+  "types-pyyaml",
   "types-toml",
-  # lsp
-  # "pyls-isort",
-  # "pylsp-mypy",
-  # TimeoutError in pylsp.workspace.Workspace._progress_begin, same with "python-lsp-server[rope]"
-  # "pylsp-rope",
-  "python-lsp-black",
-  "python-lsp-server",
-  # use instead of python-lsp-ruff so python-lsp-server has less to do
-  "ruff-lsp",
+  "types-tqdm",
   # debug
   "pdbpp",
-  # profile
-  "py-spy",
-  "pyinstrument",
-  "snakeviz",
-  "yappi",
+  "ptpython",
+  # TODO: include lsp etc. as project dev depends i.e. not from global env
 ]
 test = [
   "pytest-asyncio",
   "pytest-cov",
-  "pytest-flakefinder",
   "pytest-random-order",
   "pytest-sugar",
-  "pytest-xdist[psutil,setproctitle]",
 ]
-
-[tool.black]
-target-version = ["py310"]
 
 [tool.coverage.run]
 branch = true
@@ -81,7 +66,7 @@ exclude_lines = [
   "@overload",
   "pass",
 ]
-skip_covered = true
+fail_under = 100
 
 [tool.coverage.html]
 directory = "tests/coverage-html"
@@ -89,10 +74,6 @@ show_contexts = true
 
 [tool.coverage.xml]
 output = "tests/coverage.xml"
-
-[tool.isort]
-profile = "black"
-combine_as_imports = true
 
 [tool.mypy]
 allow_untyped_defs = false
@@ -123,7 +104,6 @@ exclude = [
 [tool.pylsp-mypy]
 enabled = true
 dmypy = true
-dmypy_status_file = ".dmypy-pylsp.json"
 live_mode = false
 report_progress = true
 
@@ -190,6 +170,8 @@ ignore = [
   "PT011",
   # Missing explicit `return` at the end of function able to return non-`None` value
   "RET503",
+  # Mutable class attributes should be annotated with `typing.ClassVar` - msgspec sugar
+  "RUF012",
   # github: Requests call without timeout
   "S113",
   # Private member accessed
