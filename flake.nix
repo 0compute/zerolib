@@ -71,7 +71,8 @@
             }
             # sh
             {
-              package = beautysh;
+              package = shfmt;
+              args = ["-w"];
               types = ["shell"];
             }
             # yaml
