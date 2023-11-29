@@ -97,7 +97,7 @@
             }
           ];
         in
-          pkgs.mkShell {
+          pkgs.mkShellNoCC {
             inherit (pre-commit) shellHook;
             inputsFrom = builtins.attrValues self.packages.${system};
             packages =
