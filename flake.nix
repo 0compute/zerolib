@@ -86,6 +86,15 @@
               args = ["."];
               types = ["yaml"];
             }
+            # misc
+            {
+              package = taplo;
+              args = ["format"];
+              types = ["toml"];
+            }
+            {
+              package = typos;
+            }
           ];
         in
           pkgs.mkShell {

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 SeqType = list | set | tuple
 
-PrimativeType = float | int | str | tuple
+PrimitiveType = float | int | str | tuple
 
 
 @atools.memoize
@@ -85,7 +85,7 @@ class Dic(dict):
     # __and__
     # __or__
 
-    def _to_tuple(self, obj: Self | PrimativeType | SeqType | None = None) -> tuple:
+    def _to_tuple(self, obj: Self | PrimitiveType | SeqType | None = None) -> tuple:
         if obj is None:
             obj = self
         match obj:
@@ -166,12 +166,12 @@ class Dic(dict):
                         else sorted(value, key=self._to_tuple_str)
                         if isinstance(v, set)
                         else v
-                        if isinstance(v, PrimativeType) or not stringify  # type: ignore[arg-type,misc]
+                        if isinstance(v, PrimitiveType) or not stringify  # type: ignore[arg-type,misc]
                         else str(v)
                         for v in value
                     ]
                 case _:
-                    if stringify and not isinstance(value, PrimativeType):  # type: ignore[arg-type,misc]
+                    if stringify and not isinstance(value, PrimitiveType):  # type: ignore[arg-type,misc]
                         value = str(value)
             clean[key] = value
         return clean
