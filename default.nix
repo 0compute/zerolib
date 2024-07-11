@@ -1,4 +1,4 @@
-{pkgs ? import <nixpkgs> {}}: let
+{pkgs}: let
   python = pkgs.python311;
 in
   with rec {
@@ -343,14 +343,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "coverage";
-        version = "7.3.2";
+        version = "7.5.4";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-vjKtKTQbAXDnlcpZDhwH6B/AYctbEMdM5yA0kUhEBO8=";
+            sha256 = "a44963520b069e12789d0faea4e9fdb1e410cdc4aab89d94f7f55cbb7fef0353";
           };
         nativeBuildInputs = [setuptools];
         doCheck = false;
@@ -1689,13 +1689,13 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest-cov";
-        version = "4.1.0";
+        version = "5.0.0";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-OQSxPfv+xH8AO453/VtYnNEZBKId3xqzimTyBNahDvY=";
+            sha256 = "5837b58e9f6ebd335b0f8060eecce69b662415b16dc503883a02f45dfeb14857";
           };
         propagatedBuildInputs = [coverage pytest];
         doCheck = false;
@@ -2537,7 +2537,7 @@ in
       format = "pyproject";
       src =
         pkgs.nix-gitignore.gitignoreSource
-        "/default.nix\n/dist-seed/\n/doc/\n/.*"
+        "/*.nix"
         (
           builtins.path
           {
@@ -2593,7 +2593,7 @@ in
         # Install editable to $XDG_CACHE_HOME keyed on $PWD and hash of pyproject.toml
         # and/or setup.{cfg,py}
         files=()
-        for file in pyproject.toml setup.py setup.cfg; do
+        for file in pyproject.toml setup.py setup.cfg flake.* default.nix; do
         ! [ -e $file ] || files+=($file)
         done
         if (( ''${#files} )); then
