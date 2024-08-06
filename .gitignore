@@ -11,6 +11,7 @@
 /.result*
 /.site/
 /.test-results/
+/.zsh_history
 /YAKSHAVE
 /flamegraph.svg
 /result*
