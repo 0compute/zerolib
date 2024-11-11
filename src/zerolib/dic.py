@@ -153,7 +153,7 @@ class Dic(dict):
             match value:
                 case dict():
                     if not isinstance(value, Dic):
-                        raise RuntimeError(f"{key} = {value!r} - should be Dic")  # noqa: TRY004
+                        raise TypeError(f"{key} = {value!r} - should be Dic")
                     value = value.export(stringify=stringify)
                 case list() | set() | tuple():
                     if isinstance(value, set):
