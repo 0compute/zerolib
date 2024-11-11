@@ -206,7 +206,7 @@ class Struct(
             if path is None:
                 if key is None:
                     raise TypeError("either key or path must be provided")
-                path = cls._key_path(key)
+                path = cls._path(key)
             try:
                 encoded = await path.read_bytes()
             except FileNotFoundError:
@@ -229,26 +229,22 @@ class Struct(
         return default
 
     async def put(self, path: anyio.Path | None = None) -> None:
-        if self.ctx.cache:
-            # XXX: coverage branch broken: path is not None in
-            # ../../tests/unit/type/test_struct.py::test_store_path
-            if path is None:  # pragma: no branch
-                path = self._key_path(self)
+        # XXX: coverage branch broken: cls.ctx.cache is False in
+        # ../../tests/unit/type/test_struct.py::test_store_path_nocache
+        if self.ctx.cache:  # pragma: no branch
+            path = self._path(self) if path is None else path
             # TODO: lock
             await path.parent.mkdir(parents=True, exist_ok=True)
             await path.write_bytes(self.encode())
             self.log.debug(f"wrote to {path}")
 
     async def delete(self, path: anyio.Path | None = None) -> None:
-        # XXX: coverage branch broken: path is not None in
-        # ../../tests/unit/type/test_struct.py::test_store_path
-        if path is None:  # pragma: no branch
-            path = self._key_path(self)
+        path = self._path(self) if path is None else path
         await path.unlink()
         self.log.debug(f"deleted {path}")
 
     @classmethod
-    def _key_path(cls, key: str | Self) -> anyio.Path:
+    def _path(cls, key: str | Self) -> anyio.Path:
         return cls.ctx.cachedir / "db" / cls.__name__.lower() / f"{key}.msgpack"
 
     @classmethod
