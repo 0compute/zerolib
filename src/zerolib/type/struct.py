@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Any, ClassVar, Self, Union, cast, get_origin
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Self,
+    Union,
+    cast,
+    dataclass_transform,
+    get_origin,
+)
 
 import anyio
 import msgspec
@@ -117,6 +126,7 @@ class Decoder:
         raise NotImplementedError(f"dec_hook: {cls!r}")
 
 
+@dataclass_transform()
 class Struct(
     msgspec.Struct,
     order=True,
