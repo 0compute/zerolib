@@ -88,14 +88,10 @@ async def run(
         raise CalledProcessError(
             returncode,
             command,
-            out,
-            "\n".join(stderr_lines) if stderr is subprocess.PIPE else None,
+            out or "",
+            "\n".join(stderr_lines) if stderr is subprocess.PIPE else "",
         )
-    # XXX: branch coverage broken: lines=False in
-    # ../../tests/functional/test_command.py::test_basic
-    if lines:  # pragma: no branch
-        return [] if out is None else out.decode().strip().splitlines()
-    return out
+    return [] if out is None else out.decode().strip().splitlines() if lines else out
 
 
 async def _process_stdout(stream: ByteReceiveStream, buffer: io.BytesIO) -> None:
