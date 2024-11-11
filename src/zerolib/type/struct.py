@@ -210,20 +210,15 @@ class Struct(
             try:
                 encoded = await path.read_bytes()
             except FileNotFoundError:
-                ...
+                log.debug(f"miss: {path}")
             else:
                 try:
                     self = cls.decode(encoded)
-                except (
-                    msgspec.DecodeError,
-                    msgspec.ValidationError,
-                    NotImplementedError,
-                    TypeError,
-                ):
+                except Exception as exc:
                     await path.unlink()
-                    log.exception(f"get: decode fail - unlinked {path}")
+                    log.opt(exception=exc).error(f"get: decode fail - unlinked {path}")
                 else:
-                    self.log.debug(f"cache hit: {path}")
+                    self.log.debug(f"hit: {path}")
                     await self._set_runtime_state()
                     return self
         return default
@@ -236,7 +231,7 @@ class Struct(
             # TODO: lock
             await path.parent.mkdir(parents=True, exist_ok=True)
             await path.write_bytes(self.encode())
-            self.log.debug(f"wrote to {path}")
+            self.log.debug(f"wrote {path}")
 
     async def delete(self, path: anyio.Path | None = None) -> None:
         path = self._path(self) if path is None else path
