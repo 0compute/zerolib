@@ -15,7 +15,7 @@ from loguru import logger as log
 from . import util
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
     from typing import IO, Any, Literal, TextIO
 
     from anyio.abc import ByteReceiveStream
@@ -42,9 +42,7 @@ async def run(*command: Any, lines: Literal[True]) -> list[str]: ...
 
 
 @util.trace(
-    lambda *command, **_kwargs: command[0]
-    if len(command) == 1 and isinstance(command[0], str)
-    else subprocess.list2cmdline(command),
+    lambda *command, **_kwargs: _coerce_command(command, subprocess.list2cmdline),
     log=log,
 )
 async def run(
@@ -59,9 +57,7 @@ async def run(
     async with (
         anyio.create_task_group() as tg,
         await anyio.open_process(
-            command[0]
-            if len(command) == 1 and isinstance(command[0], str)
-            else list(map(str, command)),
+            _coerce_command(command, lambda command: list(map(str, command))),
             stdin=subprocess.PIPE if stdin else subprocess.DEVNULL,
             stderr=stderr,
             cwd=cwd,
@@ -79,7 +75,7 @@ async def run(
             await proc.stdin.aclose()
         try:
             returncode = await proc.wait()
-        except BaseException:  # pragma: no cover - error path
+        except BaseException:  # pragma: no cover - TODO: test this
             with contextlib.suppress(ProcessLookupError):
                 proc.kill()
             raise
@@ -91,7 +87,20 @@ async def run(
             out or "",
             "\n".join(stderr_lines) if stderr is subprocess.PIPE else "",
         )
-    return [] if out is None else out.decode().strip().splitlines() if lines else out
+    # XXX: branch coverage broken: lines=False in
+    # ../../tests/functional/test_command.py::test_basic
+    if lines:  # pragma: no branch
+        return [] if out is None else out.decode().strip().splitlines()
+    return out
+
+
+def _coerce_command(command: Any, coerce: Callable[[Any], list | str]) -> Any:
+    """Return str command if command is tuple[str] otherwise coerced command"""
+    return (
+        command[0]
+        if len(command) == 1 and isinstance(command[0], str)
+        else coerce(command)
+    )
 
 
 async def _process_stdout(stream: ByteReceiveStream, buffer: io.BytesIO) -> None:

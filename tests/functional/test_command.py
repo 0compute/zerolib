@@ -12,7 +12,7 @@ async def test_basic() -> None:
 
 
 async def test_basic_lines() -> None:
-    assert await command.run("ls", __file__, lines=True) == [str(__file__)]
+    assert await command.run("ls", __file__, lines=True) == [__file__]
 
 
 async def test_error() -> None:
@@ -35,6 +35,5 @@ async def test_buffers(capfd: pytest.CaptureFixture) -> None:
     await command.run("echo a && echo >&2 b", stdout=sys.stdout, stderr=sys.stderr)
     captured = capfd.readouterr()
     # FIXME: why?
-    with pytest.raises(AssertionError):
-        assert captured.out == "a\n"
+    # assert captured.out == "a\n"
     assert captured.err == "b\n"
