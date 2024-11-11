@@ -156,12 +156,19 @@ class Struct(
         except Exception:
             return f"<unprintable {name}>"
 
-    async def __setstate__(self) -> None:
+    def __str__(self) -> str:
+        raise NotImplementedError  # pragma: no cover
+
+    async def _set_runtime_state(self) -> None:
         """Set runtime state after msgspec decoding"""
-        ...
 
     @classmethod
     def factory(cls, *args: Any, **kwargs: Any) -> Self:
+        """
+        Create instance
+
+        Does not set runtime state
+        """
         attrs = {}
         # set struct members
         for key in cls.__struct_fields__:
@@ -176,6 +183,13 @@ class Struct(
         # XXX: coverage branch broken
         for key, value in kwargs.items():  # pragma: no branch
             setattr(self, f"_{key}", value)
+        return self
+
+    @classmethod
+    async def factory_async(cls, *args: Any, **kwargs: Any) -> Self:
+        """Create instance and set runtime state"""
+        self = cls.factory(*args, **kwargs)
+        await self._set_runtime_state()
         return self
 
     @classmethod
@@ -210,7 +224,7 @@ class Struct(
                     log.exception(f"get: decode fail - unlinked {path}")
                 else:
                     self.log.debug(f"cache hit: {path}")
-                    await self.__setstate__()
+                    await self._set_runtime_state()
                     return self
         return default
 

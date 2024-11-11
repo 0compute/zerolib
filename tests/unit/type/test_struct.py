@@ -22,10 +22,8 @@ class Impl(Struct):
     def __str__(self) -> str:
         return self.mstr
 
-
-@union
-class Impl2(Impl):
-    path: anyio.Path | None = None
+    async def _set_runtime_state(self) -> None:
+        self._runtime = True
 
 
 class FailImpl(Struct):
@@ -67,6 +65,13 @@ def test_factory() -> None:
     assert obj._mbool
     # runtime member
     assert obj._x == 2  # type: ignore[attr-defined]
+
+
+async def test_factory_async() -> None:
+    obj = Impl.factory()
+    assert not hasattr(obj, "_runtime")
+    obj = await Impl.factory_async()
+    assert obj._runtime
 
 
 def test_asdict() -> None:
