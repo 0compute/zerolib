@@ -157,7 +157,7 @@ class Struct(
             return f"<unprintable {name}>"
 
     def __str__(self) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover - abstract method
 
     async def _set_runtime_state(self) -> None:
         """Set runtime state after msgspec decoding"""
