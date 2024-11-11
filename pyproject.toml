@@ -26,8 +26,6 @@ dev = [
   # required by .pyproject
   "toml",
   # typing
-  "beartype",
-  "typeguard",
   "types-aiofiles",
   "types-appdirs",
   "types-pyyaml",
@@ -39,10 +37,12 @@ dev = [
   # TODO: include lsp etc. as project dev depends i.e. not from global env
 ]
 test = [
+  "beartype",
   "pytest-asyncio",
   "pytest-cov",
   "pytest-random-order",
   "pytest-sugar",
+  "typeguard",
 ]
 
 [tool.coverage.run]
