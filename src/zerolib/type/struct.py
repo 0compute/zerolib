@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Literal
 
-    from loguru._logger import Logger
+    from loguru import Logger
 
     EncoderType = Callable[["Struct"], bytes]
 

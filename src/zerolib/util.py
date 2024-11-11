@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Generator, Iterable
     from typing import Any
 
-    from loguru._logger import Logger
+    from loguru import Logger
 
 
 def run_sync(func: Callable, *args: Any, debug: bool = False, **kwargs: Any) -> Any:

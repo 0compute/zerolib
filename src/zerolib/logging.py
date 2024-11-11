@@ -8,7 +8,7 @@ import warnings
 from typing import TYPE_CHECKING
 
 import anyio
-from loguru import _logger, logger as log
+from loguru import logger as log
 
 from . import serialize
 from .dic import Dic
@@ -16,6 +16,8 @@ from .dic import Dic
 if TYPE_CHECKING:
     import datetime
     from typing import IO, TextIO
+
+    from loguru import Logger
 
 COLOR_DEFAULT = "auto"
 
@@ -32,7 +34,7 @@ async def configure(
     config: anyio.Path = HERE / "logging.yml",
     sink: IO | None = None,
     enable_for: tuple[str, ...] = (__package__,),
-) -> _logger.Logger:
+) -> Logger:
     # read config
     cfg = Dic(serialize.loads(await config.read_text()))
 
