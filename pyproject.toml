@@ -14,6 +14,7 @@ dependencies = [
   "deepmerge",
   "loguru",
   "msgspec",
+  "msgpack",
   "pyyaml",
   "rustworkx[mpl]",
   "tqdm",
@@ -21,7 +22,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-serde = ["msgpack", "orjson", "pyyaml"]
 dev = [
   # required by .pyproject
   "toml",
@@ -57,7 +57,6 @@ relative_files = true
 
 [tool.coverage.report]
 exclude_lines = [
-  "except ImportError:",
   "if TYPE_CHECKING:",
   "raise NotImplementedError",
   "raise RuntimeError",

@@ -4,17 +4,7 @@ import functools
 from typing import TYPE_CHECKING, Any, ClassVar, Self, Union, cast, get_origin
 
 import anyio
-
-try:
-    import msgpack
-except ImportError:
-    msgpack = None
 import msgspec
-
-try:
-    import yaml
-except ImportError:
-    yaml = None
 from loguru import logger as log
 
 # export msgspec field for import convenience
@@ -63,27 +53,23 @@ class Encoder:
     def json(self) -> EncoderType:
         return msgspec.json.Encoder(enc_hook=str).encode
 
-    if msgpack is not None:  # pragma: no branch
+    @util.cached_property
+    def msgpack(self) -> EncoderType:
+        return msgspec.msgpack.Encoder(enc_hook=self._msgpack_encode).encode
 
-        @util.cached_property
-        def msgpack(self) -> EncoderType:
-            return msgspec.msgpack.Encoder(enc_hook=self._msgpack_encode).encode
+    # fallback for unsupported on msgpack encode
+    @staticmethod
+    def _msgpack_encode(obj: Any) -> Any:
+        cls = type(obj)
+        ext_code = EXT_TYPES.get(cls)
+        if ext_code is None:
+            raise NotImplementedError(f"enc_hook: EXT code undefined for {cls!r}")
+        encoder = ENCODERS.get(cls, lambda obj: str(obj).encode())
+        return msgspec.msgpack.Ext(ext_code, encoder(obj))
 
-        # fallback for unsupported on msgpack encode
-        @staticmethod
-        def _msgpack_encode(obj: Any) -> Any:
-            cls = type(obj)
-            ext_code = EXT_TYPES.get(cls)
-            if ext_code is None:
-                raise NotImplementedError(f"enc_hook: EXT code undefined for {cls!r}")
-            encoder = ENCODERS.get(cls, lambda obj: str(obj).encode())
-            return msgspec.msgpack.Ext(ext_code, encoder(obj))
-
-    if yaml is not None:  # pragma: no branch
-
-        @util.cached_property
-        def yaml(self) -> EncoderType:
-            return functools.partial(msgspec.yaml.encode, enc_hook=str)  # type: ignore[attr-defined]
+    @util.cached_property
+    def yaml(self) -> EncoderType:
+        return functools.partial(msgspec.yaml.encode, enc_hook=str)
 
 
 class Decoder:
@@ -94,37 +80,31 @@ class Decoder:
             dec_hook=self._dec_hook,
         ).decode
 
-    if msgpack is not None:  # pragma: no branch
+    @util.cached_property
+    def msgpack(self) -> DecoderType:
+        return msgspec.msgpack.Decoder(
+            type=self._typed_union,
+            dec_hook=self._dec_hook,
+            ext_hook=self._msgpack_ext_hook,
+        ).decode
 
-        @util.cached_property
-        def msgpack(self) -> DecoderType:
-            return msgspec.msgpack.Decoder(
-                type=self._typed_union,
-                dec_hook=self._dec_hook,
-                ext_hook=self._ext_hook,
-            ).decode
+    def _msgpack_ext_hook(self, code: int, data: memoryview) -> Any:
+        cls = self._msgpack_ext_types.get(code)
+        if cls is None:
+            raise NotImplementedError(f"ext_hook: type undefined for EXT code {code}")
+        return DECODERS.get(cls, lambda data: cls(data.decode()))(data.tobytes())
 
-        def _ext_hook(self, code: int, data: memoryview) -> Any:
-            cls = self._ext_types.get(code)
-            if cls is None:
-                raise NotImplementedError(
-                    f"ext_hook: type undefined for EXT code {code}"
-                )
-            return DECODERS.get(cls, lambda data: cls(data.decode()))(data.tobytes())
+    @util.cached_property
+    def _msgpack_ext_types(self) -> dict:
+        return {v: k for k, v in EXT_TYPES.items()}
 
-        @util.cached_property
-        def _ext_types(self) -> dict:
-            return {v: k for k, v in EXT_TYPES.items()}
-
-    if yaml is not None:  # pragma: no branch
-
-        @util.cached_property
-        def yaml(self) -> DecoderType:
-            return functools.partial(
-                msgspec.yaml.decode,  # type: ignore[attr-defined]
-                type=self._typed_union,
-                dec_hook=self._dec_hook,
-            )
+    @util.cached_property
+    def yaml(self) -> DecoderType:
+        return functools.partial(
+            msgspec.yaml.decode,
+            type=self._typed_union,
+            dec_hook=self._dec_hook,
+        )
 
     @util.cached_property
     def _typed_union(self) -> Union | Any:

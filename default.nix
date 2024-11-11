@@ -1158,42 +1158,6 @@ in
         };
       };
 
-    orjson =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "orjson";
-        version = "3.8.12";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "9f0f042cf002a474a6aea006dd9f8d7a5497e35e5fb190ec78eb4d232ec19955";
-          };
-        nativeBuildInputs = [
-          maturin
-          pkgs.rustPlatform.cargoSetupHook
-          pkgs.cargo
-          pkgs.rustc
-        ];
-        cargoDeps =
-          pkgs.rustPlatform.importCargoLock
-          {
-            lockFile =
-              pkgs.runCommand
-              "${pname}-${version}-cargo-lock"
-              {inherit src;}
-              "tar -zxOf $src ${pname}-${version}/Cargo.lock > $out";
-          };
-        doCheck = false;
-        meta = {
-          description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy";
-          homepage = "https://github.com/ijl/orjson";
-          license = pkgs.lib.licenses.asl20;
-        };
-      };
-
     packaging =
       python.pkgs.buildPythonPackage rec
       {
@@ -2576,7 +2540,6 @@ in
         loguru
         msgpack
         msgspec
-        # orjson
         pyyaml
         rustworkx
         tqdm
