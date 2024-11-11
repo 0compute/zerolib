@@ -16,11 +16,6 @@ SeqType = list | set | tuple
 PrimitiveType = float | int | str | tuple
 
 
-@atools.memoize
-def _sha256_hex(value: str) -> str:
-    return hashlib.sha256(value.encode()).hexdigest()
-
-
 class Dic(dict):
     """A hashable dictionary that supports key access as attribute."""
 
@@ -38,15 +33,13 @@ class Dic(dict):
         )
 
     def _convert(self, obj: Any) -> Any:
-        if not (obj and isinstance(obj, dict | SeqType)):
-            return obj
         match obj:
             case Dic():
                 # noop: here so that dict() below doesn't recurse
                 ...
             case dict():
                 obj = type(self)(obj)
-            case list() | set() | tuple():  # pragma: no branch - no default case
+            case list() | set() | tuple():
                 obj = type(obj)(map(self._convert, obj))
         return obj
 
@@ -79,7 +72,12 @@ class Dic(dict):
         return hash(self._to_tuple())
 
     def sha256_hex(self) -> str:
-        return _sha256_hex(self._to_tuple_str())
+        return self._sha256_hex(self._to_tuple_str())
+
+    @staticmethod
+    @atools.memoize
+    def _sha256_hex(value: str) -> str:
+        return hashlib.sha256(value.encode()).hexdigest()
 
     # TODO:
     # __and__
