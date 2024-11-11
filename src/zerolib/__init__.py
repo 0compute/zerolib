@@ -17,6 +17,6 @@ from .type import (
     union,
 )
 
-# https://loguru.readthedocs.io/en/stable/resources/recipes.html#configuring-loguru-to-be-used-by-a-library-or-an-application
+# https://loguru.readthedocs.io/en/0.7.2/resources/recipes.html#configuring-loguru-to-be-used-by-a-library-or-an-application
 log.disable(__package__)
 del log
