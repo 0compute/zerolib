@@ -56,7 +56,7 @@ class Graph(wrapt.ObjectProxy):
     def __iter__(self) -> Generator[set[Hashable], None, None]:
         sorter = rustworkx.TopologicalSorter(  # type: ignore[attr-defined]
             self.__wrapped__,
-            # we don't need to check cycle - it's been done already
+            # we don't need to check cycle - it's done already in `.add_child`
             check_cycle=False,
         )
         ready: list | None = None
@@ -171,36 +171,28 @@ class Graph(wrapt.ObjectProxy):
     def descendants(
         self, node: Hashable, filter: NodeFilterType = None
     ) -> list[Hashable]:
-        return self._descendants(node, filter)
-
-    def _descendants(
-        self, node: Hashable, filter: NodeFilterType = None
-    ) -> list[Hashable]:
-        descendants = [
-            self._self_index_node_map[n]
-            for n in rustworkx.descendants(  # type: ignore[attr-defined]
-                self.__wrapped__, self._self_node_index_map[node]
-            )
-        ]
-        if filter is not None:  # pragma: no branch - XXX: coverage branch broken
-            descendants = self._filter_nodes(descendants, filter)
-        return descendants
+        return self._relations("descendants", node, filter)
 
     def ancestors(
         self, node: Hashable, filter: NodeFilterType = None
     ) -> list[Hashable]:
-        ancestors = [
+        return self._relations("ancestors", node, filter)
+
+    def _relations(
+        self, func: str, node: Hashable, filter: NodeFilterType = None
+    ) -> list[Hashable]:
+        nodes = [
             self._self_index_node_map[n]
-            for n in rustworkx.ancestors(  # type: ignore[attr-defined]
+            for n in getattr(rustworkx, func)(
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
         if filter is not None:  # pragma: no branch - XXX: coverage branch broken
-            ancestors = self._filter_nodes(ancestors, filter)
-        return ancestors
+            nodes = self._filter_nodes(nodes, filter)
+        return nodes
 
     @staticmethod
-    def _filter_nodes(nodes: list | set, filter: NodeFilterType = None) -> list:
+    def _filter_nodes(nodes: list | set, filter: NodeFilterType) -> list:
         return [
             node
             for node in nodes
@@ -217,7 +209,7 @@ class Graph(wrapt.ObjectProxy):
         )
 
     def subgraph(self, node: Hashable, filter: NodeFilterType = None) -> Self:
-        descendants = self._descendants(node, filter)
+        descendants = self.descendants(node, filter)
         graph = Graph.factory(
             graph=self.__wrapped__.subgraph(
                 [self._self_node_index_map[node] for node in descendants],
