@@ -16,8 +16,10 @@ if TYPE_CHECKING:
 @pytest.mark.parametrize(
     ("fmt", "obj"),
     functools.reduce(
-        lambda base, fmt: base  # type: ignore[arg-type,return-value]
-        + [(fmt, obj) for obj in (dict(a=1), [1], 1, "a", None, Dic(a=1))],
+        lambda base, fmt: [
+            *base,
+            *[(fmt, obj) for obj in (dict(a=1), [1], 1, "a", None, Dic(a=1))],
+        ],
         serialize.SERIALIZE,
         [],
     ),
