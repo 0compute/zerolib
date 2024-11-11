@@ -7,8 +7,6 @@ import anyio
 import pytest
 from zerolib import Context, Dic, FrozenStruct, Struct, field, serialize, union
 
-from ... import CustomError
-
 if TYPE_CHECKING:
     import pathlib
     from collections.abs import Generator
@@ -197,6 +195,8 @@ async def test_get_exc(
     path = ctx.cachedir / "x"
     await obj.put(path)
     assert await path.exists()
+
+    class CustomError(Exception): ...
 
     def _raiser(_encoded: bytes) -> None:
         raise CustomError
