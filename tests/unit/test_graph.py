@@ -17,6 +17,8 @@ def test_bool(graph: Graph) -> None:
 
 def test_str(graph: Graph) -> None:
     assert "nodes=0" in str(graph)
+    graph.add_node(1)
+    assert "nodes=1" in str(graph)
 
 
 def test_factory() -> None:
@@ -48,6 +50,12 @@ def test_has_child(graph: Graph) -> None:
 def test_get_edge_data(graph: Graph) -> None:
     graph.add_child(1, 2, dict(a=1))
     assert graph.get_edge_data(1, 2) == dict(a=1)
+
+
+def test_add_double(graph: Graph) -> None:
+    graph.add_child(1, 2)
+    with pytest.raises(RuntimeError):
+        graph.add_child(1, 2)
 
 
 def test_add_circular(graph: Graph) -> None:
