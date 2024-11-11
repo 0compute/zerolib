@@ -108,7 +108,7 @@ class Dic(dict):
         super().update(self._convert(self._merge_args(m, kwargs)))
 
     def merge(self, other: dict) -> Self:
-        deepmerge.always_merger.merge(self, other)
+        return deepmerge.always_merger.merge(self, other)
 
     def sorted(
         self, key: Callable[[Any], str] | None = None, *, reverse: bool = False
