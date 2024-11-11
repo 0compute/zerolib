@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 # https://loguru.readthedocs.io/en/stable/resources/migration.html#replacing-caplog-fixture-from-pytest-library
 @pytest.fixture
 def caplog(
-    caplog: pytest.LogCaptureFixture
+    caplog: pytest.LogCaptureFixture,
 ) -> Generator[pytest.LogCaptureFixture, None, None]:
     util.run_sync(logging.configure)
     handler_id = log.add(

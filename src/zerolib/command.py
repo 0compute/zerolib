@@ -22,28 +22,23 @@ if TYPE_CHECKING:
 
 
 @overload
-async def run(command: str) -> bytes:
-    ...
+async def run(command: str) -> bytes: ...
 
 
 @overload
-async def run(*command: Any) -> bytes:
-    ...
+async def run(*command: Any) -> bytes: ...
 
 
 @overload
-async def run(command: str, stdin: bytes) -> bytes:
-    ...
+async def run(command: str, stdin: bytes) -> bytes: ...
 
 
 @overload
-async def run(command: str, stdout: TextIO, stderr: TextIO) -> bytes:
-    ...
+async def run(command: str, stdout: TextIO, stderr: TextIO) -> bytes: ...
 
 
 @overload
-async def run(*command: Any, lines: Literal[True]) -> list[str]:
-    ...
+async def run(*command: Any, lines: Literal[True]) -> list[str]: ...
 
 
 @util.trace(

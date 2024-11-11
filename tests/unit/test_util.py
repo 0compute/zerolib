@@ -41,8 +41,7 @@ def test_trepr_trunc_dict() -> None:
 
 async def test_trace(caplog: pytest.LogCaptureFixture) -> None:
     @util.trace()
-    async def func() -> None:
-        ...
+    async def func() -> None: ...
 
     await func()
     record = caplog.records[0]

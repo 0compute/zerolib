@@ -82,18 +82,15 @@ def dump(
 
 
 @overload
-def dumps(obj: Any) -> str:
-    ...
+def dumps(obj: Any) -> str: ...
 
 
 @overload
-def dumps(obj: Any, fmt: Literal["json", "yaml"]) -> str:
-    ...
+def dumps(obj: Any, fmt: Literal["json", "yaml"]) -> str: ...
 
 
 @overload
-def dumps(obj: Any, fmt: Literal["msgpack"]) -> bytes:
-    ...
+def dumps(obj: Any, fmt: Literal["msgpack"]) -> bytes: ...
 
 
 def dumps(obj: Any, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any) -> bytes | str:

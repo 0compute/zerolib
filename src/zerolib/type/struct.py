@@ -41,7 +41,6 @@ def register_ext_type(cls: type) -> int:
 # only anyio.Path here - consumers add more as required
 register_ext_type(anyio.Path)
 
-
 # TOGO: maybe, leaving for a while in case not
 # hooks for custom encoders and decoders
 ENCODERS: dict[type, EncoderType] = {}
