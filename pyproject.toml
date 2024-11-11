@@ -80,15 +80,12 @@ cache_fine_grained = true
 check_untyped_defs = true
 # left to ruff
 disable_error_code = "name-defined,syntax"
-# speed issue
-follow_imports = "skip"
 ignore_missing_imports = true
 show_error_codes = true
 strict_optional = false
 # nice in theory, practically mypy is fukt and enabling this will lead you down
 # an endless trail of casts
 # warn_return_any = true
-warn_no_return = false
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_configs = true
@@ -123,9 +120,12 @@ tmp_path_retention_policy = "failed"
 [tool.ruff]
 extend-exclude = [".result*", ".pyproject*", "result*"]
 force-exclude = true
+output-format = "full"
+show-fixes = true
+target-version = "py311"
+
+[tool.ruff.lint]
 ignore = [
-  # mccabe
-  "C90",
   # pydocstyle
   "D",
   # pylint
@@ -136,8 +136,7 @@ ignore = [
   # shadowing a python builtin
   "A001",
   "A002",
-  "A003",
-  # Nissing type annotation for `self` in method
+  # Missing type annotation for `self` in method
   "ANN101",
   # Missing type annotation for `cls` in classmethod
   "ANN102",
@@ -151,56 +150,36 @@ ignore = [
   "COM812",
   # commented-out code - selected in pre-commit
   "ERA001",
-  # line too long
-  "E501",
   # Exception must not use a string literal
   "EM101",
   # Exception must not use an f-string literal
   "EM102",
-  # Logging statement uses `+`
-  "G003",
   # Logging statement uses f-string
   "G004",
   # implicitly concatenated strings - selected in pre-commit
   "ISC001",
-  # `inplace=True` should be avoided - what's this?
-  "PD002",
-  # pytest.raises(...)` is too broad
-  "PT011",
-  # Missing explicit `return` at the end of function able to return non-`None` value
-  "RET503",
-  # Mutable class attributes should be annotated with `typing.ClassVar` - msgspec sugar
-  "RUF012",
-  # github: Requests call without timeout
-  "S113",
   # Private member accessed
   "SLF001",
   # Relative imports from parent modules are banned
   "TID252",
-  # Create your own exception
-  "TRY002",
   # Avoid specifying long messages outside the exception class
   "TRY003",
 ]
-ignore-init-module-imports = true
 select = ["ALL"]
-show-fixes = true
-show-source = true
-target-version = "py310"
 task-tags = ["FIXME", "HACK", "TODO", "TOGO", "XXX"]
 
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 mypy-init-return = true
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 mark-parentheses = false
 fixture-parentheses = false
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # use of assert
 "tests/*" = ["S101"]
 # imported but unused
