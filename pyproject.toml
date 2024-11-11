@@ -48,8 +48,6 @@ test = [
 [tool.coverage.run]
 branch = true
 data_file = "tests/.coverage"
-# pytest-cov fails with pytest-xdist: https://github.com/pytest-dev/pytest-cov/issues/604
-# dynamic_context = "test_function"
 parallel = true
 source = ["."]
 omit = [".pyproject/*", ".site/sitecustomize.py", "tests/whitelist.py"]
