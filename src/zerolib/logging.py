@@ -14,7 +14,6 @@ from . import serialize
 from .dic import Dic
 
 if TYPE_CHECKING:
-    import datetime
     from typing import IO, TextIO
 
     from loguru import Logger
@@ -69,8 +68,6 @@ async def configure(
     # set individual logger levels
     for name, level in cfg.levels.items():
         logging.getLogger(name).setLevel(getattr(logging, level.upper()))
-    # reset start time (don't count import time)
-    set_start_time()
 
     # configure logger
     log.remove()
@@ -83,13 +80,6 @@ async def configure(
     logging.basicConfig(handlers=[_InterceptHandler()], level=0, force=True)
 
     return log
-
-
-start_time = _logger.start_time
-
-
-def set_start_time(time: datetime.datetime | None = None) -> None:
-    _logger.start_time = time or _logger.aware_now()
 
 
 def _showwarning(
