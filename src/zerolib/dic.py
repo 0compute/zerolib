@@ -87,16 +87,17 @@ class Dic(dict):
         if obj is None:
             obj = self
         match obj:
-            case dict():  # pragma: no branch - branch coverage broken
+            # XXX: coverage broken
+            case dict():  # pragma: no branch
                 return tuple(
                     (key, self._to_tuple(value)) for key, value in sorted(obj.items())
                 )
-            case list() | set() | tuple():
-                if isinstance(obj, set):  # pragma: no branch - branch coverage broken
+            case list() | set() | tuple():  # pragma: no branch
+                # assert isinstance(obj, set), f"obj is {type(obj)}"
+                if isinstance(obj, set):  # pragma: no branch - proof above
                     obj = sorted(obj)
                 return tuple(self._to_tuple(value) for value in obj)
-            case _:  # case statement for coverage - otherwise could return this outside
-                return (obj,)
+        return (obj,)
 
     def _to_tuple_str(self, obj: Self | SeqType | None = None) -> str:
         return str(self._to_tuple(obj))
@@ -148,11 +149,12 @@ class Dic(dict):
         if not clean:
             log.warning("empty export")
             return clean
-        # XXX: coverage branch broken
+        # XXX: coverage branch broken - loop always completes
         for key, value in clean.items():  # pragma: no branch
             match value:
                 case dict():
-                    if not isinstance(value, Dic):
+                    # FIXME: this should never happen
+                    if not isinstance(value, Dic):  # pragma: no cover - error case
                         raise TypeError(f"{key} = {value!r} - should be Dic")
                     value = value.export(stringify=stringify)
                 case list() | set() | tuple():

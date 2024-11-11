@@ -57,11 +57,8 @@ relative_files = true
 exclude_lines = [
   "if TYPE_CHECKING:",
   "raise NotImplementedError",
-  "raise RuntimeError",
-  "raise TypeError",
   "pragma: no cover",
   "@overload",
-  "pass",
 ]
 fail_under = 100
 

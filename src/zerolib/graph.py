@@ -80,7 +80,7 @@ class Graph(wrapt.ObjectProxy):
 
     def add_node(self, node: Hashable) -> int:
         index = self._self_node_index_map.get(node)
-        # XXX: coverage branch broken: index is not None in
+        # XXX: coverage branch broken: index is 0 in
         # ../../tests/unit/test_graph.py::test_add_node "show idempotent"
         if index is None:  # pragma: no branch
             index = self.__wrapped__.add_node(node)
@@ -187,7 +187,9 @@ class Graph(wrapt.ObjectProxy):
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
-        if filter is not None:  # pragma: no branch - XXX: coverage branch broken
+        # XXX: coverage branch broken: filter is None in
+        # ../../tests/unit/test_graph.py::test_descendants
+        if filter is not None:  # pragma: no branch
             nodes = self._filter_nodes(nodes, filter)
         return nodes
 

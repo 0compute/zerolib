@@ -59,7 +59,7 @@ def trepr(
                 end = ")"
             case "<":
                 end = ">"
-            case "'":  # pragma: no branch
+            case "'":  # pragma: no branch - no default case
                 end = "'"
         repr_str = f"{repr_str[:max_length]}…{end}"
     return repr_str

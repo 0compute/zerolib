@@ -106,7 +106,8 @@ def _dump(
 ) -> bytes | str | None:
     if (asdict := getattr(obj, "asdict", None)) is not None:
         obj = asdict()
-    #  XXX: coverage broken - not Dic in ../../tests/unit/test_serialize.py::test_dump_load
+    #  XXX: coverage broken - not Dic in
+    #  ../../tests/unit/test_serialize.py::test_dump_load
     if isinstance(obj, Dic):  # pragma: no branch
         obj = obj.export(stringify=stringify)
     return dumper(obj, *args, **kwargs)

@@ -157,7 +157,7 @@ class Struct(
             return f"<unprintable {name}>"
 
     def __str__(self) -> str:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     async def _set_runtime_state(self) -> None:
         """Set runtime state after msgspec decoding"""
@@ -180,7 +180,7 @@ class Struct(
                 attrs[key] = value
         self = cls(*args, **attrs)
         # set runtime members
-        # XXX: coverage branch broken
+        # XXX: coverage branch broken - loop does complete
         for key, value in kwargs.items():  # pragma: no branch
             setattr(self, f"_{key}", value)
         return self
@@ -204,7 +204,9 @@ class Struct(
         # ../../tests/unit/type/test_struct.py::test_store_path_nocache
         if cls.ctx.cache:  # pragma: no branch
             if path is None:
-                if key is None:
+                # XXX: coverage branch broken: key is None in
+                # ../../tests/unit/type/test_struct.py::test_get_exc
+                if key is None:  # pragma: no branch
                     raise TypeError("either key or path must be provided")
                 path = cls._path(key)
             try:
