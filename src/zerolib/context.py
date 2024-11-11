@@ -35,7 +35,7 @@ class Context:
     """Cache directory"""
 
     def __repr__(self) -> str:
-        return f"<{type(self).__name__} {self.graph}>"
+        return f"<{type(self).__name__}>"
 
     @contextlib.contextmanager
     def __call__(self, **kwargs: Any) -> Generator[Self, None, None]:
@@ -48,3 +48,9 @@ class Context:
         finally:
             for func in reset:
                 func()
+
+    @classmethod
+    def factory(cls, name: str = const.NAME) -> Context:
+        self = cls()
+        self.cachedir = anyio.Path(appdirs.user_cache_dir(name))
+        return self

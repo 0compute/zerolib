@@ -4,7 +4,7 @@ from zerolib import Context
 
 
 def test_repr() -> None:
-    assert repr(Context()) == "<Context nodes=0 edges=0>"
+    assert repr(Context()) == "<Context>"
 
 
 def test_contextmanager() -> None:

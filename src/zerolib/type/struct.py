@@ -126,7 +126,7 @@ class Struct(
     # faster, but less debugability: array_like=True,
     dict=True,
 ):
-    ctx: ClassVar[Context] = Context()
+    ctx: ClassVar[Context] = Context.factory()
 
     _encoder: ClassVar[Encoder] = Encoder()
     _decoder: ClassVar[Decoder] = Decoder()
