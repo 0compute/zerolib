@@ -343,14 +343,14 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "coverage";
-        version = "7.5.4";
+        version = "7.6.4";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "a44963520b069e12789d0faea4e9fdb1e410cdc4aab89d94f7f55cbb7fef0353";
+            sha256 = "sha256-KfwPF7HT/qMy+AAdRVj4IUr38dh6NF86EzyQHWA0fHM=";
           };
         nativeBuildInputs = [setuptools];
         doCheck = false;
@@ -1357,13 +1357,13 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pluggy";
-        version = "1.0.0";
+        version = "1.5.0";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159";
+            sha256 = "sha256-LP+ojpT9yXjExXTxX55Zt/QgHUORlcNxXKniSG8dDPE=";
           };
         nativeBuildInputs = [setuptools-scm];
         doCheck = false;
@@ -1604,17 +1604,18 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest";
-        version = "7.4.3";
+        version = "8.3.3";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-2YnRNpgt5OOynavMg4rVgcZOjtUsEfvobd69naCBjNU=";
+            sha256 = "sha256-cLmBB71kgwinlSsG5sqaULxmC+IY1TwlfMH8lP2hAYE=";
           };
         nativeBuildInputs = [setuptools-scm];
         propagatedBuildInputs = [iniconfig packaging pluggy];
+
         doCheck = false;
         meta = {
           description = "pytest: simple powerful testing with Python";
@@ -1627,15 +1628,15 @@ in
     pytest-asyncio =
       python.pkgs.buildPythonPackage rec
       {
-        pname = "pytest-asyncio";
-        version = "0.21.1";
+        pname = "pytest_asyncio";
+        version = "0.24.0";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-QKfq5t3tIse2BJhoVepIQAqxWwaa44EW6MASOOnutk0=";
+            sha256 = "sha256-0IHYKOV22F+HU5kZQoHpK/imjWDXLRovry/t22xGsnY=";
           };
         nativeBuildInputs = [setuptools-scm];
         propagatedBuildInputs = [pytest];
@@ -1653,13 +1654,13 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest-cov";
-        version = "5.0.0";
+        version = "6.0.0";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "5837b58e9f6ebd335b0f8060eecce69b662415b16dc503883a02f45dfeb14857";
+            sha256 = "sha256-/eC1lcoki7ji128CC0ZfOxB8ljLmodFwXxeDTIncrcA=";
           };
         propagatedBuildInputs = [coverage pytest];
         doCheck = false;
@@ -1697,13 +1698,13 @@ in
       python.pkgs.buildPythonPackage rec
       {
         pname = "pytest-sugar";
-        version = "0.9.7";
+        version = "1.0.0";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "f1e74c1abfa55f7241cf7088032b6e378566f16b938f3f08905e2cf4494edd46";
+            sha256 = "sha256-ZCLoMlj1sMBM58YyF2x3Msq1/bkJyznMpckTn4EnbAo=";
           };
         propagatedBuildInputs = [pytest termcolor];
         doCheck = false;

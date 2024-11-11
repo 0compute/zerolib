@@ -104,7 +104,6 @@ live_mode = false
 report_progress = true
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
 addopts = """
   --showlocals
   --no-cov-on-fail
@@ -112,6 +111,8 @@ addopts = """
   --random-order
   --random-order-bucket=global
 """
+asyncio_default_fixture_loop_scope = "function"
+asyncio_mode = "auto"
 cache_dir = "tests/.cache"
 junit_logging = "all"
 junit_log_passing_tests = true
