@@ -123,7 +123,7 @@ class Struct(
     omit_defaults=True,
     forbid_unknown_fields=True,
     tag=True,
-    # faster, but less debugability: array_like=True,
+    # TODO: maybe faster, but less debugability: array_like=True,
     dict=True,
 ):
     ctx: ClassVar[Context] = Context.factory()

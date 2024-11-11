@@ -85,7 +85,7 @@ class Node(Struct):
     def has_node(self) -> bool:
         return self.ctx.graph.has_node(self)
 
-    # TOGO: needed?
+    # TOGO: wanted?
     @property
     def is_unlinked(self) -> bool:
         return not self.children and not self.parents
