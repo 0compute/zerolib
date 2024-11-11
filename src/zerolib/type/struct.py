@@ -123,6 +123,8 @@ class Decoder:
         cls = get_origin(cls) or cls
         if cls in EXT_TYPES:
             return obj
+        if issubclass(cls, dict):
+            return Dic(obj) if issubclass(cls, Dic) else cls(obj)
         raise NotImplementedError(f"dec_hook: {cls!r}")
 
 
