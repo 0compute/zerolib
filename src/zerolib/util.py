@@ -116,18 +116,15 @@ def trace(
     return wrapper
 
 
-TMPDIR_PREFIX = f"{const.NAME}-"
-
-
 def tmpdir(
     **kwargs: Any,
 ) -> aiofiles.tempfile.AiofilesContextManagerTempDir:
-    kwargs["prefix"] = TMPDIR_PREFIX
+    kwargs["prefix"] = f"{const.NAME}-"
     return aiofiles.tempfile.TemporaryDirectory(**kwargs)
 
 
 def is_tmpdir(path: str) -> bool:
-    return path.startswith(f"{tempfile.gettempdir()}{os.sep}{TMPDIR_PREFIX}")
+    return path.startswith(f"{tempfile.gettempdir()}{os.sep}{const.NAME}-")
 
 
 @contextlib.contextmanager
