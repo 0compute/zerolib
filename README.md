@@ -1,5 +1,5 @@
 # Zero Lib
 
-A Zero Library for Python.
+A Python library.
 
 Nothing to see here.
