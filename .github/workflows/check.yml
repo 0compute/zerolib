@@ -35,7 +35,7 @@ jobs:
           COV_REPORT: html xml
       - uses: actions/upload-artifact@v4
         with:
-          name: tests/coverage-html-${{ matrix.test }}
+          name: coverage-html-${{ matrix.test }}
           path: tests/coverage-html-${{ matrix.test }}
       - uses: actions/upload-artifact@v4
         if: ${{ success() || (failure() && steps.test.conclusion == 'failure') }}
