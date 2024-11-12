@@ -93,8 +93,7 @@ class Dic(dict):
                     (key, self._to_tuple(value)) for key, value in sorted(obj.items())
                 )
             case list() | set() | tuple():  # pragma: no branch
-                # assert isinstance(obj, set), f"obj is {type(obj)}"
-                if isinstance(obj, set):  # pragma: no branch - proof above
+                if isinstance(obj, set):  # pragma: no branch
                     obj = sorted(obj)
                 return tuple(self._to_tuple(value) for value in obj)
         return (obj,)

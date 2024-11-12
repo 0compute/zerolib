@@ -34,6 +34,5 @@ async def test_stdin() -> None:
 async def test_buffers(capfd: pytest.CaptureFixture) -> None:
     await command.run("echo a && echo >&2 b", stdout=sys.stdout, stderr=sys.stderr)
     captured = capfd.readouterr()
-    # FIXME: why?
-    # assert captured.out == "a\n"
+    # FIXME: why? assert captured.out == "a\n"
     assert captured.err == "b\n"
