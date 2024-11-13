@@ -44,8 +44,8 @@ SERIALIZE = Dic(
     ),
     json=Dic(
         dump=dict(
-            file=functools.partial(json.dump, **_JSON_DEFAULTS),
-            str=functools.partial(json.dumps, **_JSON_DEFAULTS),
+            file=functools.partial(json.dump, **_JSON_DEFAULTS),  # type: ignore[arg-type]
+            str=functools.partial(json.dumps, **_JSON_DEFAULTS),  # type: ignore[arg-type]
         ),
         load=dict(
             file=json.load,
@@ -77,7 +77,7 @@ def dump(
 ) -> None:
     if fmt == "msgpack" and hasattr(file, "buffer"):
         # msgpack writes bytes so needs a buffer
-        file = file.buffer
+        file = file.buffer  # type: ignore[assignment]
     _dump(obj, SERIALIZE[fmt].dump.file, file, **kwargs)
 
 

@@ -165,12 +165,12 @@ class Dic(dict):
                         else sorted(value, key=self._to_tuple_str)
                         if isinstance(v, set)
                         else v
-                        if isinstance(v, PrimitiveType) or not stringify  # type: ignore[arg-type,misc]
+                        if isinstance(v, PrimitiveType) or not stringify
                         else str(v)
                         for v in value
                     ]
                 case _:
-                    if stringify and not isinstance(value, PrimitiveType):  # type: ignore[arg-type,misc]
+                    if stringify and not isinstance(value, PrimitiveType):
                         value = str(value)
             clean[key] = value
         return clean
