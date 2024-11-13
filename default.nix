@@ -1132,12 +1132,12 @@ in
 
     mypy = python.pkgs.buildPythonPackage rec {
       pname = "mypy";
-      version = "1.7.0";
+      version = "1.13.0";
       format = "pyproject";
       src = python.pkgs.fetchPypi {
         inherit pname;
         inherit version;
-        sha256 = "sha256-HigLVpcgLvppg3LS856aZxOgOVp1axxr1ImV+NcmkNw=";
+        sha256 = "sha256-ApGmG2+/PmZz40Bc/MDnZQvrx5OWWf3KJwKVgDi9g14=";
       };
       nativeBuildInputs = [
         setuptools
@@ -1494,28 +1494,24 @@ in
         pythonImportsCheck = ["prompt_toolkit"];
       };
 
-    psutil =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "psutil";
-        version = "5.9.5";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "5410638e4df39c54d957fc51ce03048acd8e6d60abc0f5107af51e5fb566eb3c";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Cross-platform lib for process and system monitoring in Python.";
-          homepage = "https://github.com/giampaolo/psutil";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["psutil"];
+    psutil = python.pkgs.buildPythonPackage rec {
+      pname = "psutil";
+      version = "5.9.6";
+      format = "pyproject";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "sha256-5Lkt3NfdTN0/kAGA6h4QSTLHvOI0+4iXbio7KWRBIlo=";
       };
+      nativeBuildInputs = [setuptools];
+      doCheck = false;
+      meta = {
+        description = "Cross-platform lib for process and system monitoring in Python.";
+        homepage = "https://github.com/giampaolo/psutil";
+        license = pkgs.lib.licenses.bsdOriginal;
+      };
+      pythonImportsCheck = ["psutil"];
+    };
 
     ptpython =
       python.pkgs.buildPythonPackage rec
@@ -2651,6 +2647,7 @@ in
       nativeBuildInputs = [
         beartype
         flit-core
+        mypy
         pdbpp
         pip # because we're using a custom shellHook
         ptpython
