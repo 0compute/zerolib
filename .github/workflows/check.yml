@@ -18,7 +18,6 @@ jobs:
       - run: make lint
         env:
           RUFF_FORMAT: github
-          SKIP: mypy
       - run: git diff
         if: failure()
   test:
