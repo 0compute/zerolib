@@ -34,6 +34,11 @@ dev = [
   # debug
   "pdbpp",
   "ptpython",
+  # lint
+  "mypy[dmypy]",
+  "vulture",
+  "yamlfix",
+  "yamllint",
   # TODO: include lsp etc. as project dev depends i.e. not from global env
 ]
 test = [

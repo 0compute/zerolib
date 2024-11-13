@@ -986,6 +986,30 @@ in
         pythonImportsCheck = ["lsprotocol"];
       };
 
+    maison = python.pkgs.buildPythonPackage rec {
+      pname = "maison";
+      version = "1.4.0";
+      format = "pyproject";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "9843758d7772e0fc3ca93cf3abfdd39656f41bc75f026fd8bfb5a0ac17f27a7e";
+      };
+      nativeBuildInputs = [poetry-core];
+      propagatedBuildInputs = [
+        click
+        pydantic
+        toml
+      ];
+      doCheck = false;
+      meta = {
+        description = "Maison";
+        homepage = "https://github.com/dbatten5/maison";
+        license = pkgs.lib.licenses.mit;
+      };
+      pythonImportsCheck = ["maison"];
+    };
+
     matplotlib =
       python.pkgs.buildPythonPackage rec
       {
@@ -1105,6 +1129,56 @@ in
         };
         pythonImportsCheck = ["msgspec"];
       };
+
+    mypy = python.pkgs.buildPythonPackage rec {
+      pname = "mypy";
+      version = "1.7.0";
+      format = "pyproject";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "sha256-HigLVpcgLvppg3LS856aZxOgOVp1axxr1ImV+NcmkNw=";
+      };
+      nativeBuildInputs = [
+        setuptools
+        types-psutil
+        types-setuptools
+        types-typed-ast
+      ];
+      propagatedBuildInputs = [
+        mypy-extensions
+        psutil
+        typing-extensions
+      ];
+      doCheck = false;
+      meta = {
+        description = "Optional static typing for Python";
+        homepage = "https://www.mypy-lang.org/";
+        license = pkgs.lib.licenses.mit;
+      };
+      pythonImportsCheck = [
+        "mypy"
+        "mypyc"
+      ];
+      MYPY_USE_MYPYC = "1";
+    };
+
+    mypy-extensions = python.pkgs.buildPythonPackage rec {
+      pname = "mypy_extensions";
+      version = "1.0.0";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782";
+      };
+      doCheck = false;
+      meta = {
+        description = "Type system extensions for programs checked with the mypy type checker.";
+        homepage = "https://github.com/python/mypy_extensions";
+        license = pkgs.lib.licenses.mit;
+      };
+      pythonImportsCheck = ["mypy_extensions"];
+    };
 
     numpy =
       python.pkgs.buildPythonPackage rec
@@ -1508,6 +1582,24 @@ in
         };
         pythonImportsCheck = ["pycparser"];
       };
+
+    pydantic = python.pkgs.buildPythonPackage rec {
+      pname = "pydantic";
+      version = "1.10.7";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "cfc83c0678b6ba51b0532bea66860617c4cd4251ecf76e9846fa5a9f3454e97e";
+      };
+      propagatedBuildInputs = [typing-extensions];
+      doCheck = false;
+      meta = {
+        description = "Data validation and settings management using python type hints";
+        homepage = "https://github.com/pydantic/pydantic";
+        license = pkgs.lib.licenses.mit;
+      };
+      pythonImportsCheck = ["pydantic"];
+    };
 
     pygments =
       python.pkgs.buildPythonPackage rec
@@ -2494,6 +2586,52 @@ in
         };
         pythonImportsCheck = ["wrapt"];
       };
+
+    yamlfix = python.pkgs.buildPythonPackage rec {
+      pname = "yamlfix";
+      version = "1.15.0";
+      format = "pyproject";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "sha256-aqUOrDswjvjTH14NDDaqXFvUbeTY+UOubLYt9g6OfnI=";
+      };
+      nativeBuildInputs = [pdm-pep517];
+      propagatedBuildInputs = [
+        maison
+        ruyaml
+      ];
+      doCheck = false;
+      meta = {
+        description = "A simple opinionated yaml formatter that keeps your comments!";
+        homepage = "https://github.com/lyz-code/yamlfix";
+        license = pkgs.lib.licenses.gpl3Only;
+      };
+      pythonImportsCheck = ["yamlfix"];
+    };
+
+    yamllint = python.pkgs.buildPythonPackage rec {
+      pname = "yamllint";
+      version = "1.31.0";
+      format = "pyproject";
+      src = python.pkgs.fetchPypi {
+        inherit pname;
+        inherit version;
+        sha256 = "2d83f1d12f733e162a87e06b176149d7bb9c5bae4a9e5fce1c771d7f703f7a65";
+      };
+      nativeBuildInputs = [setuptools];
+      propagatedBuildInputs = [
+        pathspec
+        pyyaml
+      ];
+      doCheck = false;
+      meta = {
+        description = "A linter for YAML files.";
+        homepage = "https://github.com/adrienverge/yamllint";
+        license = pkgs.lib.licenses.gpl1Only;
+      };
+      pythonImportsCheck = ["yamllint"];
+    };
   }; (
     python.pkgs.buildPythonPackage rec
     {
@@ -2527,6 +2665,9 @@ in
         types-pyyaml
         types-toml
         types-tqdm
+        vulture
+        yamlfix
+        yamllint
       ];
       propagatedNativeBuildInputs = [
         pkgs.graphviz
