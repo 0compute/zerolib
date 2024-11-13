@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+# required by dorny/test-reporter
+permissions:
+  checks: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest
