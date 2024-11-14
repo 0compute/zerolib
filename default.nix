@@ -93,29 +93,6 @@
         pythonImportsCheck = ["atools"];
       };
 
-    attrs =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "attrs";
-        version = "23.1.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6279836d581513a26f1bf235f9acd333bc9115683f14f7e8fae46c98fc50e015";
-          };
-        nativeBuildInputs = [hatch-fancy-pypi-readme hatch-vcs];
-        doCheck = false;
-        meta = {
-          description = "Classes Without Boilerplate";
-          homepage = "https://github.com/python-attrs/attrs";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["attr" "attrs"];
-      };
-
     beartype =
       python.pkgs.buildPythonPackage rec
       {
@@ -157,30 +134,6 @@
         pythonImportsCheck = ["calver"];
       };
 
-    cattrs =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "cattrs";
-        version = "22.2.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "f0eed5642399423cf656e7b66ce92cdc5b963ecafd041d1b24d136fdde7acf6d";
-          };
-        nativeBuildInputs = [poetry-core];
-        propagatedBuildInputs = [attrs];
-        doCheck = false;
-        meta = {
-          description = "Composable complex class support for attrs and dataclasses.";
-          homepage = "https://github.com/python-attrs/cattrs";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["cattr" "cattrs"];
-      };
-
     certifi =
       python.pkgs.buildPythonPackage rec
       {
@@ -200,94 +153,6 @@
           license = pkgs.lib.licenses.mpl20;
         };
         pythonImportsCheck = ["certifi"];
-      };
-
-    cffi =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "cffi";
-        version = "1.15.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "d400bfb9a37b1351253cb402671cea7e89bdecc294e8016a707f6d1d8ac934f9";
-          };
-        buildInputs = [pkgs.libffi];
-        propagatedBuildInputs = [pycparser];
-        doCheck = false;
-        meta = {
-          description = "Foreign Function Interface for Python calling C code.";
-          homepage = "http://cffi.readthedocs.org";
-          license = pkgs.lib.licenses.mit;
-        };
-        inherit (python.pkgs.cffi) postPatch;
-        pythonImportsCheck = ["cffi"];
-        inherit (python.pkgs.cffi) NIX_CFLAGS_COMPILE;
-      };
-
-    cfgv =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "cfgv";
-        version = "3.3.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "f5a830efb9ce7a445376bb66ec94c638a9787422f96264c98edc6bdeed8ab736";
-          };
-        doCheck = false;
-        meta = {
-          description = "Validate configuration and produce human readable error messages.";
-          homepage = "https://github.com/asottile/cfgv";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["cfgv"];
-      };
-
-    charset-normalizer =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "charset-normalizer";
-        version = "3.1.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "34e0a2f9c370eb95597aae63bf85eb5e96826d81e3dcf88b8886012906f509b5";
-          };
-        doCheck = false;
-        meta = {
-          description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet.";
-          homepage = "https://github.com/Ousret/charset_normalizer";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["charset_normalizer"];
-      };
-
-    click =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "click";
-        version = "8.1.3";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e";
-          };
-        doCheck = false;
-        meta = {
-          description = "Composable command line interface toolkit";
-          homepage = "https://palletsprojects.com/p/click/";
-          license = pkgs.lib.licenses.bsd3;
-        };
-        pythonImportsCheck = ["click"];
       };
 
     contextvars-extras =
@@ -383,47 +248,6 @@
         pythonImportsCheck = ["cppy"];
       };
 
-    cryptography =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "cryptography";
-        version = "40.0.2";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "c33c0d32b8594fa647d2e01dbccc303478e16fdd7cf98652d5b3ed11aa5e5c99";
-          };
-        nativeBuildInputs = [
-          pkgs.pkg-config
-          pkgs.rustPlatform.cargoSetupHook
-          pkgs.cargo
-          pkgs.rustc
-          setuptools-rust
-        ];
-        buildInputs = [pkgs.openssl];
-        propagatedBuildInputs = [cffi];
-        cargoDeps =
-          pkgs.rustPlatform.importCargoLock
-          {
-            lockFile =
-              pkgs.runCommand
-              "${pname}-${version}-cargo-lock"
-              {inherit src;}
-              "tar -zxOf $src ${pname}-${version}/src/rust/Cargo.lock > $out";
-          };
-        cargoRoot = "src/rust";
-        doCheck = false;
-        meta = {
-          description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers.";
-          homepage = "https://github.com/pyca/cryptography";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["cryptography"];
-      };
-
     cycler =
       python.pkgs.buildPythonPackage rec
       {
@@ -512,29 +336,6 @@
         pythonImportsCheck = ["deepmerge"];
       };
 
-    distro =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "distro";
-        version = "1.8.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "02e111d1dc6a50abb8eed6bf31c3e48ed8b0830d1ea2a1b78c61765c2513fdd8";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        meta = {
-          description = "Distro - an OS platform information API";
-          homepage = "https://github.com/python-distro/distro";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["distro"];
-      };
-
     editables =
       python.pkgs.buildPythonPackage rec
       {
@@ -579,29 +380,6 @@
           license = pkgs.lib.licenses.bsdOriginal;
         };
         pythonImportsCheck = ["fancycompleter"];
-      };
-
-    filelock =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "filelock";
-        version = "3.12.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "fc03ae43288c013d2ea83c8597001b1129db351aad9c57fe2409327916b8e718";
-          };
-        nativeBuildInputs = [hatch-vcs];
-        doCheck = false;
-        meta = {
-          description = "A platform independent file lock.";
-          homepage = "https://github.com/tox-dev/py-filelock";
-          license = pkgs.lib.licenses.unlicense;
-        };
-        pythonImportsCheck = ["filelock"];
       };
 
     flit-core =
@@ -669,96 +447,6 @@
         pythonImportsCheck = ["frozendict"];
       };
 
-    h11 =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "h11";
-        version = "0.14.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d";
-          };
-        doCheck = false;
-        meta = {
-          description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1";
-          homepage = "https://github.com/python-hyper/h11";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["h11"];
-      };
-
-    hatch-fancy-pypi-readme =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "hatch_fancy_pypi_readme";
-        version = "22.8.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "da91282ca09601c18aded8e378daf8b578c70214866f0971156ee9bb9ce6c26a";
-          };
-        propagatedBuildInputs = [hatchling];
-        doCheck = false;
-        meta = {
-          description = "Fancy PyPI READMEs with Hatch";
-          homepage = "https://github.com/hynek/hatch-fancy-pypi-readme";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["hatch_fancy_pypi_readme"];
-      };
-
-    hatch-nodejs-version =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "hatch_nodejs_version";
-        version = "0.3.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0e55fd713d92c5c1ccfee778efecaa780fd8bcd276d4ca7aff9f6791f6f76d9c";
-          };
-        propagatedBuildInputs = [hatchling];
-        doCheck = false;
-        meta = {
-          description = "Hatch plugin for versioning from a package.json file";
-          homepage = "https://github.com/agoose77/hatch-nodejs-version";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["hatch_nodejs_version"];
-      };
-
-    hatch-requirements-txt =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "hatch_requirements_txt";
-        version = "0.4.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "800509946e85d9e56d73242fab223ec36db50372e870a04e2dd1fd9bad98455d";
-          };
-        propagatedBuildInputs = [hatchling];
-        doCheck = false;
-        meta = {
-          description = "Hatchling plugin to read project dependencies from requirements.txt";
-          homepage = "https://github.com/repo-helper/hatch-requirements-txt";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["hatch_requirements_txt"];
-      };
-
     hatch-vcs =
       python.pkgs.buildPythonPackage rec
       {
@@ -803,52 +491,6 @@
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["hatchling"];
-      };
-
-    httpcore =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "httpcore";
-        version = "0.17.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "cc045a3241afbf60ce056202301b4d8b6af08845e3294055eb26b09913ef903c";
-          };
-        propagatedBuildInputs = [anyio certifi h11];
-        doCheck = false;
-        meta = {
-          description = "A minimal low-level HTTP client.";
-          homepage = "https://github.com/encode/httpcore";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["httpcore"];
-      };
-
-    httpx =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "httpx";
-        version = "0.24.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "507d676fc3e26110d41df7d35ebd8b3b8585052450f4097401c9be59d928c63e";
-          };
-        nativeBuildInputs = [hatch-fancy-pypi-readme];
-        propagatedBuildInputs = [httpcore];
-        doCheck = false;
-        meta = {
-          description = "The next generation HTTP client.";
-          homepage = "https://github.com/encode/httpx";
-          license = pkgs.lib.licenses.bsd3;
-        };
-        pythonImportsCheck = ["httpx"];
       };
 
     idna =
@@ -961,54 +603,6 @@
         pythonImportsCheck = ["loguru"];
       };
 
-    lsprotocol =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "lsprotocol";
-        version = "2023.0.0a1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "32edfd4856abba1349bf5a070567445b3d7286951afba3644b472629796f82d0";
-          };
-        nativeBuildInputs = [flit-core];
-        propagatedBuildInputs = [cattrs];
-        doCheck = false;
-        meta = {
-          description = "Python implementation of the Language Server Protocol.";
-          homepage = "https://github.com/microsoft/lsprotocol";
-          license = pkgs.lib.licenses.gpl1Only;
-        };
-        pythonImportsCheck = ["lsprotocol"];
-      };
-
-    maison = python.pkgs.buildPythonPackage rec {
-      pname = "maison";
-      version = "1.4.0";
-      format = "pyproject";
-      src = python.pkgs.fetchPypi {
-        inherit pname;
-        inherit version;
-        sha256 = "9843758d7772e0fc3ca93cf3abfdd39656f41bc75f026fd8bfb5a0ac17f27a7e";
-      };
-      nativeBuildInputs = [poetry-core];
-      propagatedBuildInputs = [
-        click
-        pydantic
-        toml
-      ];
-      doCheck = false;
-      meta = {
-        description = "Maison";
-        homepage = "https://github.com/dbatten5/maison";
-        license = pkgs.lib.licenses.mit;
-      };
-      pythonImportsCheck = ["maison"];
-    };
-
     matplotlib =
       python.pkgs.buildPythonPackage rec
       {
@@ -1045,43 +639,6 @@
         inherit (python.pkgs.matplotlib) postPatch;
         pythonImportsCheck = ["matplotlib" "mpl_toolkits"];
         inherit (python.pkgs.matplotlib) MPLSETUPCFG;
-      };
-
-    maturin =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "maturin";
-        version = "0.15.1";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "247bec13d82021972e5cb4eb38e7a7aea0e7a034beab60f0e0464ffe7423f24b";
-          };
-        nativeBuildInputs = [
-          pkgs.rustPlatform.cargoSetupHook
-          pkgs.cargo
-          pkgs.rustc
-          setuptools-rust
-        ];
-        cargoDeps =
-          pkgs.rustPlatform.importCargoLock
-          {
-            lockFile =
-              pkgs.runCommand
-              "${pname}-${version}-cargo-lock"
-              {inherit src;}
-              "tar -zxOf $src ${pname}-${version}/Cargo.lock > $out";
-          };
-        doCheck = false;
-        meta = {
-          description = "Build and publish crates with pyo3, rust-cpython and cffi bindings as well as rust binaries as python packages";
-          homepage = "https://github.com/pyo3/maturin";
-          license = "MIT OR Apache-2.0";
-        };
-        pythonImportsCheck = ["maturin"];
       };
 
     msgpack =
@@ -1557,45 +1114,6 @@
         pythonImportsCheck = ["pybind11"];
       };
 
-    pycparser =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pycparser";
-        version = "2.21";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206";
-          };
-        doCheck = false;
-        meta = {
-          description = "C parser in Python";
-          homepage = "https://github.com/eliben/pycparser";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["pycparser"];
-      };
-
-    pydantic = python.pkgs.buildPythonPackage rec {
-      pname = "pydantic";
-      version = "1.10.7";
-      src = python.pkgs.fetchPypi {
-        inherit pname;
-        inherit version;
-        sha256 = "cfc83c0678b6ba51b0532bea66860617c4cd4251ecf76e9846fa5a9f3454e97e";
-      };
-      propagatedBuildInputs = [typing-extensions];
-      doCheck = false;
-      meta = {
-        description = "Data validation and settings management using python type hints";
-        homepage = "https://github.com/pydantic/pydantic";
-        license = pkgs.lib.licenses.mit;
-      };
-      pythonImportsCheck = ["pydantic"];
-    };
-
     pygments =
       python.pkgs.buildPythonPackage rec
       {
@@ -1661,30 +1179,6 @@
           license = "MIT X11 style";
         };
         pythonImportsCheck = ["pyrepl"];
-      };
-
-    pyrsistent =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pyrsistent";
-        version = "0.19.3";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "1a2994773706bbb4995c31a97bc94f1418314923bd1048c6d964837040376440";
-          };
-        nativeBuildInputs = [setuptools];
-        patchPhase = "sed -i 's/<7//g' setup.py";
-        doCheck = false;
-        meta = {
-          description = "Persistent/Functional/Immutable data structures";
-          homepage = "https://github.com/tobgu/pyrsistent/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["pyrsistent"];
       };
 
     pytest =
@@ -1851,30 +1345,6 @@
         pythonImportsCheck = ["yaml"];
       };
 
-    pyzmq =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "pyzmq";
-        version = "25.0.2";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6b8c1bbb70e868dc88801aa532cae6bd4e3b5233784692b786f17ad2962e5149";
-          };
-        nativeBuildInputs = [packaging setuptools];
-        buildInputs = [pkgs.zeromq];
-        doCheck = false;
-        meta = {
-          description = "Python bindings for 0MQ";
-          homepage = "https://pyzmq.readthedocs.org";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-        pythonImportsCheck = ["zmq"];
-      };
-
     rustworkx =
       python.pkgs.buildPythonPackage rec
       {
@@ -1911,30 +1381,6 @@
           license = pkgs.lib.licenses.asl20;
         };
         pythonImportsCheck = ["rustworkx"];
-      };
-
-    ruyaml =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "ruyaml";
-        version = "0.91.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6ce9de9f4d082d696d3bde264664d1bcdca8f5a9dff9d1a1f1a127969ab871ab";
-          };
-        nativeBuildInputs = [pip setuptools-scm setuptools-scm-git-archive];
-        propagatedBuildInputs = [distro setuptools];
-        doCheck = false;
-        meta = {
-          description = "ruyaml is a fork of ruamel.yaml";
-          homepage = "https://github.com/pycontribs/ruyaml";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["ruyaml"];
       };
 
     semantic-version =
@@ -2050,28 +1496,6 @@
         pythonImportsCheck = ["setuptools_scm"];
       };
 
-    setuptools-scm-git-archive =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "setuptools_scm_git_archive";
-        version = "1.4";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "b048b27b32e1e76ec865b0caa4bb85df6ddbf4697d6909f567ac36709f6ef2f0";
-          };
-        nativeBuildInputs = [setuptools-scm];
-        doCheck = false;
-        meta = {
-          description = "setuptools_scm plugin for git archives";
-          homepage = "https://github.com/Changaco/setuptools_scm_git_archive/";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["setuptools_scm_git_archive"];
-      };
-
     six =
       python.pkgs.buildPythonPackage rec
       {
@@ -2136,59 +1560,6 @@
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["termcolor"];
-      };
-
-    toml =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "toml";
-        version = "0.10.2";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f";
-          };
-        doCheck = false;
-        meta = {
-          description = "Python Library for Tom's Obvious, Minimal Language";
-          homepage = "https://github.com/uiri/toml";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["toml"];
-      };
-
-    tqdm =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "tqdm";
-        version = "4.65.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "1871fb68a86b8fb3b59ca4cdd3dcccbc7e6d613eeed31f4c332531977b89beb5";
-          };
-        nativeBuildInputs = [setuptools-scm];
-        doCheck = false;
-        meta = {
-          description = "Fast, Extensible Progress Meter";
-          homepage = "https://tqdm.github.io";
-          license = pkgs.lib.licenses.mit;
-        };
-        patches = [
-          (
-            pkgs.fetchpatch
-            {
-              sha256 = "sha256-XZDI0+Ui8DnbStHkrpQPEhImRXrdFJ8mugRXQKB1YOw=";
-              url = "https://github.com/tqdm/tqdm/pull/1333.patch";
-            }
-          )
-        ];
-        pythonImportsCheck = ["tqdm"];
       };
 
     trove-classifiers =
@@ -2343,48 +1714,6 @@
         pythonImportsCheck = ["pkg_resources-stubs" "setuptools-stubs"];
       };
 
-    types-toml =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-toml";
-        version = "0.10.8.6";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "6d3ac79e36c9ee593c5d4fb33a50cca0e3adceb6ef5cff8b8e5aef67b4c4aaf2";
-          };
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for toml";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["toml-stubs"];
-      };
-
-    types-tqdm =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "types-tqdm";
-        version = "4.65.0.1";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "972dd871b6b2b8ff32f1f0f6fdfdf5a4ba2b0b848453689391bec8bd858fb1c4";
-          };
-        doCheck = false;
-        meta = {
-          description = "Typing stubs for tqdm";
-          homepage = "https://github.com/python/typeshed";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["tqdm-stubs"];
-      };
-
     types-typed-ast =
       python.pkgs.buildPythonPackage rec
       {
@@ -2429,71 +1758,6 @@
         pythonImportsCheck = ["typing_extensions"];
       };
 
-    ujson =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "ujson";
-        version = "5.7.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "e788e5d5dcae8f6118ac9b45d0b891a0d55f7ac480eddcb7f07263f2bcf37b23";
-          };
-        nativeBuildInputs = [setuptools-scm];
-        doCheck = false;
-        meta = {
-          description = "Ultra fast JSON encoder and decoder for Python";
-          homepage = "https://github.com/ultrajson/ultrajson";
-          license = pkgs.lib.licenses.bsdOriginal;
-        };
-      };
-
-    uvloop =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "uvloop";
-        version = "0.17.0";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "0ddf6baf9cf11a1a22c71487f39f15b2cf78eb5bde7e5b45fbb99e8a9d91b9e1";
-          };
-        patchPhase = "sed -i 's/~=/>=/g' setup.py";
-        doCheck = false;
-        meta = {
-          description = "Fast implementation of asyncio event loop on top of libuv";
-          homepage = "http://github.com/MagicStack/uvloop";
-          license = pkgs.lib.licenses.asl20;
-        };
-        pythonImportsCheck = ["uvloop"];
-      };
-
-    vulture =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "vulture";
-        version = "2.7";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "67fb80a014ed9fdb599dd44bb96cb54311032a104106fc2e706ef7a6dad88032";
-          };
-        propagatedBuildInputs = [toml];
-        doCheck = false;
-        meta = {
-          description = "Find dead code";
-          homepage = "https://github.com/jendrikseipp/vulture";
-          license = pkgs.lib.licenses.mit;
-        };
-        pythonImportsCheck = ["vulture"];
-      };
-
     wcwidth =
       python.pkgs.buildPythonPackage rec
       {
@@ -2513,31 +1777,6 @@
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["wcwidth"];
-      };
-
-    wheel =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "wheel";
-        version = "0.40.0";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "cd1196f3faee2b31968d626e1731c94f99cbdb67cf5a46e4f5656cbee7738873";
-          };
-        nativeBuildInputs = [flit-core];
-        patchPhase = "rm tests/test_macosx_libfile.py";
-        doCheck = false;
-        meta = {
-          description = "A built-package format for Python";
-          homepage = "https://github.com/pypa/wheel/issues";
-          license = pkgs.lib.licenses.mit;
-        };
-        pipInstallFlags = ["--ignore-installed"];
-        pythonImportsCheck = ["wheel"];
       };
 
     wmctrl =
@@ -2581,52 +1820,6 @@
         };
         pythonImportsCheck = ["wrapt"];
       };
-
-    yamlfix = python.pkgs.buildPythonPackage rec {
-      pname = "yamlfix";
-      version = "1.15.0";
-      format = "pyproject";
-      src = python.pkgs.fetchPypi {
-        inherit pname;
-        inherit version;
-        sha256 = "sha256-aqUOrDswjvjTH14NDDaqXFvUbeTY+UOubLYt9g6OfnI=";
-      };
-      nativeBuildInputs = [pdm-pep517];
-      propagatedBuildInputs = [
-        maison
-        ruyaml
-      ];
-      doCheck = false;
-      meta = {
-        description = "A simple opinionated yaml formatter that keeps your comments!";
-        homepage = "https://github.com/lyz-code/yamlfix";
-        license = pkgs.lib.licenses.gpl3Only;
-      };
-      pythonImportsCheck = ["yamlfix"];
-    };
-
-    yamllint = python.pkgs.buildPythonPackage rec {
-      pname = "yamllint";
-      version = "1.31.0";
-      format = "pyproject";
-      src = python.pkgs.fetchPypi {
-        inherit pname;
-        inherit version;
-        sha256 = "2d83f1d12f733e162a87e06b176149d7bb9c5bae4a9e5fce1c771d7f703f7a65";
-      };
-      nativeBuildInputs = [setuptools];
-      propagatedBuildInputs = [
-        pathspec
-        pyyaml
-      ];
-      doCheck = false;
-      meta = {
-        description = "A linter for YAML files.";
-        homepage = "https://github.com/adrienverge/yamllint";
-        license = pkgs.lib.licenses.gpl1Only;
-      };
-      pythonImportsCheck = ["yamllint"];
-    };
   };
 in
   with pypkgs; (
@@ -2656,16 +1849,10 @@ in
         pytest-cov
         pytest-random-order
         pytest-sugar
-        toml
         typeguard
         types-aiofiles
         types-appdirs
         types-pyyaml
-        types-toml
-        types-tqdm
-        vulture
-        yamlfix
-        yamllint
       ];
       propagatedNativeBuildInputs = [
         pkgs.graphviz
@@ -2682,7 +1869,6 @@ in
         msgspec
         pyyaml
         rustworkx
-        tqdm
         wrapt
       ];
       catchConflicts = false;

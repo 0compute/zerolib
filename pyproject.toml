@@ -9,6 +9,7 @@ description = "..."
 dependencies = [
   "aiofiles",
   "anyio",
+  "appdirs",
   "atools",
   "contextvars-extras",
   "deepmerge",
@@ -17,28 +18,20 @@ dependencies = [
   "msgpack",
   "pyyaml",
   "rustworkx[mpl]",
-  "tqdm",
   "wrapt",
 ]
 
 [project.optional-dependencies]
 dev = [
-  # required by .pyproject
-  "toml",
   # typing
   "types-aiofiles",
   "types-appdirs",
   "types-pyyaml",
-  "types-toml",
-  "types-tqdm",
   # debug
   "pdbpp",
   "ptpython",
   # lint
   "mypy[dmypy]",
-  "vulture",
-  "yamlfix",
-  "yamllint",
   # TODO: include lsp etc. as project dev depends i.e. not from global env
 ]
 test = [

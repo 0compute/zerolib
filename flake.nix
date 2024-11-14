@@ -60,29 +60,23 @@
               name = "mypy";
               package = gnumake;
               types_or = ["python" "pyi"];
-              args = ["mypy"];
+              args = ["--no-print-directory" "--silent" "mypy"];
               pass_filenames = false;
             }
             {
-              entry = "vulture";
+              package = python3Packages.vulture;
               args = ["."];
               types_or = ["python" "pyi"];
               pass_filenames = false;
             }
-            # sh
-            {
-              package = shfmt;
-              args = ["-w"];
-              types = ["shell"];
-            }
             # yaml
             {
-              entry = "yamlfix";
+              package = python3Packages.yamlfix;
               args = ["--exclude=.pre-commit-config.yaml" "."];
               types = ["yaml"];
             }
             {
-              entry = "yamllint";
+              package = python3Packages.yamllint;
               args = ["."];
               types = ["yaml"];
             }
