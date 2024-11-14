@@ -1,7 +1,6 @@
 {pkgs}: let
   python = pkgs.python311;
-in
-  with rec {
+  pypkgs = rec {
     inherit (python.pkgs) setuptools;
 
     aiofiles =
@@ -2628,7 +2627,9 @@ in
       };
       pythonImportsCheck = ["yamllint"];
     };
-  }; (
+  };
+in
+  with pypkgs; (
     python.pkgs.buildPythonPackage rec
     {
       pname = "zerolib";
@@ -2716,5 +2717,6 @@ in
       '';
 
       pythonImportsCheck = ["zerolib"];
+      passthru.pypkgs = pypkgs;
     }
   )
