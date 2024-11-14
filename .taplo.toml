@@ -1,2 +1,1 @@
-[formatting]
-array_auto_collapse = false
+.pyproject/.taplo.toml
