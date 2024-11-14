@@ -1112,13 +1112,13 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "msgspec";
-        version = "0.18.4";
+        version = "0.18.6";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-y2IDC9axoAsBovywlzUBYBFpYwTmsdMyHlgCJUgmjT4=";
+            sha256 = "sha256-pZ/DtPzbly0JE4y1FtveYAyZ0Hw4/ZNypu9QDS0DG04=";
           };
         doCheck = false;
         meta = {

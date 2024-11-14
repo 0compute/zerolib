@@ -17,7 +17,7 @@ import msgspec
 from loguru import logger as log
 
 # export msgspec field for import convenience
-from msgspec import field  # noqa: F401
+from msgspec import field, structs  # noqa: F401
 
 from .. import serialize, util
 from ..context import Context
@@ -147,6 +147,11 @@ class Struct(
     def log(self) -> Logger:
         return log.bind(self=self)
 
+    def __post_init__(self) -> None:
+        # TODO: self._db_path is private runtime member, this hack pending
+        # https://github.com/jcrist/msgspec/issues/199
+        structs.force_setattr(self, "_db_path", None)
+
     # FIXME: not the right way to hash
     def __hash__(self) -> int:
         return hash(self.__class__.__name__ + str(self))
@@ -197,20 +202,13 @@ class Struct(
     @classmethod
     async def get(
         cls,
-        key: str | None = None,
+        key: str | anyio.Path,
         default: Any = None,
-        *,
-        path: anyio.Path | None = None,
     ) -> Self | None:
         # XXX: coverage branch broken: cls.ctx.cache is False in
         # ../../tests/unit/type/test_struct.py::test_store_path_nocache
         if cls.ctx.cache:  # pragma: no branch
-            if path is None:
-                # XXX: coverage branch broken: key is None in
-                # ../../tests/unit/type/test_struct.py::test_get_exc
-                if key is None:  # pragma: no branch
-                    raise TypeError("either key or path must be provided")
-                path = cls._path(key)
+            path = key if isinstance(key, anyio.Path) else cls.db_path(key)
             try:
                 encoded = await path.read_bytes()
             except FileNotFoundError:
@@ -219,10 +217,11 @@ class Struct(
                 try:
                     self = cls.decode(encoded)
                 except Exception as exc:
+                    log.opt(exception=exc).error(f"get: decode fail - unlinking {path}")
                     await path.unlink()
-                    log.opt(exception=exc).error(f"get: decode fail - unlinked {path}")
                 else:
                     self.log.debug(f"hit: {path}")
+                    structs.force_setattr(self, "_db_path", path)
                     await self._set_runtime_state()
                     return self
         return default
@@ -231,20 +230,23 @@ class Struct(
         # XXX: coverage branch broken: cls.ctx.cache is False in
         # ../../tests/unit/type/test_struct.py::test_store_path_nocache
         if self.ctx.cache:  # pragma: no branch
-            path = self._path(self) if path is None else path
+            # XXX: coverage branch broken: path is None in
+            # ../../tests/unit/type/test_struct.py::test_store_key
+            if path is None:  # pragma: no branch
+                path = self.db_path(self)
+            structs.force_setattr(self, "_db_path", path)
             # TODO: lock
             await path.parent.mkdir(parents=True, exist_ok=True)
             await path.write_bytes(self.encode())
             self.log.debug(f"wrote {path}")
 
-    async def delete(self, path: anyio.Path | None = None) -> None:
-        path = self._path(self) if path is None else path
-        await path.unlink()
-        self.log.debug(f"deleted {path}")
-
     @classmethod
-    def _path(cls, key: str | Self) -> anyio.Path:
+    def db_path(cls, key: str | Self) -> anyio.Path:
         return cls.ctx.cachedir / "db" / cls.__name__.lower() / f"{key}.msgpack"
+
+    async def delete(self) -> None:
+        await self._db_path.unlink()  # type: ignore[attr-defined]
+        self.log.debug(f"deleted {self._db_path}")  # type: ignore[attr-defined]
 
     @classmethod
     def decode(cls, encoded: bytes, type: CodeType = serialize.FAST_SERIALIZER) -> Self:

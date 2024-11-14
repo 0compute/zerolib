@@ -170,10 +170,10 @@ async def test_store_path(ctx: Context) -> None:
     path = ctx.cachedir / "x"
     await obj.put(path)
     assert await path.exists()
-    assert await Impl.get(path=path) == obj
-    await obj.delete(path)
+    assert await Impl.get(path) == obj
+    await obj.delete()
     assert not await path.exists()
-    assert await Impl.get(path=path) is None
+    assert await Impl.get(path) is None
 
 
 async def test_store_path_nocache(ctx: Context) -> None:
@@ -182,15 +182,12 @@ async def test_store_path_nocache(ctx: Context) -> None:
         path = ctx.cachedir / "x"
         await obj.put(path)
         assert not await path.exists()
-        assert await Impl.get(path=path) is None
+        assert await Impl.get(path) is None
 
 
 async def test_get_exc(
     ctx: Context, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
-    with pytest.raises(TypeError):
-        await Impl.get()
-
     obj = Impl.factory()
     path = ctx.cachedir / "x"
     await obj.put(path)
@@ -202,7 +199,7 @@ async def test_get_exc(
         raise CustomError
 
     monkeypatch.setattr(Impl, "decode", _raiser)
-    assert await Impl.get(path=path) is None
+    assert await Impl.get(path) is None
     assert not await path.exists()
     record = caplog.records[-1]
     assert record.levelname == "ERROR"
