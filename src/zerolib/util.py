@@ -5,7 +5,7 @@ import functools
 import os
 import tempfile
 import time
-from typing import TYPE_CHECKING, Protocol, cast, runtime_checkable
+from typing import TYPE_CHECKING, Literal, Protocol, cast, runtime_checkable
 
 import aiofiles
 import anyio
@@ -175,3 +175,32 @@ class cached_property(property):  # noqa: N801
 
     def __repr__(self) -> str:
         return repr(self.fget)
+
+
+CLI_COLOR_CHOICES = ("auto", "always", "never")
+
+CLI_COLOR_DEFAULT = CLI_COLOR_CHOICES[0]
+
+CliColorType = Literal[*CLI_COLOR_CHOICES]  # type: ignore[valid-type]
+
+
+def cli_color(
+    color: CliColorType = CLI_COLOR_DEFAULT, env: os._Environ | dict = os.environ
+) -> bool | None:
+    """
+    Whether cli should use color
+
+    Returns bool, or None to signify that output stream's `isatty` should be consulted
+    """
+    # https://bixense.com/clicolors/
+    return (
+        False
+        if env.get("NO_COLOR")
+        else True
+        if env.get("CLICOLOR") == "1"
+        or env.get("CLICOLOR_FORCE") == "1"
+        or env.get("FORCE_COLOR") == "1"
+        else None
+        if color == "auto"
+        else color == "always"
+    )

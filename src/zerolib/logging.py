@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import inspect
 import logging
-import os
 import sys
 import warnings
 from typing import TYPE_CHECKING
@@ -10,7 +9,7 @@ from typing import TYPE_CHECKING
 import anyio
 from loguru import logger as log
 
-from . import serialize
+from . import serialize, util
 from .dic import Dic
 
 if TYPE_CHECKING:
@@ -18,9 +17,6 @@ if TYPE_CHECKING:
 
     from loguru import Logger
 
-COLOR_DEFAULT = "auto"
-
-COLOR_CHOICES = (COLOR_DEFAULT, "always", "never")
 
 HERE = anyio.Path(__file__).parent
 
@@ -29,7 +25,7 @@ async def configure(
     *,
     debug: bool = False,
     verbose: int = 0,
-    color: str = COLOR_DEFAULT,
+    color: util.CliColorType = util.CLI_COLOR_DEFAULT,
     config: anyio.Path = HERE / "logging.yml",
     sink: IO | None = None,
     enable_for: tuple[str, ...] = (__package__,),
@@ -45,10 +41,7 @@ async def configure(
         # format is specified as a list for ease of yaml formatting
         format=" ".join(default.format),
         # colorize=None is auto based on sys.stderr.isatty
-        # NO_COLOR: see https://no-color.org/
-        colorize=(
-            None if "NO_COLOR" in os.environ or color == "auto" else color == "always"
-        ),
+        colorize=util.cli_color(color),
     )
 
     # debug mode

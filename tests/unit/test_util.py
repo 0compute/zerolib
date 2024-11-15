@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+import typeguard
 from zerolib import Dic, util
 
 
@@ -100,3 +101,23 @@ def test_cached_property() -> None:
     assert instance_key not in memoized.memos
     assert len(memoized.memos) == 1
     assert "Impl.aproperty" in repr(Impl.aproperty)
+
+
+def test_cli_color() -> None:
+    assert util.cli_color(env=dict()) is None
+    assert util.cli_color("auto", env=dict()) is None
+    assert util.cli_color("always", env=dict()) is True
+    assert util.cli_color("never", env=dict()) is False
+    with pytest.raises(typeguard.TypeCheckError):
+        util.cli_color("xxx")
+
+
+def test_cli_color_disabled() -> None:
+    assert util.cli_color(env=dict(NO_COLOR="")) is None
+    assert util.cli_color(env=dict(NO_COLOR="1")) is False
+
+
+@pytest.mark.parametrize("var", ("CLICOLOR", "CLICOLOR_FORCE", "FORCE_COLOR"))  # noqa: PT007
+def test_cli_color_enabled(var: str) -> None:
+    assert util.cli_color(env={var: ""}) is None
+    assert util.cli_color(env={var: "1"}) is True
