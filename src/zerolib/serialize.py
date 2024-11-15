@@ -65,15 +65,20 @@ SERIALIZE = Dic(
 
 SERIALIZE.yaml.load.str = SERIALIZE.yaml.load.file
 
-SERIALIZERS = list(SERIALIZE.keys())
+SERIALIZERS = tuple(SERIALIZE.keys())
 
 FAST_SERIALIZER = SERIALIZERS[0]
 
 DEFAULT_SERIALIZER = SERIALIZERS[-1]
 
+FormatType = Literal[*SERIALIZERS]  # type: ignore[valid-type]
+
 
 def dump(
-    obj: Any, file: IOType = sys.stdout, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any
+    obj: Any,
+    file: IOType = sys.stdout,
+    fmt: FormatType = DEFAULT_SERIALIZER,
+    **kwargs: Any,
 ) -> None:
     if fmt == "msgpack" and hasattr(file, "buffer"):
         # msgpack writes bytes so needs a buffer
@@ -93,7 +98,7 @@ def dumps(obj: Any, fmt: Literal["json", "yaml"]) -> str: ...
 def dumps(obj: Any, fmt: Literal["msgpack"]) -> bytes: ...
 
 
-def dumps(obj: Any, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any) -> bytes | str:
+def dumps(obj: Any, fmt: FormatType = DEFAULT_SERIALIZER, **kwargs: Any) -> bytes | str:
     return _dump(obj, SERIALIZE[fmt].dump.str, **kwargs).strip()
 
 
@@ -113,11 +118,15 @@ def _dump(
     return dumper(obj, *args, **kwargs)
 
 
-def load(file: IOType = sys.stdin, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any) -> Any:
+def load(
+    file: IOType = sys.stdin, fmt: FormatType = DEFAULT_SERIALIZER, **kwargs: Any
+) -> Any:
     return _load(SERIALIZE[fmt].load.file(file, **kwargs))
 
 
-def loads(value: bytes | str, fmt: str = DEFAULT_SERIALIZER, **kwargs: Any) -> Any:
+def loads(
+    value: bytes | str, fmt: FormatType = DEFAULT_SERIALIZER, **kwargs: Any
+) -> Any:
     return _load(SERIALIZE[fmt].load.str(value, **kwargs))
 
 

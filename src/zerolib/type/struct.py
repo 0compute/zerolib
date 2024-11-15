@@ -25,15 +25,12 @@ from ..dic import Dic
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Literal
 
     from loguru import Logger
 
     EncoderType = Callable[["Struct"], bytes]
 
     DecoderType = Callable[[bytes], "Struct"]
-
-    CodeType = Literal[*serialize.SERIALIZE]  # type: ignore[valid-type]
 
 
 # msgpack ext types
@@ -249,10 +246,12 @@ class Struct(
         self.log.debug(f"deleted {self._db_path}")  # type: ignore[attr-defined]
 
     @classmethod
-    def decode(cls, encoded: bytes, type: CodeType = serialize.FAST_SERIALIZER) -> Self:
+    def decode(
+        cls, encoded: bytes, type: serialize.FormatType = serialize.FAST_SERIALIZER
+    ) -> Self:
         return cast(Self, getattr(cls._decoder, type)(encoded))
 
-    def encode(self, type: CodeType = serialize.FAST_SERIALIZER) -> bytes:
+    def encode(self, type: serialize.FormatType = serialize.FAST_SERIALIZER) -> bytes:
         return getattr(self._encoder, type)(self)
 
     def replace(self, **changes: Any) -> Self:
