@@ -58,13 +58,13 @@ jobs:
         with:
           parallel-finished: true
           carryforward: ${{ join(matrix.*, ',') }}
-  test-report:
+  test-reporter:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/test-reporter@v1.9.1
         with:
           artifact: /test-.*-result/
-          name: Test Report
+          name: test-report
           path: test-*.xml
           reporter: java-junit
