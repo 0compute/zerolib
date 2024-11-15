@@ -4,6 +4,21 @@ import pytest
 from zerolib import Dic, util
 
 
+def test_run_sync() -> None:
+    async def x() -> int:
+        return 1
+
+    assert util.run_sync(x) == 1
+
+
+def test_make_sync() -> None:
+    @util.make_sync
+    async def x() -> int:
+        return 1
+
+    assert x.sync() == 1
+
+
 def test_irepr() -> None:
     assert util.irepr({"a", "B"}) == "'B', 'a'"
 

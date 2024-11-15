@@ -5,7 +5,7 @@ import functools
 import os
 import tempfile
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol, cast, runtime_checkable
 
 import aiofiles
 import anyio
@@ -15,16 +15,39 @@ from loguru import logger as log
 from . import const
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Generator, Iterable
+    from collections.abc import Callable, Coroutine, Generator, Iterable
     from typing import Any
 
     from loguru import Logger
 
 
-def run_sync(func: Callable, *args: Any, debug: bool = False, **kwargs: Any) -> Any:
+def run_sync(
+    func: Callable[..., Coroutine],
+    *args: Any,
+    debug: bool = False,
+    **kwargs: Any,
+) -> Any:
+    """Run an async coro synchronously"""
     return anyio.run(
-        functools.partial(func, *args, **kwargs), backend_options=dict(debug=debug)
+        functools.partial(func, *args, **kwargs),
+        backend_options=dict(debug=debug),
     )
+
+
+@runtime_checkable
+class _SyncWrapper(Protocol):
+    sync: Callable
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...  # pragma: no cover
+
+
+def make_sync(func: Callable[..., Coroutine]) -> _SyncWrapper:
+    """
+    Decorate async coro with `.sync` attribute which makes it callable synchronously
+    """
+    func = cast(_SyncWrapper, func)
+    func.sync = lambda *args, **kwargs: run_sync(func, *args, **kwargs)
+    return func
 
 
 def joinmap(
