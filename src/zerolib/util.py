@@ -5,24 +5,19 @@ import functools
 import os
 import tempfile
 import time
-from typing import TYPE_CHECKING, Literal, Protocol, cast, runtime_checkable
+from collections.abc import Callable, Coroutine, Generator, Iterable
+from typing import Any, Literal, Protocol, cast, runtime_checkable
 
 import aiofiles
 import anyio
 import atools
-from loguru import logger as log
 
 from . import const
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Generator, Iterable
-    from typing import Any
-
-    from loguru import Logger
+from .loguru_compat import Logger, log
 
 
 def run_sync(
-    func: Callable[..., Coroutine],
+    func: Callable[..., Coroutine[Any, Any, Any]],
     *args: Any,
     debug: bool = False,
     **kwargs: Any,
@@ -36,12 +31,12 @@ def run_sync(
 
 @runtime_checkable
 class _SyncWrapper(Protocol):
-    sync: Callable
+    sync: Callable[..., Any]
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any: ...  # pragma: no cover
 
 
-def make_sync(func: Callable[..., Coroutine]) -> _SyncWrapper:
+def make_sync(func: Callable[..., Coroutine[Any, Any, Any]]) -> _SyncWrapper:
     """
     Decorate async coro with `.sync` attribute which makes it callable synchronously
     """
@@ -51,7 +46,7 @@ def make_sync(func: Callable[..., Coroutine]) -> _SyncWrapper:
 
 
 def joinmap(
-    iterable: Iterable, func: Callable[[Any], str] = str, sep: str = ", "
+    iterable: Iterable[Any], func: Callable[[Any], str] = str, sep: str = ", "
 ) -> str:
     return sep.join(map(func, iterable))
 
@@ -89,7 +84,7 @@ def trepr(
 
 
 def irepr(
-    iterable: Iterable,
+    iterable: Iterable[Any],
     sep: str = ", ",
     repr: Callable[[Any], str] = repr,
     max_length: int | None = REPR_MAX_LENGTH,
@@ -108,8 +103,8 @@ def trace(
     *,
     log: Logger = log,
     level: str = "DEBUG",
-) -> Callable:
-    def wrapper(func: Callable) -> Callable:
+) -> Callable[..., Any]:
+    def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
         async def wrapped(*args: Any, **kwargs: Any) -> Any:
             start = time.monotonic()
@@ -141,7 +136,7 @@ def trace(
 
 def tmpdir(
     **kwargs: Any,
-) -> aiofiles.tempfile.AiofilesContextManagerTempDir:
+) -> aiofiles.tempfile.AiofilesContextManagerTempDir:  # type: ignore[type-arg]
     kwargs["prefix"] = f"{const.NAME}-"
     return aiofiles.tempfile.TemporaryDirectory(**kwargs)
 
@@ -167,10 +162,10 @@ class cached_property(property):  # noqa: N801
         super().__init__(atools.memoize(fget, keygen=lambda self: (id(self),)))
 
     def __delete__(self, obj: Any) -> None:
-        memoized = self.fget.memoize  # type: ignore[attr-defined]
+        memoized = self.fget.memoize  # type: ignore[union-attr]
         key = memoized.get_key(memoized.keygen(obj))
         if key not in memoized.memos:
-            raise AttributeError(self.fget.__name__)
+            raise AttributeError(self.fget.__name__)  # type: ignore[union-attr]
         memoized.reset_key(key)
 
     def __repr__(self) -> str:
@@ -185,7 +180,8 @@ CliColorType = Literal[*CLI_COLOR_CHOICES]  # type: ignore[valid-type]
 
 
 def cli_color(
-    color: CliColorType = CLI_COLOR_DEFAULT, env: os._Environ | dict = os.environ
+    color: CliColorType = CLI_COLOR_DEFAULT,
+    env: os._Environ | dict[str, str] = os.environ,  # type: ignore[type-arg]
 ) -> bool | None:
     """
     Whether cli should use color

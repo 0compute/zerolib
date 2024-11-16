@@ -4,18 +4,15 @@ import functools
 import io
 import json
 import sys
-from typing import TYPE_CHECKING, Literal, overload
+from collections.abc import Callable
+from typing import IO, Any, Literal, cast, overload
 
 import msgpack
 import yaml
 
 from .dic import Dic
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import IO, Any
-
-    IOType = IO | io.BytesIO | io.StringIO
+IOType = IO[Any] | io.BytesIO | io.StringIO
 
 _JSON_DEFAULTS = dict(default=str, indent=2)
 
@@ -99,12 +96,12 @@ def dumps(obj: Any, fmt: Literal["msgpack"]) -> bytes: ...
 
 
 def dumps(obj: Any, fmt: FormatType = DEFAULT_SERIALIZER, **kwargs: Any) -> bytes | str:
-    return _dump(obj, SERIALIZE[fmt].dump.str, **kwargs).strip()
+    return cast(bytes | str, _dump(obj, SERIALIZE[fmt].dump.str, **kwargs)).strip()
 
 
 def _dump(
     obj: Any,
-    dumper: Callable[[Any], bytes | str | None],
+    dumper: Callable[..., bytes | str | None],
     *args: Any,
     stringify: bool = True,
     **kwargs: Any,

@@ -3,22 +3,18 @@ from __future__ import annotations
 import contextlib
 import io
 import subprocess
+from collections.abc import Callable, Mapping
 
 # export this so consumers don't need to
 from subprocess import CalledProcessError
-from typing import TYPE_CHECKING, overload
+from typing import IO, Any, Literal, TextIO, cast, overload
 
 import anyio
+from anyio.abc import ByteReceiveStream
 from anyio.streams.text import TextReceiveStream
-from loguru import logger as log
 
 from . import util
-
-if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping
-    from typing import IO, Any, Literal, TextIO
-
-    from anyio.abc import ByteReceiveStream
+from .loguru_compat import log
 
 
 @overload
@@ -70,8 +66,8 @@ async def run(
         if stderr is subprocess.PIPE:
             stderr_lines: list[str] = []
             tg.start_soon(_process_stderr, proc.stderr, stderr_lines)
-        if stdin:
-            await proc.stdin.send(stdin)
+        if proc.stdin is not None:
+            await proc.stdin.send(cast(bytes, stdin))
             await proc.stdin.aclose()
         try:
             returncode = await proc.wait()
@@ -94,7 +90,7 @@ async def run(
     return out
 
 
-def _coerce_command(command: Any, coerce: Callable[[Any], list | str]) -> Any:
+def _coerce_command(command: Any, coerce: Callable[[Any], list[str] | str]) -> Any:
     """Return str command if command is tuple[str] otherwise coerced command"""
     return (
         command[0]

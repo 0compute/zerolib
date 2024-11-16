@@ -106,7 +106,9 @@ def test_clean() -> None:
         i=[dict(a=1)],
         j={1},
     )
-    assert d.clean() == Dic(a=1, b=dict(c=1), c=False, d=0, i=[dict(a=1)], j={1})
+    clean = Dic(a=1, b=dict(c=1), c=False, d=0, i=[dict(a=1)], j={1})
+    assert d.clean() == clean
+    assert d.clean(dict) == clean
 
 
 def test_export() -> None:

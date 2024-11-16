@@ -1,36 +1,15 @@
 from __future__ import annotations
 
-import os
+from collections.abc import Generator
 from typing import TYPE_CHECKING
 
-import beartype
-import beartype.claw
 import pytest
-import typeguard
 from loguru import logger as log
 
-PACKAGES = ("zerolib", "tests")
-
-# install type checkers - must be before local imports
-if "ZEROLIB_NO_TYPECHECK" not in os.environ:  # pragma: no branch - test setup
-    typeguard.config.forward_ref_policy = typeguard.ForwardRefPolicy.ERROR
-    typeguard.install_import_hook(PACKAGES)
-
-    beartype.claw.beartype_packages(
-        PACKAGES,
-        conf=beartype.BeartypeConf(
-            is_color=True,
-            is_debug=True,
-            strategy=beartype.BeartypeStrategy.On,
-        ),
-    )
-
-from zerolib import Struct, logging, util  # noqa: E402
-
 if TYPE_CHECKING:
-    from collections.abc import Generator
-
     from zerolib import Context
+
+# XXX: Do not import zerolib in global scope so typeguard can instrument the package
 
 
 # https://loguru.readthedocs.io/en/stable/resources/migration.html#replacing-caplog-fixture-from-pytest-library
@@ -38,7 +17,9 @@ if TYPE_CHECKING:
 def caplog(
     caplog: pytest.LogCaptureFixture,
 ) -> Generator[pytest.LogCaptureFixture, None, None]:
-    util.run_sync(logging.configure)
+    from zerolib import logging
+
+    logging.configure.sync()
     handler_id = log.add(
         caplog.handler,
         format="{message}",
@@ -51,4 +32,6 @@ def caplog(
 
 @pytest.fixture
 def ctx() -> Context:
+    from zerolib import Struct
+
     return Struct.ctx

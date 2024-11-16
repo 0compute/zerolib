@@ -4,30 +4,25 @@ import inspect
 import logging
 import sys
 import warnings
-from typing import TYPE_CHECKING
+from typing import IO, Any, TextIO
 
 import anyio
-from loguru import logger as log
 
 from . import serialize, util
 from .dic import Dic
-
-if TYPE_CHECKING:
-    from typing import IO, TextIO
-
-    from loguru import Logger
-
+from .loguru_compat import Logger, log
 
 HERE = anyio.Path(__file__).parent
 
 
+@util.make_sync
 async def configure(
     *,
     debug: bool = False,
     verbose: int = 0,
     color: util.CliColorType = util.CLI_COLOR_DEFAULT,
     config: anyio.Path = HERE / "logging.yml",
-    sink: IO | None = None,
+    sink: IO[Any] | None = None,
     enable_for: tuple[str, ...] = (__package__,),
 ) -> Logger:
     # read config

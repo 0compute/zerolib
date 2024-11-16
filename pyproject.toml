@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "zerolib"
 version = "0.1.0"
-description = "..."
+description = "A Python library"
 dependencies = [
   "aiofiles",
   "anyio",
@@ -35,7 +35,6 @@ dev = [
   # TODO: include lsp etc. as project dev depends i.e. not from global env
 ]
 test = [
-  "beartype",
   "pytest-asyncio",
   "pytest-cov",
   "pytest-random-order",
@@ -67,27 +66,20 @@ show_contexts = true
 output = "tests/coverage.xml"
 
 [tool.mypy]
-allow_untyped_defs = false
-cache_fine_grained = true
-check_untyped_defs = true
+# https://mypy.readthedocs.io/en/stable/config_file.html
+mypy_path = "$MYPY_CONFIG_FILE_DIR/.stubs"
+exclude = [
+  '^/nix/store/.*',
+  '^\.result.*',
+  '^result.*',
+  '^\.stubs/.*',
+]
+python_version = "3.11"
+strict = true
 # left to ruff
 disable_error_code = "name-defined,syntax"
-ignore_missing_imports = true
-show_error_codes = true
-strict_optional = false
-# nice in theory, practically mypy is fukt and enabling this will lead you down
-# an endless trail of casts
-# warn_return_any = true
-warn_redundant_casts = true
 warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = true
-exclude = [
-  # single quotes is a literal string
-  '^/nix/store/.*',
-  '^.result.*',
-  '^result.*',
-]
+cache_fine_grained = true
 
 [tool.pylsp-mypy]
 enabled = true
@@ -109,6 +101,9 @@ cache_dir = "tests/.cache"
 junit_logging = "all"
 junit_log_passing_tests = true
 tmp_path_retention_policy = "failed"
+typeguard-packages = "zerolib"
+typeguard-forward-ref-policy = "ERROR"
+typeguard-collection-check-strategy = "ALL_ITEMS"
 
 [tool.ruff]
 extend-exclude = [".result*", ".pyproject*", "result*"]
@@ -127,7 +122,6 @@ ignore = [
   "FIX",
   "TD",
   # shadowing a python builtin
-  "A001",
   "A002",
   # Missing type annotation for `self` in method
   "ANN101",
@@ -143,8 +137,6 @@ ignore = [
   "COM812",
   # commented-out code - selected in pre-commit
   "ERA001",
-  # Exception must not use a string literal
-  "EM101",
   # Exception must not use an f-string literal
   "EM102",
   # Logging statement uses f-string
@@ -155,6 +147,12 @@ ignore = [
   "SLF001",
   # Relative imports from parent modules are banned
   "TID252",
+  # Move application import into a type-checking block
+  "TCH001",
+  # Move third-party import into a type-checking block
+  "TCH002",
+  # Move standard library import into a type-checking block
+  "TCH003",
   # Avoid specifying long messages outside the exception class
   "TRY003",
 ]
@@ -175,8 +173,6 @@ required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.per-file-ignores]
 # use of assert
 "tests/*" = ["S101"]
-# imported but unused
-"__init__.py" = ["F401"]
 
 [tool.vulture]
 exclude = [".pyproject/", ".result*/", "result*/"]

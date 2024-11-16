@@ -31,7 +31,7 @@ async def test_stdin() -> None:
     assert await command.run("cat", stdin=b"a") == b"a"
 
 
-async def test_buffers(capfd: pytest.CaptureFixture) -> None:
+async def test_buffers(capfd: pytest.CaptureFixture) -> None:  # type: ignore[type-arg]
     await command.run("echo a && echo >&2 b", stdout=sys.stdout, stderr=sys.stderr)
     captured = capfd.readouterr()
     # FIXME: why? assert captured.out == "a\n"

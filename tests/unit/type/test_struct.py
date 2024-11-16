@@ -1,22 +1,19 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING
+import pathlib
+from collections.abc import Generator
 
 import anyio
 import pytest
 from zerolib import Context, Dic, FrozenStruct, Struct, field, serialize, union
-
-if TYPE_CHECKING:
-    import pathlib
-    from collections.abs import Generator
 
 
 @union
 class Impl(Struct):
     mstr: str = "a"
     mdict: Dic = Dic()
-    mset: set = set()  # noqa: RUF012
+    mset: set[int] = set()  # noqa: RUF012
     mint: int = 0
     _mbool: bool = False
 
@@ -149,7 +146,7 @@ def ctx(ctx: Context, tmp_path: pathlib.Path) -> Generator[Context, None, None]:
         yield ctx
 
 
-async def test_store_key(ctx: Context) -> None:  # noqa: ARG001
+async def test_store_key() -> None:
     obj = Impl.factory()
     await obj.put()
     assert await Impl.get(str(obj)) == obj
@@ -213,5 +210,6 @@ def test_frozen() -> None:
         a: str = "1"
 
     obj = FrozenImpl()
+    assert obj.a == "1"
     with pytest.raises(AttributeError):
         obj.a = "x"

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import functools
+from collections.abc import Callable
 from typing import (
-    TYPE_CHECKING,
     Any,
     ClassVar,
     Self,
@@ -14,23 +14,18 @@ from typing import (
 
 import anyio
 import msgspec
-from loguru import logger as log
 
 # export msgspec field for import convenience
-from msgspec import field, structs  # noqa: F401
+from msgspec import field, structs
 
 from .. import serialize, util
 from ..context import Context
 from ..dic import Dic
+from ..loguru_compat import Logger, log
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
+EncoderType = Callable[["Struct"], bytes]
 
-    from loguru import Logger
-
-    EncoderType = Callable[["Struct"], bytes]
-
-    DecoderType = Callable[[bytes], "Struct"]
+DecoderType = Callable[[bytes], "Struct"]
 
 
 # msgpack ext types
@@ -56,11 +51,13 @@ DECODERS: dict[type, DecoderType] = {}
 class Encoder:
     @util.cached_property
     def json(self) -> EncoderType:
-        return msgspec.json.Encoder(enc_hook=str).encode
+        encoder = msgspec.json.Encoder(enc_hook=str)
+        return lambda obj: encoder.encode(obj)
 
     @util.cached_property
     def msgpack(self) -> EncoderType:
-        return msgspec.msgpack.Encoder(enc_hook=self._msgpack_encode).encode
+        encoder = msgspec.msgpack.Encoder(enc_hook=self._msgpack_encode)
+        return lambda obj: encoder.encode(obj)
 
     # fallback for unsupported on msgpack encode
     @staticmethod
@@ -69,7 +66,7 @@ class Encoder:
         ext_code = EXT_TYPES.get(cls)
         if ext_code is None:
             raise NotImplementedError(f"enc_hook: EXT code undefined for {cls!r}")
-        encoder = ENCODERS.get(cls, lambda obj: str(obj).encode())
+        encoder = ENCODERS.get(cls, cast(EncoderType, lambda obj: str(obj).encode()))
         return msgspec.msgpack.Ext(ext_code, encoder(obj))
 
     @util.cached_property
@@ -80,27 +77,30 @@ class Encoder:
 class Decoder:
     @util.cached_property
     def json(self) -> DecoderType:
-        return msgspec.json.Decoder(
+        decoder = msgspec.json.Decoder(
             type=self._typed_union,
             dec_hook=self._dec_hook,
-        ).decode
+        )
+        return lambda buf: decoder.decode(buf)
 
     @util.cached_property
     def msgpack(self) -> DecoderType:
-        return msgspec.msgpack.Decoder(
+        decoder = msgspec.msgpack.Decoder(
             type=self._typed_union,
             dec_hook=self._dec_hook,
             ext_hook=self._msgpack_ext_hook,
-        ).decode
+        )
+        return lambda buf: decoder.decode(buf)
 
     def _msgpack_ext_hook(self, code: int, data: memoryview) -> Any:
         cls = self._msgpack_ext_types.get(code)
         if cls is None:
             raise NotImplementedError(f"ext_hook: type undefined for EXT code {code}")
-        return DECODERS.get(cls, lambda data: cls(data.decode()))(data.tobytes())
+        decoder = DECODERS.get(cls, cast(DecoderType, lambda data: cls(data.decode())))
+        return decoder(data.tobytes())
 
     @util.cached_property
-    def _msgpack_ext_types(self) -> dict:
+    def _msgpack_ext_types(self) -> dict[int, type]:
         return {v: k for k, v in EXT_TYPES.items()}
 
     @util.cached_property
@@ -149,7 +149,6 @@ class Struct(
         # https://github.com/jcrist/msgspec/issues/199
         structs.force_setattr(self, "_db_path", None)
 
-    # FIXME: not the right way to hash
     def __hash__(self) -> int:
         return hash(self.__class__.__name__ + str(self))
 
@@ -201,7 +200,7 @@ class Struct(
         cls,
         key: str | anyio.Path,
         default: Any = None,
-    ) -> Self | None:
+    ) -> Self | Any:
         # XXX: coverage branch broken: cls.ctx.cache is False in
         # ../../tests/unit/type/test_struct.py::test_store_path_nocache
         if cls.ctx.cache:  # pragma: no branch
@@ -252,7 +251,7 @@ class Struct(
         return cast(Self, getattr(cls._decoder, type)(encoded))
 
     def encode(self, type: serialize.FormatType = serialize.FAST_SERIALIZER) -> bytes:
-        return getattr(self._encoder, type)(self)
+        return cast(bytes, getattr(self._encoder, type)(self))
 
     def replace(self, **changes: Any) -> Self:
         return msgspec.structs.replace(self, **changes)
@@ -272,3 +271,12 @@ def union(cls: type[Struct]) -> type[Struct]:
     """Join class to the tagged union used by msgspec decoder"""
     UNION_TYPES.add(cls)
     return cls
+
+
+__all__ = (
+    "FrozenStruct",
+    "Struct",
+    "field",
+    "register_ext_type",
+    "union",
+)

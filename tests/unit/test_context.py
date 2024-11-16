@@ -12,4 +12,4 @@ def test_contextmanager() -> None:
     assert ctx.cache
     with ctx(cache=False):
         assert not ctx.cache
-    assert ctx.cache
+    assert ctx.cache  # type: ignore[unreachable]

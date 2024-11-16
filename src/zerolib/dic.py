@@ -1,22 +1,20 @@
 from __future__ import annotations
 
 import hashlib
-from typing import TYPE_CHECKING
+from collections.abc import Callable, Iterable, Mapping
+from typing import KT, VT, Any, Self, cast  # type: ignore[attr-defined]
 
 import atools
 import deepmerge
-from loguru import logger as log
 
-if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Mapping
-    from typing import KT, VT, Any, Self  # type: ignore[attr-defined]
+from .loguru_compat import log
 
-SeqType = list | set | tuple
+PrimitiveType = float | int | str
 
-PrimitiveType = float | int | str | tuple
+SeqType = list[PrimitiveType] | set[PrimitiveType] | tuple[PrimitiveType]
 
 
-class Dic(dict):
+class Dic(dict):  # type: ignore[type-arg]
     """A hashable dictionary that supports key access as attribute."""
 
     def __init__(
@@ -47,7 +45,7 @@ class Dic(dict):
         self,
         base: Mapping[KT, VT] | Iterable[tuple[KT, VT]] | None,
         kwargs: VT,
-    ) -> dict:
+    ) -> dict[Any, Any]:
         return dict(base) if base is not None else {} | kwargs
 
     def __setattr__(self, key: KT, value: VT) -> Any:
@@ -72,7 +70,7 @@ class Dic(dict):
         return hash(self._to_tuple())
 
     def sha256_hex(self) -> str:
-        return self._sha256_hex(self._to_tuple_str())
+        return cast(str, self._sha256_hex(self._to_tuple_str()))
 
     @staticmethod
     @atools.memoize
@@ -83,7 +81,9 @@ class Dic(dict):
     # __and__
     # __or__
 
-    def _to_tuple(self, obj: Self | PrimitiveType | SeqType | None = None) -> tuple:
+    def _to_tuple(
+        self, obj: Self | PrimitiveType | SeqType | None = None
+    ) -> tuple[PrimitiveType | tuple[Any, ...], ...]:
         if obj is None:
             obj = self
         match obj:
@@ -98,17 +98,17 @@ class Dic(dict):
                 return tuple(self._to_tuple(value) for value in obj)
         return (obj,)
 
-    def _to_tuple_str(self, obj: Self | SeqType | None = None) -> str:
+    def _to_tuple_str(self, obj: Self | PrimitiveType | SeqType | None = None) -> str:
         return str(self._to_tuple(obj))
 
     def setdefault(self, key: KT, default: VT) -> Self:  # type: ignore[override]
-        return super().setdefault(key, self._convert(default))
+        return cast(Self, super().setdefault(key, self._convert(default)))
 
     def update(self, m: Mapping[KT, VT] | None = None, /, **kwargs: VT) -> None:  # type: ignore[override]
         super().update(self._convert(self._merge_args(m, kwargs)))
 
-    def merge(self, other: dict) -> Self:
-        return deepmerge.always_merger.merge(self, other)
+    def merge(self, other: dict[Any, Any]) -> Self:
+        return cast(Self, deepmerge.always_merger.merge(self, other))
 
     def sorted(
         self, key: Callable[[Any], str] | None = None, *, reverse: bool = False
@@ -117,11 +117,14 @@ class Dic(dict):
             {key: self[key] for key in sorted(self.keys(), key=key, reverse=reverse)}
         )
 
-    def clean(self, cls: type[dict] | None = None) -> Self | dict:
-        if cls is None:
+    def clean(self, cls: type | None = None) -> Self | dict[Any, Any]:
+        # XXX: coverage branch broken: cls is None and dict in
+        # ../../tests/unit/test_dic.py::test_clean
+        if cls is None:  # pragma: no branch
             cls = type(self)
-        clean = cls()
-        for key, value in self.items():
+        clean = cast(Self | dict[Any, Any], cls())
+        # XXX: coverage branch broken: loop does complete
+        for key, value in self.items():  # pragma: no branch
             match value:
                 case Dic():
                     value = value.clean()
@@ -143,7 +146,7 @@ class Dic(dict):
     def _has_value(value: Any) -> bool:
         return bool(value) or isinstance(value, int | float)
 
-    def export(self, *, stringify: bool = False) -> dict:
+    def export(self, *, stringify: bool = False) -> Self | dict[Any, Any]:
         clean = self.clean(dict)
         if not clean:
             log.warning("empty export")

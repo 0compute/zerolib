@@ -2,17 +2,13 @@ from __future__ import annotations
 
 import contextlib
 import inspect
-from typing import TYPE_CHECKING, Self, cast
+from typing import Any, Self
 
 import atools
 
 from .. import util
+from ..graph import Graph, NodeFilterType, NodeListEdgeDataType, NodeListType
 from .struct import Struct
-
-if TYPE_CHECKING:
-    from typing import Any
-
-    from ..graph import Graph, NodeFilterType
 
 
 class cached_edge_property(util.cached_property):  # noqa: N801
@@ -36,7 +32,7 @@ class Node(Struct):
 
     @classmethod
     @atools.memoize
-    def _cached_edge_properties(cls) -> list:
+    def _cached_edge_properties(cls) -> list[str]:
         return [
             key
             for key, attr in inspect.getmembers(cls)
@@ -45,7 +41,7 @@ class Node(Struct):
 
     @classmethod
     @atools.memoize
-    def _cached_child_edge_properties(cls) -> list:
+    def _cached_child_edge_properties(cls) -> list[str]:
         return [
             key
             for key, attr in inspect.getmembers(cls)
@@ -54,7 +50,7 @@ class Node(Struct):
 
     @classmethod
     @atools.memoize
-    def _cached_parent_edge_properties(cls) -> list:
+    def _cached_parent_edge_properties(cls) -> list[str]:
         return [
             key
             for key, attr in inspect.getmembers(cls)
@@ -74,12 +70,12 @@ class Node(Struct):
         child._clear_cached_edge_properties("parent")
 
     @cached_parent_edge_property
-    def parents(self) -> list[tuple[Self, dict | None]]:
-        return cast(list[tuple[Self, dict | None]], self.ctx.graph.parents(self))
+    def parents(self) -> NodeListEdgeDataType:
+        return self.ctx.graph.parents(self)
 
     @cached_child_edge_property
-    def children(self) -> list[tuple[Self, dict | None]]:
-        return cast(list[tuple[Self, dict | None]], self.ctx.graph.children(self))
+    def children(self) -> NodeListEdgeDataType:
+        return self.ctx.graph.children(self)
 
     @property
     def has_node(self) -> bool:
@@ -105,11 +101,11 @@ class Node(Struct):
         self.log.debug(f"remove_child {child!r}")
         self.ctx.graph.remove_child(self, child)
 
-    def ancestors(self, filter: NodeFilterType = None) -> list[Self]:
-        return cast(list[Self], self.ctx.graph.ancestors(self, filter))
+    def ancestors(self, filter: NodeFilterType = None) -> NodeListType:
+        return self.ctx.graph.ancestors(self, filter)
 
-    def descendants(self, filter: NodeFilterType = None) -> list[Self]:
-        return cast(list[Self], self.ctx.graph.descendants(self, filter))
+    def descendants(self, filter: NodeFilterType = None) -> NodeListType:
+        return self.ctx.graph.descendants(self, filter)
 
     def subgraph(self, filter: NodeFilterType = None) -> Graph:
         return self.ctx.graph.subgraph(self, filter)

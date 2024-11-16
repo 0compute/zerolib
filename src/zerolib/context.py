@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import contextlib
 import functools
-from typing import TYPE_CHECKING
+from collections.abc import Generator
+from typing import Any, Self
 
 import anyio
 import appdirs
@@ -10,10 +11,6 @@ from contextvars_extras import ContextVarDescriptor
 
 from . import const
 from .graph import Graph
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
-    from typing import Any, Self
 
 
 class Context:

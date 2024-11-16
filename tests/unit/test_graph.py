@@ -48,8 +48,10 @@ def test_has_child(graph: Graph) -> None:
 
 
 def test_get_edge_data(graph: Graph) -> None:
-    graph.add_child(1, 2, dict(a=1))
-    assert graph.get_edge_data(1, 2) == dict(a=1)
+    graph.add_child(1, 2)
+    assert graph.get_edge_data(1, 2) is None
+    graph.add_child(2, 3, dict(a=1))
+    assert graph.get_edge_data(2, 3) == dict(a=1)
 
 
 def test_add_double(graph: Graph) -> None:
@@ -73,9 +75,9 @@ def test_parents(graph: Graph) -> None:
 
 
 def test_children(graph: Graph) -> None:
-    graph.add_child(1, 2)
-    assert graph.children(1)[0][0] == 2
-    assert not graph.children(3)
+    graph.add_child(1, 2, dict(a=1))
+    assert graph.children(1)[0] == (2, dict(a=1))
+    assert not graph.children(2)
 
 
 def test_remove_node(graph: Graph) -> None:
@@ -83,7 +85,7 @@ def test_remove_node(graph: Graph) -> None:
     assert graph.has_node(1)
     graph.remove_node(1)
     assert not graph.has_node(1)
-    # to catch the keyerror
+    # to hit the KeyError except block
     graph.remove_node(1)
 
 
@@ -116,7 +118,8 @@ def test_descendants(graph: Graph) -> None:
 
 def test_subgraph(graph: Graph) -> None:
     graph.add_child(1, 2)
-    assert graph.subgraph(1)._self_node_index_map == {2: 0}
+    graph.add_child(2, 3)
+    assert graph.subgraph(1)._self_node_index_map == {2: 0, 3: 1}
 
 
 def test_topo_iter(graph: Graph) -> None:

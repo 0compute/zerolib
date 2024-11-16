@@ -2,15 +2,12 @@ from __future__ import annotations
 
 import functools
 import io
-from typing import TYPE_CHECKING
+from typing import Any
 
 import pytest
 from zerolib import Dic, serialize
 
 from .type.test_struct import Impl
-
-if TYPE_CHECKING:
-    from typing import Any
 
 
 @pytest.mark.parametrize(

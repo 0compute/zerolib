@@ -83,6 +83,7 @@
             inherit version;
             sha256 = "ae2e518fb51355a03c1564b5ba80c7a7d28d1fc3e465fa391bde56e5582e8463";
           };
+        patchPhase = "touch atools/py.typed";
         propagatedBuildInputs = [frozendict];
         doCheck = false;
         meta = {
@@ -91,24 +92,6 @@
           license = pkgs.lib.licenses.mit;
         };
         pythonImportsCheck = ["atools"];
-      };
-
-    beartype =
-      python.pkgs.buildPythonPackage rec
-      {
-        pname = "beartype";
-        version = "0.16.4";
-        format = "pyproject";
-        src =
-          python.pkgs.fetchPypi
-          {
-            inherit pname;
-            inherit version;
-            sha256 = "sha256-GtqJzy1usw624Vbu0utUkzV3gpN5ENdDgJGOU8Lq4L8=";
-          };
-        nativeBuildInputs = [setuptools];
-        doCheck = false;
-        pythonImportsCheck = ["beartype"];
       };
 
     calver =
@@ -168,6 +151,7 @@
             inherit version;
             sha256 = "4fd84e7bd8352c1d2cb7e5f2e260994cd8c3cbf35ca83785fb24476a8ad4fe0f";
           };
+        patchPhase = "touch contextvars_extras/py.typed";
         nativeBuildInputs = [poetry-core];
         propagatedBuildInputs = [sentinel-value];
         doCheck = false;
@@ -317,14 +301,14 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "deepmerge";
-        version = "1.1.0";
+        version = "2.0";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "4c27a0db5de285e1a7ceac7dbc1531deaa556b627dea4900c8244581ecdfea2d";
+            sha256 = "sha256-XD2GCB++vQTdXeA2JqBge4CamPtsy6V3C2JGb+lA/yA=";
           };
         nativeBuildInputs = [setuptools-scm];
         doCheck = false;
@@ -645,14 +629,14 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "msgpack";
-        version = "1.0.7";
+        version = "1.1.0";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-Vy78k9t6TSfkBFAZdcptLZd1cFwtkiOQ2Hj892jZLIc=";
+            sha256 = "sha256-3UMszCxyuRTky3evzmSqt2HBE3zGmL45hO7iYLyyiW4=";
           };
         nativeBuildInputs = [cython setuptools];
         patchPhase = "sed -i 's/~=/>=/' pyproject.toml";
@@ -1257,13 +1241,13 @@
       python.pkgs.buildPythonPackage
       rec {
         pname = "pytest-random-order";
-        version = "1.1.0";
+        version = "1.1.1";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "dbe6debb9353a7af984cc9eddbeb3577dd4dbbcc1529a79e3d21f68ed9b45605";
+            sha256 = "sha256-RHLX008fHF86NZxP/FwT7QZSMvMeyhnIhEwatAbnkIA=";
           };
         propagatedBuildInputs = [pytest];
         doCheck = false;
@@ -1476,17 +1460,17 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "setuptools_scm";
-        version = "7.1.0";
+        version = "8.1.0";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "6c508345a771aad7d56ebff0e70628bf2b0ec7573762be9960214730de278f27";
+            sha256 = "sha256-Qt6htldxy6k7elFdZaZdgkblYHaKZrkQalksjn8myKc";
           };
         propagatedNativeBuildInputs = [pkgs.gitMinimal];
-        propagatedBuildInputs = [packaging setuptools typing-extensions];
+        propagatedBuildInputs = [packaging setuptools];
         doCheck = false;
         meta = {
           description = "the blessed package to manage your versions by scm tags";
@@ -1589,14 +1573,14 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "typeguard";
-        version = "4.1.5";
+        version = "4.4.1";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-6goRO7wRG8/8kHieuyFWJcljQR9wlqfpBi1ORjDBVf0=";
+            sha256 = "sha256-DSKonQC0U7R8SYdfQrZgG5YXV1QaLh4O9Re24kITwhs=";
           };
         nativeBuildInputs = [setuptools-scm];
         propagatedBuildInputs = [typing-extensions];
@@ -1739,14 +1723,14 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "typing_extensions";
-        version = "4.8.0";
+        version = "4.12.2";
         format = "pyproject";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "sha256-345DOenLdzV1WMvbzsozwwNxTPhh0e7xXhBwBVrot+8=";
+            sha256 = "sha256-Gn6tVcflWd1N7ohW46iLQSJav+HOjfV7fBORX+Eh/7g=";
           };
         nativeBuildInputs = [flit-core];
         doCheck = false;
@@ -1804,13 +1788,13 @@
       python.pkgs.buildPythonPackage rec
       {
         pname = "wrapt";
-        version = "1.15.0";
+        version = "1.16.0";
         src =
           python.pkgs.fetchPypi
           {
             inherit pname;
             inherit version;
-            sha256 = "d06730c6aed78cee4126234cf2d071e01b44b915e725a6cb439a879ec9754a3a";
+            sha256 = "sha256-XzcPlSlx59F8fR6tQOSfMjRaf3pTc1ce9E2ADQaxiZ0=";
           };
         doCheck = false;
         meta = {
@@ -1839,7 +1823,6 @@ in
           }
         );
       nativeBuildInputs = [
-        beartype
         flit-core
         mypy
         pdbpp

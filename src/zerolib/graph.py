@@ -1,21 +1,24 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import Callable, Generator, Hashable
+from typing import Any, Self, cast
 
 import rustworkx
 import wrapt
-from loguru import logger as log
 
 from .exc import CircularError
+from .loguru_compat import log
 
-if TYPE_CHECKING:
-    from collections.abc import Callable, Generator, Hashable
-    from typing import Self
+NodeFilterType = tuple[type, ...] | type | Callable[[Hashable], bool] | None
 
-    NodeFilterType = tuple[type, ...] | type | Callable[[Hashable], bool] | None
+NodeAttrsType = dict[str, Any] | None
+
+NodeListType = list[Hashable]
+
+NodeListEdgeDataType = list[tuple[Hashable, NodeAttrsType]]
 
 
-class Graph(wrapt.ObjectProxy):
+class Graph(wrapt.ObjectProxy):  # type: ignore[type-arg]
     _self_node_index_map: dict[Hashable, int]
     _self_index_node_map: dict[int, Hashable]
     _self_filter: NodeFilterType
@@ -23,7 +26,7 @@ class Graph(wrapt.ObjectProxy):
     # XXX: need a factory because superclass does not allow setting self members in
     # __init__ - trying results in "ValueError: wrapper has not been initialized"
     @classmethod
-    def factory(cls, graph: rustworkx.PyDiGraph | None = None) -> Self:
+    def factory(cls, graph: rustworkx.PyDiGraph | None = None) -> Self:  # type: ignore[type-arg]
         if graph is None:
             graph = cls._digraph()
         self = cls(graph)
@@ -33,11 +36,13 @@ class Graph(wrapt.ObjectProxy):
         return self
 
     @classmethod
-    def _digraph(cls) -> rustworkx.PyDiGraph:
+    def _digraph(cls) -> rustworkx.PyDiGraph:  # type: ignore[type-arg]
         return rustworkx.PyDiGraph(multigraph=False)
 
     def __str__(self) -> str:
-        return f"nodes={self.num_nodes()} edges={self.num_edges()}"
+        return (
+            f"nodes={self.__wrapped__.num_nodes()} edges={self.__wrapped__.num_edges()}"
+        )
 
     def __repr__(self) -> str:
         return repr(self.__wrapped__)
@@ -59,21 +64,17 @@ class Graph(wrapt.ObjectProxy):
             # we don't need to check cycle - it's done already in `.add_child`
             check_cycle=False,
         )
-        ready: list | None = None
-        while True:
-            if not sorter.is_active():
-                break
-            # XXX: coverage branch broken: ready is None on first loop
-            if ready is not None:  # pragma: no branch
-                sorter.done(ready)
+        while sorter.is_active():
             ready = sorter.get_ready()
-            nodes: set[Hashable] = {self._self_index_node_map[index] for index in ready}
-            # XXX: coverage branch broken: self.filter is None in
-            # ../../tests/unit/test_graph.py::test_topo_iter
-            if self.filter is not None:  # pragma: no branch
-                nodes = set(self._filter_nodes(nodes, self.filter))
+            nodes = set(
+                self._filter_nodes(
+                    {self._self_index_node_map[index] for index in ready},
+                    self.filter,
+                )
+            )
             if nodes:
                 yield nodes
+            sorter.done(ready)
 
     def has_node(self, node: Hashable) -> bool:
         return node in self._self_node_index_map
@@ -111,13 +112,13 @@ class Graph(wrapt.ObjectProxy):
             child_index = self._self_node_index_map[child]
         except KeyError:
             return False
-        return self.__wrapped__.has_edge(parent_index, child_index)
+        return cast(bool, self.__wrapped__.has_edge(parent_index, child_index))
 
     def add_child(
         self,
         parent: Hashable,
         child: Hashable,
-        attrs: dict | None = None,
+        attrs: NodeAttrsType = None,
     ) -> None:
         parent_index = self.add_node(parent)
         child_index = self.add_node(child)
@@ -148,7 +149,7 @@ class Graph(wrapt.ObjectProxy):
                 self._self_node_index_map[parent], self._self_node_index_map[child]
             )
 
-    def children(self, node: Hashable) -> list[tuple[Hashable, dict | None]]:
+    def children(self, node: Hashable) -> NodeListEdgeDataType:
         try:
             index = self._self_node_index_map[node]
         except KeyError:
@@ -158,7 +159,7 @@ class Graph(wrapt.ObjectProxy):
             for e in self.__wrapped__.out_edges(index)
         ]
 
-    def parents(self, node: Hashable) -> list[tuple[Hashable, dict | None]]:
+    def parents(self, node: Hashable) -> NodeListEdgeDataType:
         try:
             index = self._self_node_index_map[node]
         except KeyError:
@@ -170,31 +171,31 @@ class Graph(wrapt.ObjectProxy):
 
     def descendants(
         self, node: Hashable, filter: NodeFilterType = None
-    ) -> list[Hashable]:
+    ) -> NodeListType:
         return self._relations("descendants", node, filter)
 
-    def ancestors(
-        self, node: Hashable, filter: NodeFilterType = None
-    ) -> list[Hashable]:
+    def ancestors(self, node: Hashable, filter: NodeFilterType = None) -> NodeListType:
         return self._relations("ancestors", node, filter)
 
     def _relations(
         self, func: str, node: Hashable, filter: NodeFilterType = None
-    ) -> list[Hashable]:
+    ) -> NodeListType:
         nodes = [
             self._self_index_node_map[n]
             for n in getattr(rustworkx, func)(
                 self.__wrapped__, self._self_node_index_map[node]
             )
         ]
-        # XXX: coverage branch broken: filter is None in
-        # ../../tests/unit/test_graph.py::test_descendants
-        if filter is not None:  # pragma: no branch
-            nodes = self._filter_nodes(nodes, filter)
-        return nodes
+        return self._filter_nodes(nodes, filter)
 
     @staticmethod
-    def _filter_nodes(nodes: list | set, filter: NodeFilterType) -> list:
+    def _filter_nodes(
+        nodes: NodeListType | set[Hashable], filter: NodeFilterType
+    ) -> NodeListType:
+        # XXX: coverage branch broken: filter is None in
+        # ../../tests/unit/test_graph.py::test_ancestors
+        if filter is None:  # pragma: no branch
+            return list(nodes)
         return [
             node
             for node in nodes
@@ -205,12 +206,15 @@ class Graph(wrapt.ObjectProxy):
             )
         ]
 
-    def get_edge_data(self, parent: Hashable, child: Hashable) -> dict | None:
-        return self.__wrapped__.get_edge_data(
-            self._self_node_index_map[parent], self._self_node_index_map[child]
+    def get_edge_data(self, parent: Hashable, child: Hashable) -> NodeAttrsType:
+        return cast(
+            NodeAttrsType,
+            self.__wrapped__.get_edge_data(
+                self._self_node_index_map[parent], self._self_node_index_map[child]
+            ),
         )
 
-    def subgraph(self, node: Hashable, filter: NodeFilterType = None) -> Self:
+    def subgraph(self, node: Hashable, filter: NodeFilterType = None) -> Graph:
         descendants = self.descendants(node, filter)
         graph = Graph.factory(
             graph=self.__wrapped__.subgraph(
@@ -218,7 +222,8 @@ class Graph(wrapt.ObjectProxy):
                 preserve_attrs=True,
             )
         )
-        for index, gnode in enumerate(graph.nodes()):
+        # XXX: coverage branch broken: loop does complete
+        for index, gnode in enumerate(graph.__wrapped__.nodes()):  # pragma: no branch
             graph._self_index_node_map[index] = gnode
             graph._self_node_index_map[gnode] = index
         return graph
