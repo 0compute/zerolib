@@ -21,6 +21,7 @@ jobs:
       - run: git diff
         if: failure()
   test:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
