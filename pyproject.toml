@@ -20,6 +20,7 @@ dependencies = [
   "rustworkx[mpl]",
   "wrapt",
 ]
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 dev = [
@@ -74,7 +75,6 @@ exclude = [
   '^result.*',
   '^\.stubs/.*',
 ]
-python_version = "3.11"
 strict = true
 # left to ruff
 disable_error_code = "name-defined,syntax"
@@ -110,7 +110,6 @@ extend-exclude = [".result*", ".pyproject*", "result*"]
 force-exclude = true
 output-format = "full"
 show-fixes = true
-target-version = "py311"
 
 [tool.ruff.lint]
 ignore = [
