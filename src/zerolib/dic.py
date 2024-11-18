@@ -45,8 +45,8 @@ class Dic(dict):  # type: ignore[type-arg]
         self,
         base: Mapping[KT, VT] | Iterable[tuple[KT, VT]] | None,
         kwargs: VT,
-    ) -> dict[Any, Any]:
-        return dict(base) if base is not None else {} | kwargs
+    ) -> dict[KT, VT]:
+        return cast(dict[KT, VT], dict(base) if base is not None else {} | kwargs)
 
     def __setattr__(self, key: KT, value: VT) -> Any:
         return self.__setitem__(key, self._convert(value))

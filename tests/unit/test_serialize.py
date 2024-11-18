@@ -25,7 +25,7 @@ def test_dump_load(fmt: str, obj: Any) -> None:
     stream = (io.BytesIO if fmt == "msgpack" else io.StringIO)()
     if fmt == "msgpack":
         # special case: see serialize.dump
-        stream.buffer = stream  # type: ignore[misc,union-attr]
+        stream.buffer = stream
     serialize.dump(obj, file=stream, fmt=fmt)
     stream.seek(0)
     assert serialize.load(file=stream, fmt=fmt) == obj

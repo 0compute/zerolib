@@ -59,7 +59,7 @@ class Graph(wrapt.ObjectProxy):  # type: ignore[type-arg]
         self._self_filter = value
 
     def __iter__(self) -> Generator[set[Hashable], None, None]:
-        sorter = rustworkx.TopologicalSorter(  # type: ignore[attr-defined]
+        sorter = rustworkx.TopologicalSorter(
             self.__wrapped__,
             # we don't need to check cycle - it's done already in `.add_child`
             check_cycle=False,
@@ -136,7 +136,7 @@ class Graph(wrapt.ObjectProxy):  # type: ignore[type-arg]
                 self._self_index_node_map[edge[1]],
                 self.__wrapped__.get_edge_data(*edge),
             )
-            for edge in rustworkx.digraph_find_cycle(self.__wrapped__, child_index)  # type: ignore[attr-defined]
+            for edge in rustworkx.digraph_find_cycle(self.__wrapped__, child_index)
         ]
         if cycle:
             raise CircularError(cycle)

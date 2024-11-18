@@ -62,10 +62,21 @@ async def run(
     ):
         if stdout is subprocess.PIPE:
             stdout_buffer = io.BytesIO()
-            tg.start_soon(_process_stdout, proc.stdout, stdout_buffer)
+            tg.start_soon(
+                _process_stdout,
+                # XXX: anyio Process.stdout and Process.stderr is incorrectly typed
+                # as ByteReceiveStream | None - it is never None
+                cast(ByteReceiveStream, proc.stdout),
+                stdout_buffer,
+            )
         if stderr is subprocess.PIPE:
             stderr_lines: list[str] = []
-            tg.start_soon(_process_stderr, proc.stderr, stderr_lines)
+            tg.start_soon(
+                _process_stderr,
+                # XXX: per above
+                cast(ByteReceiveStream, proc.stderr),
+                stderr_lines,
+            )
         if proc.stdin is not None:
             await proc.stdin.send(cast(bytes, stdin))
             await proc.stdin.aclose()
