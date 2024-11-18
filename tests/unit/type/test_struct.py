@@ -147,12 +147,13 @@ def ctx(ctx: Context, tmp_path: pathlib.Path) -> Generator[Context, None, None]:
         yield ctx
 
 
-async def test_store_key() -> None:
-    obj = Impl.factory()
-    await obj.put()
-    assert await Impl.get(str(obj)) == obj
-    await obj.delete()
-    assert await Impl.get(str(obj)) is None
+async def test_store_key(ctx: Context, tmp_path: pathlib.Path) -> None:
+    with ctx(cachedir=anyio.Path(tmp_path)):
+        obj = Impl.factory()
+        await obj.put()
+        assert await Impl.get(str(obj)) == obj
+        await obj.delete()
+        assert await Impl.get(str(obj)) is None
 
 
 async def test_store_key_nocache(ctx: Context) -> None:
