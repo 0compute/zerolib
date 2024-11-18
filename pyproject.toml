@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "zerolib"
-version = "0.1.0"
+version = "0.1.0.dev"
 description = "A Python library"
 dependencies = [
   "aiofiles",
@@ -23,23 +23,8 @@ dependencies = [
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-dev = [
-  # typing
-  "types-aiofiles",
-  "types-appdirs",
-  "types-pyyaml",
-  # debug
-  "pdbpp",
-  "ptpython",
-  # lint
-  "mypy[dmypy]",
-  # TODO: include lsp etc. as project dev depends i.e. not from global env
-]
 test = [
   "pytest-asyncio",
-  "pytest-cov",
-  "pytest-random-order",
-  "pytest-sugar",
   "typeguard",
 ]
 
@@ -81,21 +66,11 @@ disable_error_code = "name-defined,syntax"
 warn_unreachable = true
 cache_fine_grained = true
 
-[tool.pylsp-mypy]
-enabled = true
-dmypy = true
-live_mode = false
-report_progress = true
-
 [tool.pytest.ini_options]
 addopts = """
   --showlocals
-  --no-cov-on-fail
   --tb=short
-  --random-order
-  --random-order-bucket=global
 """
-asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "auto"
 cache_dir = "tests/.cache"
 junit_logging = "all"
