@@ -15,7 +15,7 @@ jobs:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix develop -c bash -c "make lint"
+      - run: nix develop -c make lint
         env:
           RUFF_FORMAT: github
       - run: git diff
@@ -32,7 +32,7 @@ jobs:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix develop -c bash -c "make test-${{ matrix.test }}-cov"
+      - run: nix develop -c make test-${{ matrix.test }}-cov
         id: test
         env:
           ARGV: --cov-fail-under=0 -vv

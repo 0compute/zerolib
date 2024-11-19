@@ -92,6 +92,7 @@
                       ++ pkg.optional-dependencies.dev
                       ++ (with pkgs; [
                         cachix
+                        gnumake
                       ]);
                     shellHook = ''
                       runHook preShellHook
