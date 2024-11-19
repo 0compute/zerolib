@@ -20,31 +20,46 @@ jobs:
           RUFF_FORMAT: github
       - run: git diff
         if: failure()
-  test:
-    needs: lint
+  test-matrix:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test:
-          - unit
-          - functional
+    outputs:
+      pythons: ${{ steps.set-matrix.outputs.pythons }}
     steps:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix develop -c make test-${{ matrix.test }}-cov
+      - id: set-matrix
+        run: |
+          SYSTEM=$(nix eval --impure --raw --expr builtins.currentSystem)
+          PYTHONS=$(nix flake show --json | jq --raw-output ".devShells.\"$SYSTEM\"  | keys | .[1:] | values[]" | tr "\n" " ")
+          echo "pythons=$PYTHONS" >> $GITHUB_OUTPUT
+  test:
+    needs: test-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+        python: ${{ fromJson(needs.test-matrix.outputs.pythons) }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: 0compute/pyproject@main
+        with:
+          cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - run: nix develop ".#${{ matrix.python }}" -c make test-cov
         id: test
         env:
-          ARGV: --cov-fail-under=0 -vv
+          ARGV: -vv
           COV_REPORT: html xml
       - uses: actions/upload-artifact@v4
         with:
-          name: coverage-html-${{ matrix.test }}
-          path: tests/coverage-html-${{ matrix.test }}
+          name: coverage-html
+          path: tests/coverage-html
       - uses: coverallsapp/github-action@v2
         with:
-          file: tests/coverage-${{ matrix.test }}.xml
-          flag-name: ${{ matrix.test }}
+          file: tests/coverage.xml
+          flag-name: ${{ join(matrix.*, ' - ') }}
           parallel: true
   coveralls:
     needs: test
