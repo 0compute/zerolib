@@ -37,6 +37,7 @@ dev = [
   "vulture",
 ]
 test = [
+  "pytest",
   "pytest-asyncio",
   "typeguard",
 ]

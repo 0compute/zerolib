@@ -48,20 +48,23 @@
             attrs = project.renderers.buildPythonPackage { inherit python; };
           in
           with python.pkgs;
+          let
+            # replace dependencies with local overrides, local packages are defined in
+            # ./overlay.nix as "name-local"
+            localize =
+              packages:
+              builtins.map (
+                pkg:
+                let
+                  local = "${pkg.pname}-local";
+                in
+                if builtins.hasAttr local python.pkgs then python.pkgs."${local}" else pkg
+              ) packages;
+          in
           buildPythonPackage (
             lib.recursiveUpdate attrs rec {
-              optional-dependencies =
-                let
-                  replace =
-                    extra: name:
-                    (builtins.filter (pkg: pkg.pname != name) attrs.optional-dependencies.${extra})
-                    ++ [ python.pkgs."${name}-local" ];
-                in
-                {
-                  test = (replace "test" "typeguard") ++ [
-                    pytestCheckHook
-                  ];
-                };
+              dependencies = localize attrs.dependencies;
+              optional-dependencies = lib.mapAttrs (_: localize) attrs.optional-dependencies;
               checkInputs = optional-dependencies.test;
             }
           );

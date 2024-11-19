@@ -1,21 +1,20 @@
-_self: super:
+self: super:
 with super;
 let
+  pkg-ref = pname: if builtins.hasAttr pname super then super.${pname} else self.${pname};
   override =
     pname: attrs:
     let
-      pkg = super.${pname};
+      pkg = pkg-ref pname;
     in
-    pkg.overridePythonAttrs (
-      {
-        pname = pkg.pname + "-override";
-      }
-      // attrs
-    );
+    (pkg.overridePythonAttrs attrs)
+    // {
+      pname = pkg.pname + "-override";
+    };
   upgrade =
     pname: version: hash:
     let
-      pkg = super.${pname};
+      pkg = pkg-ref pname;
     in
     assert super.lib.assertMsg (
       builtins.compareVersions pkg.version version == -1
@@ -24,6 +23,9 @@ let
       inherit version;
       src = super.fetchPypi { inherit pname version hash; };
     };
+  replace =
+    name: packages:
+    (builtins.filter (pkg: !(pkg ? pname && pkg.pname == name)) packages) ++ [ self."${name}-local" ];
 in
 rec {
 
@@ -64,6 +66,8 @@ rec {
     };
     pythonImportsCheck = [ "contextvars_extras" ];
   };
+
+  coverage-local = upgrade "coverage" "7.6.7" "sha256-151IJuQUQcmhGP8EXkvMuf29yx0CQT5+putch7VDnSQ=";
 
   deepmerge = upgrade "deepmerge" "2.0" "sha256-XD2GCB++vQTdXeA2JqBge4CamPtsy6V3C2JGb+lA/yA=";
 
@@ -123,12 +127,11 @@ rec {
     pythonImportsCheck = [ "pyrepl" ];
   };
 
-  pytest-cov = override "pytest-cov" {
-    propagatedBuildInputs = [
-      (upgrade "coverage" "7.6.7" "sha256-151IJuQUQcmhGP8EXkvMuf29yx0CQT5+putch7VDnSQ=")
-      toml
-    ];
-  };
+  pytest-cov = override "pytest-cov" (pkg: {
+    propagatedBuildInputs = replace "coverage" pkg.propagatedBuildInputs;
+  });
+
+  pytest-local = pytestCheckHook;
 
   sentinel-value = buildPythonPackage rec {
     pname = "sentinel-value";
