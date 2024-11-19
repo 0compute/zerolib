@@ -30,8 +30,9 @@ jobs:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - id: set-matrix
         run: |
+          set -x
           SYSTEM=$(nix eval --impure --raw --expr builtins.currentSystem)
-          PYTHONS=$(nix flake show --json | jq --raw-output ".devShells.\"$SYSTEM\"  | keys | .[1:] | values[]" | tr "\n" " ")
+          PYTHONS=$(nix flake show --json | jq ".devShells.\"$SYSTEM\"  | keys | .[1:]" | tr "\n" " ")
           echo "pythons=$PYTHONS" >> $GITHUB_OUTPUT
   test:
     needs: test-matrix
@@ -54,7 +55,7 @@ jobs:
           COV_REPORT: html xml
       - uses: actions/upload-artifact@v4
         with:
-          name: coverage-html
+          name: coverage-html-${{ join(matrix.*, ' - ') }}
           path: tests/coverage-html
       - uses: coverallsapp/github-action@v2
         with:
