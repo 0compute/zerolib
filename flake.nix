@@ -1,15 +1,8 @@
 {
 
   inputs = {
-    systems = {
-      url = "path:./flake.systems.nix";
-      flake = false;
-    };
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.systems.follows = "systems";
-    };
+    flake-utils.url = "github:numtide/flake-utils";
     nix-github-actions = {
       url = "github:nix-community/nix-github-actions";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -139,19 +132,23 @@
         python = overlay pkgs.python3;
 
       in
-      {
+      # skip this one as there are no github runners
+      if system == "aarch64-linux" then
+        { }
+      else
+        {
 
-        inherit formatter;
+          inherit formatter;
 
-        devShells = shells // {
-          default = shells.${python.pythonAttr};
-        };
+          devShells = shells // {
+            default = shells.${python.pythonAttr};
+          };
 
-        _devShells = shells;
+          _devShells = shells;
 
-        packages.default = package python;
+          packages.default = package python;
 
-      }
+        }
     )
     // {
 
