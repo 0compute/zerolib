@@ -144,7 +144,8 @@
             default = shells.${python.pythonAttr};
           };
 
-          _devShells = shells;
+          # XXX: filter out broken interpreters
+          githubShells = lib.filterAttrs (name: _value: name != "python313" && name != "python314") shells;
 
           packages.default = package python;
 
@@ -152,7 +153,7 @@
     )
     // {
 
-      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = self._devShells; };
+      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = self.githubShells; };
 
     };
 
