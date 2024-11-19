@@ -86,8 +86,6 @@ addopts = """
 """
 asyncio_mode = "auto"
 cache_dir = "tests/.cache"
-junit_logging = "all"
-junit_log_passing_tests = true
 tmp_path_retention_policy = "failed"
 typeguard-packages = "zerolib"
 typeguard-forward-ref-policy = "ERROR"
