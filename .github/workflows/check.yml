@@ -20,36 +20,31 @@ jobs:
           RUFF_FORMAT: github
       - run: git diff
         if: failure()
-  test-matrix:
+  nix-matrix:
     runs-on: ubuntu-latest
     outputs:
-      pythons: ${{ steps.set-matrix.outputs.pythons }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - id: set-matrix
         run: |
-          set -x
-          SYSTEM=$(nix eval --impure --raw --expr builtins.currentSystem)
-          PYTHONS=$(nix flake show --json | jq ".devShells.\"$SYSTEM\"  | keys | .[1:]" | tr "\n" " ")
-          echo "pythons=$PYTHONS" >> $GITHUB_OUTPUT
+          matrix="$(nix eval --json '.#githubActions.matrix')"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
   test:
-    needs: test-matrix
+    name: ${{ matrix.name }} (${{ matrix.system }})
+    needs: nix-matrix
     strategy:
       fail-fast: false
-      matrix:
-        os:
-          - macos-latest
-          - ubuntu-latest
-        python: ${{ fromJson(needs.test-matrix.outputs.pythons) }}
+      matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          devshell: ${{ matrix.python }}
-      - run: nix develop ".#${{ matrix.python }}" -c make test-cov
+          devshell: ${{ matrix.name }}
+      - run: nix develop ".#${{ matrix.name }}" -c make test-cov
         id: test
         env:
           ARGV: -vv

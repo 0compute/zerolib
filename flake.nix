@@ -1,8 +1,19 @@
 {
 
   inputs = {
+    systems = {
+      url = "path:./flake.systems.nix";
+      flake = false;
+    };
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-pre-commit = {
       url = "github:kingarrrt/nix-pre-commit";
       inputs.flake-utils.follows = "flake-utils";
@@ -15,7 +26,7 @@
   };
 
   outputs =
-    inputs:
+    { self, ... }@inputs:
     let
       packageOverrides = import ./overlay.nix;
       pre-commit = import ./pre-commit.nix;
@@ -136,9 +147,16 @@
           default = shells.${python.pythonAttr};
         };
 
+        _devShells = shells;
+
         packages.default = package python;
 
       }
-    );
+    )
+    // {
+
+      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = self._devShells; };
+
+    };
 
 }
