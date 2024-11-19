@@ -27,7 +27,6 @@ dev = [
   "flit",
   "mypy",
   "pdbpp",
-  "pip",                 # because we're using a custom shellHook
   "ptpython",
   "pytest-cov",
   "pytest-random-order",

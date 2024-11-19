@@ -101,8 +101,8 @@
                       prefix="''${XDG_CACHE_HOME:-$HOME/.cache}/nixpkgs/pip-shell-hook/''${PWD//\//%}/$hash"
                       PATH="$prefix/bin:$PATH"
                       export NIX_PYTHONPATH="$prefix/${python.sitePackages}:''${NIX_PYTHONPATH-}"
-                      [ -d "$prefix" ] || ${python.interpreter} -m \
-                          pip install --no-deps --editable . --prefix "$prefix" --no-build-isolation >&2
+                      [ -d "$prefix" ] || ${lib.getExe' python.pkgs.pip "pip"} install \
+                        --no-deps --editable . --prefix "$prefix" --no-build-isolation >&2
                       runHook postShellHook
                     '';
                   })
