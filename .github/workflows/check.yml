@@ -33,7 +33,7 @@ jobs:
           matrix="$(nix eval --json '.#githubActions.matrix')"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
   test:
-    name: test ${{ matrix.name }} (${{ matrix.system }})
+    name: ${{ matrix.name }} (${{ matrix.system }})
     needs: nix-matrix
     strategy:
       fail-fast: false
