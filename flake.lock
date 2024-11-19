@@ -91,11 +91,11 @@
         "pyproject-nix": "pyproject-nix"
       },
       "locked": {
-        "lastModified": 1732046920,
-        "narHash": "sha256-POC8ZRYXfV/2I1i80kAirNJXMWqOUeBvS23oBqYhQZ8=",
+        "lastModified": 1732047920,
+        "narHash": "sha256-gusj2Pgbxk/A7XCNfIje3A6pJ6j6BWkvMcDEsl6mw7U=",
         "owner": "0compute",
         "repo": "pyproject",
-        "rev": "e1d93003786fca9d69c270499773b85ec18ab152",
+        "rev": "14dfe84bff86dc07aea3595fd6a68c22d09436f6",
         "type": "github"
       },
       "original": {

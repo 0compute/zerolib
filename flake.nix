@@ -13,7 +13,6 @@
     inputs.pyproject.lib.mkPythonProject {
       projectRoot = ./.;
       packageOverrides = import ./overlay.nix;
-      pre-commit = import ./pre-commit.nix;
       dev-pkgs =
         pkgs:
         (with pkgs; [
