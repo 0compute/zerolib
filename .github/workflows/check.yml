@@ -32,7 +32,6 @@ jobs:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build ".#devShells.$(nix eval --impure --raw --expr builtins.currentSystem).default"
       - run: nix develop -c bash -c "make test-${{ matrix.test }}-cov"
         id: test
         env:
