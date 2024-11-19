@@ -43,6 +43,7 @@ jobs:
       - uses: 0compute/pyproject@main
         with:
           cachix-authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          system: ${{ matrix.system }}
           devshell: ${{ matrix.name }}
       - run: nix develop ".#${{ matrix.name }}" -c make test-cov
         id: test
