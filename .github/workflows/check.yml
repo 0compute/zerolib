@@ -33,7 +33,7 @@ jobs:
           matrix="$(nix eval --json '.#githubActions.matrix')"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
   test:
-    name: ${{ matrix.name }} (${{ matrix.system }})
+    name: test ${{ matrix.name }} (${{ matrix.system }})
     needs: nix-matrix
     strategy:
       fail-fast: false
@@ -52,12 +52,12 @@ jobs:
           COV_REPORT: html xml
       - uses: actions/upload-artifact@v4
         with:
-          name: coverage-html-${{ join(matrix.*, ' - ') }}
+          name: coverage-html-${{ matrix.name }}-${{ matrix.system }}
           path: tests/coverage-html
       - uses: coverallsapp/github-action@v2
         with:
           file: tests/coverage.xml
-          flag-name: ${{ join(matrix.*, ' - ') }}
+          flag-name: ${{ matrix.name }}-${{ matrix.system }}
           parallel: true
   coveralls:
     needs: test
@@ -66,4 +66,3 @@ jobs:
       - uses: coverallsapp/github-action@v2
         with:
           parallel-finished: true
-          carryforward: ${{ join(matrix.*, ',') }}
