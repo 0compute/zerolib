@@ -1,15 +1,16 @@
 {
   pkgs,
   python,
+  default,
 }:
 let
-  lib = import ./lib.nix { inherit (pkgs) lib; };
-  pythonx = python.override {
+  xpython = python.override {
 
     packageOverrides =
       _self: super:
       with super;
       let
+        lib = import ./lib.nix { inherit (pkgs) lib; };
         override =
           pname: version: hash:
           lib.override super pname version hash;
@@ -113,11 +114,9 @@ let
       };
   };
 
-  default = pkgs.callPackage ./default.nix { python = pythonx; };
-
 in
 
-with pythonx.pkgs;
+with xpython.pkgs;
 
 default.overridePythonAttrs {
 

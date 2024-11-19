@@ -20,9 +20,23 @@ dependencies = [
   "rustworkx[mpl]",
   "wrapt",
 ]
-requires-python = ">=3.11"
+requires-python = ">= 3.11"
 
 [project.optional-dependencies]
+dev = [
+  "flit",
+  "mypy",
+  "pdbpp",
+  "pip",                 # because we're using a custom shellHook
+  "ptpython",
+  "pytest-cov",
+  "pytest-random-order",
+  "pytest-sugar",
+  "types-aiofiles",
+  "types-appdirs",
+  "types-pyyaml",
+  "vulture",
+]
 test = [
   "pytest-asyncio",
   "typeguard",
