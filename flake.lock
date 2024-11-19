@@ -21,6 +21,7 @@
     "nix-github-actions": {
       "inputs": {
         "nixpkgs": [
+          "pyproject",
           "nixpkgs"
         ]
       },
@@ -41,9 +42,11 @@
     "nix-pre-commit": {
       "inputs": {
         "flake-utils": [
+          "pyproject",
           "flake-utils"
         ],
         "nixpkgs": [
+          "pyproject",
           "nixpkgs"
         ]
       },
@@ -77,18 +80,43 @@
         "type": "github"
       }
     },
+    "pyproject": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nix-github-actions": "nix-github-actions",
+        "nix-pre-commit": "nix-pre-commit",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pyproject-nix": "pyproject-nix"
+      },
+      "locked": {
+        "lastModified": 1732046920,
+        "narHash": "sha256-POC8ZRYXfV/2I1i80kAirNJXMWqOUeBvS23oBqYhQZ8=",
+        "owner": "0compute",
+        "repo": "pyproject",
+        "rev": "e1d93003786fca9d69c270499773b85ec18ab152",
+        "type": "github"
+      },
+      "original": {
+        "owner": "0compute",
+        "repo": "pyproject",
+        "type": "github"
+      }
+    },
     "pyproject-nix": {
       "inputs": {
         "nixpkgs": [
+          "pyproject",
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1731758791,
-        "narHash": "sha256-zssl+C/pQHR+dtIqhWMdvZZ8oRbKtpDseaDZLJhCmC8=",
+        "lastModified": 1732018630,
+        "narHash": "sha256-5DnH93JNpNZIV4y0XJu0u35sql4S2U9EKZ/SWSAdcPk=",
         "owner": "nix-community",
         "repo": "pyproject.nix",
-        "rev": "4b33d42b08f8a1ba27c9c57f355e5de4ea04b8e5",
+        "rev": "a4e838bfb3761ac0743e8d241fd0e3e0d26eabb8",
         "type": "github"
       },
       "original": {
@@ -99,11 +127,8 @@
     },
     "root": {
       "inputs": {
-        "flake-utils": "flake-utils",
-        "nix-github-actions": "nix-github-actions",
-        "nix-pre-commit": "nix-pre-commit",
         "nixpkgs": "nixpkgs",
-        "pyproject-nix": "pyproject-nix"
+        "pyproject": "pyproject"
       }
     },
     "systems": {
