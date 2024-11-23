@@ -1,3 +1,0 @@
-[submodule ".pyproject"]
-	path = .pyproject
-	url = git@github.com:0compute/pyproject

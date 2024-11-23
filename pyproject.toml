@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
+requires = [ "flit_core >=3.2,<4" ]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -14,8 +14,8 @@ dependencies = [
   "contextvars-extras",
   "deepmerge",
   "loguru",
-  "msgspec",
   "msgpack",
+  "msgspec",
   "pyyaml",
   "rustworkx[mpl]",
   "wrapt",
@@ -24,7 +24,6 @@ requires-python = ">= 3.11"
 
 [project.optional-dependencies]
 dev = [
-  "flit",
   "mypy",
   "pdbpp",
   "ptpython",
@@ -36,26 +35,23 @@ dev = [
   "types-pyyaml",
   "vulture",
 ]
-test = [
-  "pytest",
-  "pytest-asyncio",
-  "typeguard",
-]
+test = [ "pytest", "pytest-asyncio", "typeguard" ]
 
 [tool.coverage.run]
 branch = true
 data_file = "tests/.coverage"
+omit = [
+  ".site/sitecustomize.py",
+  "dev-shell",
+  "package",
+  "tests/whitelist.py",
+]
 parallel = true
-source = ["."]
-omit = [".pyproject/*", ".site/sitecustomize.py", "tests/whitelist.py"]
 relative_files = true
+source = [ "." ]
 
 [tool.coverage.report]
-exclude_lines = [
-  "if TYPE_CHECKING:",
-  "pragma: no cover",
-  "@overload",
-]
+exclude_lines = [ "@overload", "if TYPE_CHECKING:", "pragma: no cover" ]
 fail_under = 100
 
 [tool.coverage.html]
@@ -68,12 +64,7 @@ output = "tests/coverage.xml"
 [tool.mypy]
 # https://mypy.readthedocs.io/en/stable/config_file.html
 mypy_path = "$MYPY_CONFIG_FILE_DIR/.stubs"
-exclude = [
-  '^/nix/store/.*',
-  '^\.result.*',
-  '^result.*',
-  '^\.stubs/.*',
-]
+exclude = [ "dev-shell", "package", '^/nix/store/.*', '^\.stubs/.*' ]
 strict = true
 # left to ruff
 disable_error_code = "name-defined,syntax"
@@ -93,7 +84,7 @@ typeguard-forward-ref-policy = "ERROR"
 typeguard-collection-check-strategy = "ALL_ITEMS"
 
 [tool.ruff]
-extend-exclude = [".result*", ".pyproject*", "result*"]
+extend-exclude = [ "dev-shell", "package" ]
 force-exclude = true
 output-format = "full"
 show-fixes = true
@@ -142,8 +133,8 @@ ignore = [
   # Avoid specifying long messages outside the exception class
   "TRY003",
 ]
-select = ["ALL"]
-task-tags = ["FIXME", "HACK", "TODO", "TOGO", "XXX"]
+select = [ "ALL" ]
+task-tags = [ "FIXME", "HACK", "TODO", "TOGO", "XXX" ]
 
 [tool.ruff.lint.flake8-annotations]
 mypy-init-return = true
@@ -154,17 +145,17 @@ fixture-parentheses = false
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-required-imports = ["from __future__ import annotations"]
+required-imports = [ "from __future__ import annotations" ]
 
 [tool.ruff.lint.per-file-ignores]
 # use of assert
-"tests/*" = ["S101"]
+"tests/*" = [ "S101" ]
 
 [tool.vulture]
-exclude = [".pyproject/", ".result*/", "result*/"]
+exclude = [ "dev-env", "package" ]
 
 [tool.yamlfix]
 explicit_start = false
 line_length = 100
-sequence_style = "keep_style"
 section_whitelines = 1
+sequence_style = "keep_style"
