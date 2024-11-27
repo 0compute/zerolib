@@ -1,7 +1,6 @@
 /.*_cache/
 /.dmypy*.json
 /.flake
-/.flake/
 /.pre-commit-config.yaml
 /.site/
 /.taplo.toml
